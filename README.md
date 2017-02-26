@@ -3,7 +3,7 @@ read schedule and stations in *.txt files, output a svg graph.
 
 
 ##sch.txt will like follow,and a blank line are needed between two table.
-    
+<pre>
 G65
 01 北京西 ---- 10:33 ---- 
 02 保定东 11:14 11:16 2分钟 
@@ -23,9 +23,9 @@ G65
 16 清远 19:44 19:46 2分钟 
 17 广州南 20:16 20:16 ---- 
 
-
+</pre>
 ##station.txt will like follow,and each line have a station name and a millage.
-    
+<pre>
 北京西 0
 涿州东 62
 高碑店东 83
@@ -61,3 +61,4 @@ G65
 虎门 2348
 深圳北 2400
 福田 2409
+</pre>
