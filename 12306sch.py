@@ -26,7 +26,7 @@ def getmins(str):
         t[i]=getmin(t[i])
     return t
 
-fstat=open('D:\\12306station.txt')
+fstat=open('station.txt')
 source0=fstat.read()
 station=source0.split('\n')
 
@@ -35,7 +35,7 @@ for i in range(len(station)):
 
 len(station) #34
 
-fsch=open('D:\\12306up.txt')
+fsch=open('schedule.txt')
 source=fsch.read()
 sch=source.split('\n')
 len(sch)
