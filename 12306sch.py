@@ -1,3 +1,4 @@
+'''tested in python 2.7.14 on win10 x64
 from __future__ import print_function
 import os
 import re
