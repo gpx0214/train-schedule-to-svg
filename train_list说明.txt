@@ -1,0 +1,15 @@
+wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js
+
+https://kyfw.12306.cn/otn/resources/js/query/train_list.js?scriptVersion=1.0
+https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9031
+https://kyfw.12306.cn/otn/resources/js/framework/favorite_name.js
+
+import json
+f = open('train_list.js','r',encoding= 'utf8')
+f = open('train_list.js','r')
+f.read(16)
+data = f.read()
+t = json.loads(data)
+t['2017-12-09']['Z'][0]
+t['2017-12-09']['Z'][0]['station_train_code']
+t['2017-12-09']['Z'][0]['train_no']
