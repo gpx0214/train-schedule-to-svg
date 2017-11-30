@@ -13,3 +13,12 @@ t = json.loads(data)
 t['2017-12-09']['Z'][0]
 print(t['2017-12-09']['Z'][0]['station_train_code'])
 t['2017-12-09']['Z'][0]['train_no']
+
+for i in range(len(t['2017-12-09']['Z'])):
+    print(t['2017-12-09']['Z'][i])
+
+sorted(z,key=lambda x:x['train_no'])
+
+z = sorted(z,key=lambda x:x['train_no'])
+for i in range(len(z)):
+    print(z[i])
