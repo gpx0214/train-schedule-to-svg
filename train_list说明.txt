@@ -10,6 +10,6 @@ f = open('train_list.js','r')
 f.read(16)
 data = f.read()
 t = json.loads(data)
-print(t['2017-12-09']['Z'][0])
-t['2017-12-09']['Z'][0]['station_train_code']
+t['2017-12-09']['Z'][0]
+print(t['2017-12-09']['Z'][0]['station_train_code'])
 t['2017-12-09']['Z'][0]['train_no']
