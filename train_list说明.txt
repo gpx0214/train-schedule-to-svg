@@ -20,4 +20,4 @@ for i in range(len(t['2017-12-09']['Z'])):
 z = t['2017-12-09']['Z']
 z = sorted(z,key=lambda x:x['train_no'])
 for i in range(len(z)):
-    print(z[i])
+    print(z[i]['station_train_code'])
