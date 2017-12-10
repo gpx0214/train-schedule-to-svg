@@ -1,0 +1,19 @@
+http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/from2.jsp?cz=%B1%B1%BE%A9%CE%F7&cc=Z35&cxlx=1&rq=2017-12-11&czEn=-E5-8C-97-E4-BA-AC-E8-A5-BF&tp=1512927821830
+
+http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%B1%B1%BE%A9%CE%F7&cc=Z35&cxlx=1&rq=2017-12-11&czEn=-E5-8C-97-E4-BA-AC-E8-A5-BF&tp=1512927821860
+
+
+http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/from2.jsp?cz=%B1%B1%BE%A9%CE%F7&cc=Z35&cxlx=0&rq=2017-12-11&czEn=-E5-8C-97-E4-BA-AC-E8-A5-BF&tp=1512928040320
+
+http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%B1%B1%BE%A9%CE%F7&cc=Z35&cxlx=0&rq=2017-12-11&czEn=-E5-8C-97-E4-BA-AC-E8-A5-BF&tp=1512928040367
+
+http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/from2.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=Z202&cxlx=0&rq=2017-12-11&czEn=-E7-9F-B3-E5-AE-B6-E5-BA-84&tp=1512928161483
+
+http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=Z202&cxlx=0&rq=2017-12-11&czEn=-E7-9F-B3-E5-AE-B6-E5-BA-84&tp=1512928161526
+
+cz GBK
+cc 车次
+cxlx 0 到 1 发
+rq 日期 1970-01-01
+czEn UTF-8
+tp 13位时间
