@@ -2,7 +2,6 @@ http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/from2.jsp?cz=%B1%B1%BE%A9%CE%F7&cc=
 
 http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%B1%B1%BE%A9%CE%F7&cc=Z35&cxlx=1&rq=2017-12-11&czEn=-E5-8C-97-E4-BA-AC-E8-A5-BF&tp=1512927821860
 
-
 http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/from2.jsp?cz=%B1%B1%BE%A9%CE%F7&cc=Z35&cxlx=0&rq=2017-12-11&czEn=-E5-8C-97-E4-BA-AC-E8-A5-BF&tp=1512928040320
 
 http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%B1%B1%BE%A9%CE%F7&cc=Z35&cxlx=0&rq=2017-12-11&czEn=-E5-8C-97-E4-BA-AC-E8-A5-BF&tp=1512928040367
