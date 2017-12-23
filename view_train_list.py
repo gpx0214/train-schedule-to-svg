@@ -127,29 +127,30 @@ def processA(a, date, station):
         try:
             sch = json.loads(data)
             if sch['status'] == True and sch['httpstatus'] == 200 \
-                and len(sch['data']['data']):
+                    and len(sch['data']['data']):
                 return sch['data']['data']
         except ValueError:
             print('ValueError ' + a['train_no'])
-    print("processA")
 
     match = re.findall(r'(.*)\((.*)-(.*)\)',
                        a['station_train_code'], re.I | re.M)[0]
     t1 = telecode(match[1].encode('utf-8'), station)
     t2 = telecode(match[2].encode('utf-8'), station)
     if not t1:
-        #print(match[1].encode('utf-8') + " telecode not found!");
-        return []
+        print(match[1].encode('utf-8') + " telecode not found! " + match[0].encode('utf-8'));
+        t1 = "AAA"
+        #return []
     if not t2:
-        #print(match[2].encode('utf-8') + " telecode not found!");
-        return []
+        print(match[2].encode('utf-8') + " telecode not found! " + match[0].encode('utf-8'));
+        t2 = "AAA"
+        #return []
     return getSch12306(t1, t2, a['train_no'], date)
 
 
 def getSch12306(t1, t2, train_no, date):
     try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), \
-             'sch/' + train_no + '.json')
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          'sch/' + train_no + '.json')
     except:
         fn = 'sch/' + train_no + '.json'
     if os.path.exists(fn):
@@ -213,23 +214,9 @@ def downloadAllSch12306(t, station):
 def checkAllSch12306(t, station):
     for date in sorted(t.keys()):
         print(date)
-        #date = '1970-01-01';
         for type in t[date]:
             for i in range(0, len(t[date][type])):
-                a = t[date][type][i]
-                if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                               'sch/' + a['train_no'].encode('utf-8')+'.json')):
-                    f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                          'sch/' + a['train_no'].encode('utf-8')+'.json'), 'r')
-                    data = f.read()
-                    sch = json.loads(data)
-                    if len(sch['data']['data']) == 0:
-                        print(a['train_no'].encode('utf-8') + " zero")
-                        processA(t[date][type][i], date, station)
-                    # else:
-                        #print(a['train_no'].encode('utf-8') + ' local');
-                else:
-                    r = processA(t[date][type][i], date, station)
+                processA(t[date][type][i], date, station)
 
 
 def train_list_type_str(t):
