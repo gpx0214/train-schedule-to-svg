@@ -10,6 +10,10 @@ http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/from2.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=
 
 http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=Z202&cxlx=0&rq=2017-12-11&czEn=-E7-9F-B3-E5-AE-B6-E5-BA-84&tp=1512928161526
 
+"http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz="+unicode2gbk(str)+"&cc="+trainNo+"&cxlx="+"0"+"&rq="+d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() +"&czEn="+encodeURI(str).replace(/%/g, "-")+"&tp="+new Date().getTime()
+
+Y511次列车，到达石家庄站的时间为00:10".match(/(.*)次列车，到达(.*)站的时间为(.*)/)
+
 cz GBK
 cc 车次
 cxlx 0 到 1 发
