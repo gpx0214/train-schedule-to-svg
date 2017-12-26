@@ -10,9 +10,17 @@ http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/from2.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=
 
 http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=Z202&cxlx=0&rq=2017-12-11&czEn=-E7-9F-B3-E5-AE-B6-E5-BA-84&tp=1512928161526
 
-"http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz="+unicode2gbk(str)+"&cc="+trainNo+"&cxlx="+"0"+"&rq="+d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() +"&czEn="+encodeURI(str).replace(/%/g, "-")+"&tp="+new Date().getTime()
+function zwdcx(str, trainNo, cxlx) {
+return "http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz="+unicode2gbk(str)+"&cc="+trainNo+"&cxlx="+cxlx+"&rq="+d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() +"&czEn="+encodeURI(str).replace(/%/g, "-")+"&tp="+new Date().getTime()
+}
 
-Y511次列车，到达石家庄站的时间为00:10".match(/(.*)次列车，到达(.*)站的时间为(.*)/)
+"Y511次列车，到达石家庄站的时间为00:10".match(/(.*)次列车，到达(.*)站的时间为(.*)/)
+"预计Z201次列车，武昌站到达时间为04:17".match(/预计(.*)次列车，(.*)站到达时间为(.*)/)
+"预计Z201次列车，武昌站出发时间为04:31".match(/预计(.*)次列车，(.*)站出发时间为(.*)/)
+.match(/预计(.*)次列车，(.*)站(到达|出发)时间为(.*)/)
+
+http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=Y511&cxlx=1&rq=2017-12-11&czEn=-E7-9F-B3-E5-AE-B6-E5-BA-84&tp=1512928161526
+
 
 cz GBK
 cc 车次
