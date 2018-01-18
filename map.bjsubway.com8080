@@ -1,0 +1,11 @@
+#北京地铁线路图
+http://map.bjsubway.com:8080/subwaymap2/public/
+
+http://map.bjsubway.com:8080/subwaymap2/public/subwaymap/beijing.xml
+线路信息 站间用时 公里数
+
+http://map.bjsubway.com:8080/subwaymap2/public/subwaymap/interchange.xml
+换乘信息 线路间换乘时间 
+
+http://map.bjsubway.com:8080/subwaymap2/public/subwaymap/stations.xml
+站点信息
