@@ -65,3 +65,6 @@ a.data.result[45].split("|")
 33		WY
 34	seat_feature	席别
 35	yp_ex	席别 
+
+
+https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2018-04-05&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=SHH&purpose_codes=ADULT
