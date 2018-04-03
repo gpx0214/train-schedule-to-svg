@@ -22,3 +22,46 @@ z = t['2017-12-09']['Z']
 z = sorted(z,key=lambda x:x['train_no'])
 for i in range(len(z)):
     print(z[i]['station_train_code'])
+
+
+http://172.104.124.155/kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=24000T56850P&from_station_telecode=BJP&to_station_telecode=QTP&depart_date=2018-04-04
+
+{"c_name":"CLeftTicketUrl","c_url":"leftTicket/queryO","status":false}
+
+a.data.result[45].split("|")
+
+1	buttonTextInfo	预订
+2	station_train_code
+3	train_no
+4	start_telecode
+5	end_telecode
+6	from_telecode
+7	to_telecode
+8	start_time
+9	arrive_time
+10	lishi	during
+11
+12 
+13 date
+
+15
+16
+17
+
+
+
+21 RW19
+22 一人软包
+23 RW/WR
+
+
+26	无座
+
+28		YW
+29		YZ
+30		ZE
+31		ZY
+32	swz_num	SW
+33		WY
+34	seat_feature	席别
+35	yp_ex	席别 
