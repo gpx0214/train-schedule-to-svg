@@ -122,3 +122,54 @@ https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2018-04-05&
     return cs
   }
 
+
+
+#!/usr/bin/python  
+# -*- coding: <encoding name> -*-
+#python3.5.3 win10 64bit MSC v.1900 64 bit (AMD64)
+#from __future__ import print_function
+import requests #
+import webbrowser #open browser
+import re
+import json
+import math
+import random
+import time
+import os     #for cls
+
+def getStation(filename):
+    #f = open(filename,'r',encoding = 'utf8'); #py3
+    f = open(filename,'r'); #py2
+    str=f.read();
+    a=re.findall(r'\'\@([^\']+)\'', str , re.I|re.M)[0];
+    s = a.split('@');
+    for i in range(len(s)):
+        s[i] = s[i].split('|');
+    f.close();
+    #["jlo", "九龙", "JLO", "jiulong", "jl", "-1"];
+    return s;
+
+def getTelecode(str):
+    for i in range(len(station)):
+        if str ==  station[i][1]:
+            return station[i][2];
+    return '';
+
+station = getStation('station_name.js');
+getTelecode('')
+
+
+f = open('train_list.js','r',encoding= 'utf8')
+f = open('train_list.js','r')
+f.read(16)
+data = f.read()
+t = json.loads(data)
+
+
+a = t.keys()
+a.sort()
+t['2017-12-09']['Z'][0]
+print(t['2017-12-09']['Z'][0]['station_train_code']);
+t['2017-12-09']['Z'][0]['train_no'];
+
+
