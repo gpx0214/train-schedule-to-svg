@@ -137,39 +137,65 @@ import random
 import time
 import os     #for cls
 
-def getStation(filename):
-    #f = open(filename,'r',encoding = 'utf8'); #py3
-    f = open(filename,'r'); #py2
+def getStation(fn):
+    #f = open(fn,'r',encoding = 'utf8'); #py3
+    f = open(fn,'r'); #py2
     str=f.read();
     a=re.findall(r'\'\@([^\']+)\'', str , re.I|re.M)[0];
     s = a.split('@');
     for i in range(len(s)):
         s[i] = s[i].split('|');
     f.close();
-    #["jlo", "九龙", "JLO", "jiulong", "jl", "-1"];
+    s.append(["jlo", "九龙", "JLO", "jiulong", "jl", "-1"]);
     return s;
 
-def getTelecode(str):
+def telecode(str):
     for i in range(len(station)):
         if str ==  station[i][1]:
             return station[i][2];
     return '';
 
+def getTimeTable(fn):
+    #f = open('train_list.js','r',encoding= 'utf8') #py3
+    f = open('train_list.js','r') #py2
+    f.read(16)
+    data = f.read()
+    return json.loads(data);
+
+def processA(a):
+    match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
+    url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no="+ a['train_no'] +"&from_station_telecode="+ telecode(match[1].encode('utf-8')) +"&to_station_telecode="+ telecode(match[2].encode('utf-8')) +"&depart_date=" + date;
+    resp = requests.get(url);
+    body = resp.content.decode('utf-8');   #bytes -> str (ucs2)
+    sch = json.loads(body);
+    if sch['status'] == True and sch['httpstatus'] == 200 :
+        f=open('sch/'+a['train_no'].encode('utf-8')+'.json','wb')
+        f.write(resp.content)
+        f.close()
+        print(match[0]);
+        return 0;
+    else:
+        return -1;
+
+
+
 station = getStation('station_name.js');
-getTelecode('')
+t = getTimeTable('train_list.js');
+date = '2018-04-07' #time.strftime("%Y-%m-%d");
+telecode('')
 
+processA(t['2018-04-07']['Z'][0]);
 
-f = open('train_list.js','r',encoding= 'utf8')
-f = open('train_list.js','r')
-f.read(16)
-data = f.read()
-t = json.loads(data)
+for i in range(6,len(station)):
+    r = processA(t['2018-04-07']['Z'][i]);
+    if r != 0:
+        break;
+    time.sleep(5+random.random()*5) #time in s
 
 
 a = t.keys()
 a.sort()
-t['2017-12-09']['Z'][0]
+t['2018-04-07']['Z'][0]
 print(t['2017-12-09']['Z'][0]['station_train_code']);
 t['2017-12-09']['Z'][0]['train_no'];
-
 
