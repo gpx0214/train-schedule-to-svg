@@ -224,9 +224,10 @@ ValueError: No JSON object could be decoded
 '''
 
 
-for i in range(0,len(t['2018-04-07']['G'])):
-    if ('G2346' == re.findall(r'(.*)\((.*)-(.*)\)', t['2018-04-07']['G'][i]['station_train_code'] , re.I|re.M)[0][0] ):
-        print(i)
+for type in t['2018-04-07']:
+    for i in range(0,len(t['2018-04-07'][type])):
+        if ('K7651' == re.findall(r'(.*)\((.*)-(.*)\)', t['2018-04-07'][type][i]['station_train_code'] , re.I|re.M)[0][0] ):
+            print("t[\'" + type.encode('utf-8') + "\'][\'" + str(i) + "\']")
 
 		
 		
