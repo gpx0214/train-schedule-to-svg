@@ -137,13 +137,12 @@ import os     #for cls
 
 def getStation(fn):
     #f = open(fn,'r',encoding = 'utf8'); #py3
-    f = open(fn,'r'); #py2
-    str=f.read();
+    with open(fn,'r') as f: #py2
+        str=f.read();
     a=re.findall(r'\'\@([^\']+)\'', str , re.I|re.M)[0];
     s = a.split('@');
     for i in range(len(s)):
         s[i] = s[i].split('|');
-    f.close();
     s.append(["tsn", "唐山南", "TNP", "tangshannan", "tsn", "-1"]);
     s.append(["gye", "古冶", "GYP", "guye", "gy", "-1"]);
     s.append(["jlo", "九龙", "JLO", "jiulong", "jl", "-1"]);
@@ -151,42 +150,65 @@ def getStation(fn):
     s.append(['mji', '梅江', 'MKQ', 'meijiang', 'mj', '-1']);
     s.append(['ylo', '元龙', 'YLY', 'yuanlong', 'yl', '-1']);
     s.append(['bdl', '八达岭', 'ILP', 'badaling', 'bdl', '-1']);
+    s.append(['nsb', '南山北', 'NBQ', 'nanshanbei', 'nsb', '-1']);
+    s.append(['', '车墩', 'CDH', 'chedun', 'cd', '-1']);
+    s.append(['', '羊木', 'YMJ', 'yangmu', 'ym', '-1']);
     return s;
 
 def telecode(str):
     for i in range(len(station)):
         if str ==  station[i][1]:
             return station[i][2];
+    print(str)
     return '';
 
 def getTimeTable(fn):
-    #f = open('train_list.js','r',encoding= 'utf8') #py3
-    f = open('train_list.js','r') #py2
-    f.read(16)
-    data = f.read()
+    #f = open(fn,'r',encoding= 'utf8') #py3
+    with open(fn,'r') as f: #py2
+        f.read(16);
+        data = f.read();
     return json.loads(data);
 
 def processA(a):
     match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
-    url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no="+ a['train_no'] +"&from_station_telecode="+ telecode(match[1].encode('utf-8')) +"&to_station_telecode="+ telecode(match[2].encode('utf-8')) +"&depart_date=" + date;
+    t1 = telecode(match[1].encode('utf-8'));
+    t2 = telecode(match[2].encode('utf-8'));
+    if not t1:
+        print(match[1].encode('utf-8') + " telecode not found!");
+        return '';
+    if not t2:
+        print(match[2].encode('utf-8') + " telecode not found!");
+        return '';
+    url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no="+ a['train_no'] +"&from_station_telecode="+ t1 +"&to_station_telecode="+ t2 +"&depart_date=" + date;
     header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
-    resp = requests.get(url,headers=header);
+    try:
+        resp = requests.get(url,headers=header);
+    except ConnectionError:
+        time.sleep(2+random.random()*2);
+        try:
+            resp = requests.get(url,headers=header);
+        except requests.exceptions.ConnectionError:
+            print('ConnectionError ' + match[1].encode('utf-8'));
+            return '';
     body = resp.content.decode('utf-8');   #bytes -> str (ucs2)
-    sch = json.loads(body);
+    try:
+        sch = json.loads(body);
+    except ValueError:
+        print('ValueError ' + match[0].encode('utf-8'));
+        return '';
     if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']) :
-        f=open('sch/'+a['train_no'].encode('utf-8')+'.json','wb')
-        f.write(resp.content)
-        f.close()
+        with open('sch/'+a['train_no'].encode('utf-8')+'.json','wb') as f:
+            f.write(resp.content)
         print(match[0].encode('utf-8') + ' ' + str(len(sch['data']['data'])));
         return match[0].encode('utf-8');
     else:
-        print ("error " + match[0].encode('utf-8'));
+        print ("data error " + match[0].encode('utf-8'));
         return '';
 
 
 station = getStation('station_name.js');
 t = getTimeTable('train_list.js');
-date = '2018-04-07' #time.strftime("%Y-%m-%d");
+date = '2018-04-13' #time.strftime("%Y-%m-%d");
 
 for i in range(1301,len(t['2018-04-07']['G'])):
     r = processA(t['2018-04-07']['G'][i]);
@@ -195,9 +217,29 @@ for i in range(1301,len(t['2018-04-07']['G'])):
         break;
     time.sleep(2+random.random()*2) #time in s
 
+date = '2018-04-07'
+for type in t[date]:
+    for i in range(0,len(t[date][type])):
+        a = t[date][type][i];
+        if os.path.exists('sch/'+a['train_no'].encode('utf-8')+'.json'):
+            f = open('sch/'+a['train_no'].encode('utf-8')+'.json','r');
+            data = f.read()
+            sch = json.loads(data);
+            if len(sch['data']['data']) == 0:
+                print(a['train_no'].encode('utf-8') + " zero");
+                processA(t[date][type][i]);
+        else:
+            r = processA(t[date][type][i]);
+
+
 processA(t['2018-04-07']['G'][2]);
 processA(t['2018-04-07']['O'][468]);
 processA(t['2018-04-07']['O'][469]);
+
+for type in t['2018-04-07']:
+    for i in range(0,len(t['2018-04-07'][type])):
+        if ('K7651' == re.findall(r'(.*)\((.*)-(.*)\)', t['2018-04-07'][type][i]['station_train_code'] , re.I|re.M)[0][0] ):
+            print("t[\'" + type.encode('utf-8') + "\'][\'" + str(i) + "\']")
 
 #telecode('九龙');
 #k = t.keys();
@@ -205,8 +247,6 @@ processA(t['2018-04-07']['O'][469]);
 #print(t['2018-04-07']['G'][0]['station_train_code']);
 #t['2017-12-09']['Z'][0]['train_no'];
 #a = t['2018-04-07']['Z'][0] #test
-
-
 
 
 wget -P --no-check-certificate -O /var/ftp/station_name.js https://kyfw.12306.cn/otn/resources/js/framework/station_name.js
@@ -223,16 +263,19 @@ Traceback (most recent call last):
 ValueError: No JSON object could be decoded
 '''
 
-
-for type in t['2018-04-07']:
-    for i in range(0,len(t['2018-04-07'][type])):
-        if ('K7651' == re.findall(r'(.*)\((.*)-(.*)\)', t['2018-04-07'][type][i]['station_train_code'] , re.I|re.M)[0][0] ):
-            print("t[\'" + type.encode('utf-8') + "\'][\'" + str(i) + "\']")
-
-		
-		
-		
-7271(梅江-怀化) 468 469
-7539(羊木-兰州) 511 512
-8359(宝鸡-元龙) 537
-
+'''
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+  File "<stdin>", line 5, in processA
+  File "/usr/lib/python2.7/site-packages/requests/api.py", line 72, in get
+    return request('get', url, params=params, **kwargs)
+  File "/usr/lib/python2.7/site-packages/requests/api.py", line 58, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/lib/python2.7/site-packages/requests/sessions.py", line 508, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/lib/python2.7/site-packages/requests/sessions.py", line 618, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/lib/python2.7/site-packages/requests/adapters.py", line 490, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', error(104, 'Connection reset by peer'))
+'''
