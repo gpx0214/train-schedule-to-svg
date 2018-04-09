@@ -185,6 +185,7 @@ def processA(a):
     try:
         resp = requests.get(url,headers=header);
     except requests.exceptions.ConnectionError:
+        print('ConnectionError ' + match[0].encode('utf-8'));
         return '';
     body = resp.content.decode('utf-8');   #bytes -> str (ucs2)
     try:
