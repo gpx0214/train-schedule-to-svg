@@ -185,9 +185,7 @@ def processA(a):
     try:
         resp = requests.get(url,headers=header);
     except requests.exceptions.ConnectionError:
-        try:
-            resp = requests.get(url,headers=header);
-            return '';
+        return '';
     body = resp.content.decode('utf-8');   #bytes -> str (ucs2)
     try:
         sch = json.loads(body);
