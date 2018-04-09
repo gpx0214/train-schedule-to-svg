@@ -163,14 +163,15 @@ def getTimeTable(fn):
 def processA(a):
     match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
     url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no="+ a['train_no'] +"&from_station_telecode="+ telecode(match[1].encode('utf-8')) +"&to_station_telecode="+ telecode(match[2].encode('utf-8')) +"&depart_date=" + date;
-    resp = requests.get(url);
+    header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    resp = requests.get(url,headers=header);
     body = resp.content.decode('utf-8');   #bytes -> str (ucs2)
     sch = json.loads(body);
-    if sch['status'] == True and sch['httpstatus'] == 200 :
+    if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']) :
         f=open('sch/'+a['train_no'].encode('utf-8')+'.json','wb')
         f.write(resp.content)
         f.close()
-        print(match[0].encode('utf-8'));
+        print(match[0].encode('utf-8') + ' ' + str(len(sch['data']['data'])));
         return match[0].encode('utf-8');
     else:
         print ("error " + match[0].encode('utf-8'));
@@ -181,19 +182,49 @@ station = getStation('station_name.js');
 t = getTimeTable('train_list.js');
 date = '2018-04-07' #time.strftime("%Y-%m-%d");
 
-for i in range(0,len(t['2018-04-07']['T'])):
-    r = processA(t['2018-04-07']['T'][i]);
+for i in range(1104,len(t['2018-04-07']['G'])):
+    r = processA(t['2018-04-07']['G'][i]);
     if len(r) == 0:
         print("error " + i);
         break;
-    time.sleep(2+random.random()*5) #time in s
+    time.sleep(2+random.random()*2) #time in s
 
-processA(t['2018-04-07']['Z'][0]);
+processA(t['2018-04-07']['G'][2]);
+processA(t['2018-04-07']['O'][468]);
+processA(t['2018-04-07']['O'][469]);
 
 #telecode('九龙');
 #k = t.keys();
 #k.sort() 
-#print(t['2017-12-09']['Z'][0]['station_train_code']);
+#print(t['2018-04-07']['G'][0]['station_train_code']);
 #t['2017-12-09']['Z'][0]['train_no'];
 #a = t['2018-04-07']['Z'][0] #test
+
+
+
+
+wget -P --no-check-certificate -O /var/ftp/station_name.js https://kyfw.12306.cn/otn/resources/js/framework/station_name.js
+'''
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+  File "<stdin>", line 6, in processA
+  File "/usr/lib64/python2.7/json/__init__.py", line 338, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib64/python2.7/json/decoder.py", line 366, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib64/python2.7/json/decoder.py", line 384, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+'''
+
+
+for i in range(0,len(t['2018-04-07']['G'])):
+    if ('G1834' == re.findall(r'(.*)\((.*)-(.*)\)', t['2018-04-07']['G'][i]['station_train_code'] , re.I|re.M)[0][0] ):
+        print(i)
+
+
+
+7271(梅江-怀化) 468 469
+7539(羊木-兰州) 511 512
+8359(宝鸡-元龙) 537
 
