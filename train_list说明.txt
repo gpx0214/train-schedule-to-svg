@@ -180,7 +180,8 @@ def processA(a):
         print(match[2].encode('utf-8') + " telecode not found!");
         return '';
     url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no="+ a['train_no'] +"&from_station_telecode="+ t1 +"&to_station_telecode="+ t2 +"&depart_date=" + date;
-    header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    header = {"User-Agent":"Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"}
     try:
         resp = requests.get(url,headers=header);
     except ConnectionError:
@@ -210,14 +211,6 @@ station = getStation('station_name.js');
 t = getTimeTable('train_list.js');
 date = '2018-04-13' #time.strftime("%Y-%m-%d");
 
-for i in range(1301,len(t['2018-04-07']['G'])):
-    r = processA(t['2018-04-07']['G'][i]);
-    if len(r) == 0:
-        print("error " + i);
-        break;
-    time.sleep(2+random.random()*2) #time in s
-
-date = '2018-04-07'
 for type in t[date]:
     for i in range(0,len(t[date][type])):
         a = t[date][type][i];
@@ -228,25 +221,36 @@ for type in t[date]:
             if len(sch['data']['data']) == 0:
                 print(a['train_no'].encode('utf-8') + " zero");
                 processA(t[date][type][i]);
+            else:
+                print(a['train_no'].encode('utf-8') + ' local');
         else:
             r = processA(t[date][type][i]);
 
+###
 
-processA(t['2018-04-07']['G'][2]);
-processA(t['2018-04-07']['O'][468]);
-processA(t['2018-04-07']['O'][469]);
+for i in range(0,len(t[date]['G'])):
+    r = processA(t[date]['G'][i]);
+    if len(r) == 0:
+        print("error " + i);
+        break;
+    time.sleep(2+random.random()*2) #time in s
 
-for type in t['2018-04-07']:
-    for i in range(0,len(t['2018-04-07'][type])):
-        if ('K7651' == re.findall(r'(.*)\((.*)-(.*)\)', t['2018-04-07'][type][i]['station_train_code'] , re.I|re.M)[0][0] ):
+processA(t[date]['G'][2]);
+processA(t[date]['O'][468]);
+processA(t[date]['O'][469]);
+
+#查找位置
+for type in t[date]:
+    for i in range(0,len(t[date][type])):
+        if ('K7651' == re.findall(r'(.*)\((.*)-(.*)\)', t[date][type][i]['station_train_code'] , re.I|re.M)[0][0] ):
             print("t[\'" + type.encode('utf-8') + "\'][\'" + str(i) + "\']")
 
 #telecode('九龙');
 #k = t.keys();
 #k.sort() 
-#print(t['2018-04-07']['G'][0]['station_train_code']);
-#t['2017-12-09']['Z'][0]['train_no'];
-#a = t['2018-04-07']['Z'][0] #test
+#print(t[date]['G'][0]['station_train_code']);
+#t[date]['Z'][0]['train_no'];
+#a = t[date]['Z'][0] #test
 
 
 wget -P --no-check-certificate -O /var/ftp/station_name.js https://kyfw.12306.cn/otn/resources/js/framework/station_name.js
