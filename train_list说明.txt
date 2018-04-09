@@ -144,7 +144,9 @@ def getStation(fn):
     for i in range(len(s)):
         s[i] = s[i].split('|');
     f.close();
+    s.append(["gye", "古冶", "GYP", "guye", "gy", "-1"]);
     s.append(["jlo", "九龙", "JLO", "jiulong", "jl", "-1"]);
+    s.append(['jsw', '金山卫', 'BGH', 'jinshanwei', 'jsw', '-1']);
     return s;
 
 def telecode(str):
