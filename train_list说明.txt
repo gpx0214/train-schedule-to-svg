@@ -182,7 +182,7 @@ station = getStation('station_name.js');
 t = getTimeTable('train_list.js');
 date = '2018-04-07' #time.strftime("%Y-%m-%d");
 
-for i in range(1104,len(t['2018-04-07']['G'])):
+for i in range(1301,len(t['2018-04-07']['G'])):
     r = processA(t['2018-04-07']['G'][i]);
     if len(r) == 0:
         print("error " + i);
@@ -219,11 +219,12 @@ ValueError: No JSON object could be decoded
 
 
 for i in range(0,len(t['2018-04-07']['G'])):
-    if ('G1834' == re.findall(r'(.*)\((.*)-(.*)\)', t['2018-04-07']['G'][i]['station_train_code'] , re.I|re.M)[0][0] ):
+    if ('G2346' == re.findall(r'(.*)\((.*)-(.*)\)', t['2018-04-07']['G'][i]['station_train_code'] , re.I|re.M)[0][0] ):
         print(i)
 
-
-
+		
+		
+		
 7271(梅江-怀化) 468 469
 7539(羊木-兰州) 511 512
 8359(宝鸡-元龙) 537
