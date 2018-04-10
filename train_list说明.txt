@@ -233,6 +233,7 @@ for type in t[date]:
 num = 0;
 stat = [0 for i in range(1440)]
 date = '2018-04-10';
+#for type in ['Z','T','K']:
 for type in t[date]:
     for i in range(0,len(t[date][type])):
         a = t[date][type][i];
