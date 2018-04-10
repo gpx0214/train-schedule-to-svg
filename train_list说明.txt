@@ -229,6 +229,39 @@ for type in t[date]:
         else:
             r = processA(t[date][type][i]);
 
+#列出全部到发
+num = 0;
+stat = [0 for i in range(1440)]
+date = '2018-04-10';
+for type in t[date]:
+    for i in range(0,len(t[date][type])):
+        a = t[date][type][i];
+        if os.path.exists('sch/'+a['train_no'].encode('utf-8')+'.json'):
+            with open('sch/'+a['train_no'].encode('utf-8')+'.json','r') as f:
+                data = f.read();
+            sch = json.loads(data);
+            s = sch['data']['data'];
+            for i in range(0, len(s)):
+                print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['start_time'].encode('utf-8') + ' ' + s[0]['arrive_time'].encode('utf-8'));
+                if getmin(s[i]['arrive_time'].encode('utf-8')) > -1:
+                    min = getmin(s[i]['arrive_time'].encode('utf-8'));
+                    tele = telecode(s[i]['station_name'].encode('utf-8'));
+                    #print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['arrive_time'].encode('utf-8') + ' ' + '0');
+                    if tele and tele[2] == 'P':
+                        num = num+1;
+                        stat[min] = stat[min]+1;
+                if getmin(s[i]['start_time'].encode('utf-8')) > -1:
+                    min = getmin(s[i]['start_time'].encode('utf-8'));
+                    tele = telecode(s[i]['station_name'].encode('utf-8'));
+                    #print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['start_time'].encode('utf-8') + ' ' + '1');
+                    if tele and tele[2] == 'P':
+                        num = num+1;
+                        stat[min] = stat[min]+1;
+
+print(num);
+print(stat);
+
+
 ###
 
 for i in range(0,len(t[date]['G'])):
