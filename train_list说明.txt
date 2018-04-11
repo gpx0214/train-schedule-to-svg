@@ -8,6 +8,8 @@ https://kyfw.12306.cn/otn/resources/js/query/qss.js
 票价
 https://kyfw.12306.cn/otn/leftTicketPrice/queryAllPublicPrice?leftTicketDTO.train_date=2018-05-01&leftTicketDTO.from_station=HZH&leftTicketDTO.to_station=BJP&purpose_codes=ADULT&randCode=bmxa
 
+https://kyfw.12306.cn/otn/leftTicket/queryTicketPriceFL?train_no=5600000Z1020&from_station_no=01&to_station_no=04&seat_types=1413&train_date=2018-05-01
+https://kyfw.12306.cn/otn/leftTicket/queryTicketPrice?train_no=5600000Z1020&from_station_no=01&to_station_no=04&seat_types=1413&train_date=2018-05-01
 
 import json
 f = open('train_list.js','r',encoding= 'utf8')
