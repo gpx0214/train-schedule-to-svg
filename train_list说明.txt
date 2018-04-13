@@ -57,7 +57,7 @@ a.data.result[45].split("|")
 
 
 21 RW19
-22 一人软包  T31
+22 一人软包  T31    K3/K23 包厢硬卧
 23 RW/WR
 24 RZ     T5685 Y509
 
