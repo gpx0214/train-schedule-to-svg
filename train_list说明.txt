@@ -59,7 +59,7 @@ a.data.result[45].split("|")
 21 RW19
 22 一人软包
 23 RW/WR
-
+24 RZ
 
 26	无座
 
