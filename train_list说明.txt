@@ -245,31 +245,35 @@ date = '2018-04-10';
 for type in t[date]:
     for i in range(0,len(t[date][type])):
         a = t[date][type][i];
+        match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
+        if  (match[0] in a['train_no']) == False:
+            #print(match[0] +' '+ a['train_no']); #切换上下行
+            continue;
         if os.path.exists('sch/'+a['train_no'].encode('utf-8')+'.json'):
             with open('sch/'+a['train_no'].encode('utf-8')+'.json','r') as f:
                 data = f.read();
             sch = json.loads(data);
             s = sch['data']['data'];
             for i in range(0, len(s)):
-                #print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['start_time'].encode('utf-8') + ' ' + s[i]['arrive_time'].encode('utf-8'));
+                #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8'));
                 if getmin(s[i]['arrive_time'].encode('utf-8')) > -1:
                     min = getmin(s[i]['arrive_time'].encode('utf-8'));
                     tele = telecode(s[i]['station_name'].encode('utf-8'));
-                    #print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['arrive_time'].encode('utf-8') + ' ' + '0');
+                    #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
                     if tele and tele[2] == 'P':
                         num = num+1;
                         stat[min] = stat[min]+1;
                     if s[i]['station_name'].encode('utf-8') == "北京西":
-                        print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['arrive_time'].encode('utf-8') + ' ' + '0');
+                        print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
                 if getmin(s[i]['start_time'].encode('utf-8')) > -1:
                     min = getmin(s[i]['start_time'].encode('utf-8'));
                     tele = telecode(s[i]['station_name'].encode('utf-8'));
-                    #print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['start_time'].encode('utf-8') + ' ' + '1');
+                    #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
                     if tele and tele[2] == 'P':
                         num = num+1;
                         stat[min] = stat[min]+1;
-                    if s[i]['station_name'].encode('utf-8') == "北京西":
-                        print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['start_time'].encode('utf-8') + ' ' + '1');
+                    if s[i]['station_name'].encode('utf-8') == "北京西" and s[i]['start_time']!= s[i]['arrive_time']:
+                        print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
 
 print(num);
 print(stat);
