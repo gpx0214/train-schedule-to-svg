@@ -251,7 +251,7 @@ for type in t[date]:
             sch = json.loads(data);
             s = sch['data']['data'];
             for i in range(0, len(s)):
-                print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['start_time'].encode('utf-8') + ' ' + s[i]['arrive_time'].encode('utf-8'));
+                #print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['start_time'].encode('utf-8') + ' ' + s[i]['arrive_time'].encode('utf-8'));
                 if getmin(s[i]['arrive_time'].encode('utf-8')) > -1:
                     min = getmin(s[i]['arrive_time'].encode('utf-8'));
                     tele = telecode(s[i]['station_name'].encode('utf-8'));
@@ -259,6 +259,8 @@ for type in t[date]:
                     if tele and tele[2] == 'P':
                         num = num+1;
                         stat[min] = stat[min]+1;
+                    if s[i]['station_name'].encode('utf-8') == "北京西":
+                        print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['arrive_time'].encode('utf-8') + ' ' + '0');
                 if getmin(s[i]['start_time'].encode('utf-8')) > -1:
                     min = getmin(s[i]['start_time'].encode('utf-8'));
                     tele = telecode(s[i]['station_name'].encode('utf-8'));
@@ -266,6 +268,8 @@ for type in t[date]:
                     if tele and tele[2] == 'P':
                         num = num+1;
                         stat[min] = stat[min]+1;
+                    if s[i]['station_name'].encode('utf-8') == "北京西":
+                        print(s[0]['station_train_code'].encode('utf-8') + ' ' + s[i]['station_name'].encode('utf-8') + ' ' + s[i]['start_time'].encode('utf-8') + ' ' + '1');
 
 print(num);
 print(stat);
