@@ -10,6 +10,9 @@ http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/from2.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=
 
 http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=Z202&cxlx=0&rq=2017-12-11&czEn=-E7-9F-B3-E5-AE-B6-E5-BA-84&tp=1512928161526
 
+urllib.quote('北京'.decode('utf-8').encode('gbk'))
+urllib.quote('北京').replace("%","-")
+
 function zwdcx(str, trainNo, cxlx) {
 return "http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz="+unicode2gbk(str)+"&cc="+trainNo+"&cxlx="+cxlx+"&rq="+d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() +"&czEn="+encodeURI(str).replace(/%/g, "-")+"&tp="+new Date().getTime()
 }
