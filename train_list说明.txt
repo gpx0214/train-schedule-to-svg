@@ -237,6 +237,7 @@ for type in t[date]:
         else:
             r = processA(t[date][type][i]);
 
+#(s[0]['station_train_code'].encode('utf-8') in l) #match[0]
 #列出全部到发
 f1 = open('2.csv','a');
 num = 0;
