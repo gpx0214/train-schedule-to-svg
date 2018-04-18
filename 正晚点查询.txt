@@ -13,6 +13,10 @@ http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=Z20
 urllib.quote('北京'.decode('utf-8').encode('gbk'))
 urllib.quote('北京').replace("%","-")
 
+def zwdcx(stat, trainNo, cxlx):
+    return "http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz="+urllib.quote(stat.decode('utf-8').encode('gbk'))+"&cc="+trainNo+"&cxlx="+cxlx+"&rq="+time.strftime("%Y-%m-%d") +"&czEn="+urllib.quote('北京').replace("%","-")+"&tp="+str(int(time.time()*1000));
+
+
 function zwdcx(str, trainNo, cxlx) {
 return "http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz="+unicode2gbk(str)+"&cc="+trainNo+"&cxlx="+cxlx+"&rq="+d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() +"&czEn="+encodeURI(str).replace(/%/g, "-")+"&tp="+new Date().getTime()
 }
