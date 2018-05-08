@@ -19,6 +19,7 @@ def zwdcx(stat, trainNo, cxlx):
 re.findall(r'预计(.*)次列车，(.*)站(到达|出发)时间为(.*)', resp.content.decode('gbk').encode('utf-8') , re.I|re.M)[0];
 re.findall(r'(.*)次列车，到达(.*)站的时间为(.*)', resp.content.decode('gbk').encode('utf-8') , re.I|re.M)[0];
 re.findall(r'(.*)次列车，(.*)站出发的时间为(.*)', resp.content.decode('gbk').encode('utf-8') , re.I|re.M)[0];
+re.findall(r'目前暂无(.*)次列车(.*)站出发时间，请稍候重新查询', resp.content.decode('gbk').encode('utf-8') , re.I|re.M)[0];
 re.findall(r'列车时刻表中无(.*)次列车的信息', resp.content.decode('gbk').encode('utf-8') , re.I|re.M)[0];
 
 
