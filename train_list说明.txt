@@ -243,8 +243,9 @@ buffer = '';
 num = 0;
 stat = [0 for i in range(1440)]
 date = '2018-05-09';
-#for type in ['Z','T','K']:
+#for type in ['Z']:
 for type in t[date]:
+#    for i in range(0,100):
     for i in range(0,len(t[date][type])):
         a = t[date][type][i];
         match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
@@ -256,28 +257,36 @@ for type in t[date]:
                 data = f.read();
             sch = json.loads(data);
             s = sch['data']['data'];
+            day = 0;
+            last = 0;
             for i in range(0, len(s)):
                 #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8'));
-                if getmin(s[i]['arrive_time'].encode('utf-8')) > -1:
+                if getmin(s[i]['arrive_time'].encode('utf-8')) > -1 and i > 0:
                     min = getmin(s[i]['arrive_time'].encode('utf-8'));
                     tele = telecode(s[i]['station_name'].encode('utf-8'));
+                    if min < last:
+                        day += 1;
+                    last = min;
                     #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
                     if True and tele and tele[2] == 'P':
                         num = num+1;
                         stat[min] = stat[min]+1;
                     if True:
-                        print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
-                        buffer+=(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0'+'\n');
-                if getmin(s[i]['start_time'].encode('utf-8')) > -1:
+                        print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
+                        buffer+=(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0'+'\n');
+                if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
                     min = getmin(s[i]['start_time'].encode('utf-8'));
                     tele = telecode(s[i]['station_name'].encode('utf-8'));
+                    if min < last:
+                        day += 1;
+                    last = min;
                     #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
                     if True and tele and tele[2] == 'P':
                         num = num+1;
                         stat[min] = stat[min]+1;
-                    if True and s[i]['start_time']!= s[i]['arrive_time']:
-                        print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
-                        buffer+=(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1'+'\n');
+                    if True:
+                        print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
+                        buffer+=(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1'+'\n');
 
 print(num);
 print(stat);
@@ -286,8 +295,6 @@ with open('all.csv','a') as f:
     if f.tell() == 0:
         f.write('\xef\xbb\xbf');
     f.write(buffer);
-
-
 
 
 ###
