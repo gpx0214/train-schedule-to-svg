@@ -131,7 +131,7 @@ https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2018-04-05&
   }
 
 #!/usr/bin/python  
-# -*- coding: <encoding name> -*-
+# -*- coding: utf-8 -*-
 #python3.5.3 win10 64bit MSC v.1900 64 bit (AMD64)
 #from __future__ import print_function
 import requests #
