@@ -222,7 +222,10 @@ station = getStation('station_name.js');
 t = getTimeTable('train_list.js');
 date = time.strftime("%Y-%m-%d");
 
-for type in t[date]:
+
+for date in t:
+#date = '1970-01-01';
+  for type in t[date]:
     for i in range(0,len(t[date][type])):
         a = t[date][type][i];
         if os.path.exists('sch/'+a['train_no'].encode('utf-8')+'.json'):
@@ -236,6 +239,7 @@ for type in t[date]:
                 print(a['train_no'].encode('utf-8') + ' local');
         else:
             r = processA(t[date][type][i]);
+
 
 #(s[0]['station_train_code'].encode('utf-8') in l) #match[0]
 #列出全部到发
