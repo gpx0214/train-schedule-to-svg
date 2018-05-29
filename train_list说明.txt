@@ -247,6 +247,7 @@ for date in t:
 #for date in t:
 for date in ['2018-05-21','2018-05-22','2018-05-23','2018-05-24','2018-05-25','2018-05-26','2018-05-27','2018-05-28','2018-05-29','2018-05-30','2018-05-31']:
   buffer = '';
+  time_list = [];
   num = 0;
   stat = [0 for i in range(1440)];
   #for type in ['Z']:
@@ -274,12 +275,13 @@ for date in ['2018-05-21','2018-05-22','2018-05-23','2018-05-24','2018-05-25','2
                         day += 1;
                     last = min;
                     #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
-                    if True and tele and tele[2] == 'P':
+                    if True or tele and tele[2] == 'P':
                         num = num+1;
                         stat[min] = stat[min]+1;
                     if True:
                         #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
                         buffer+=(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0'+'\n');
+                        time_list.append([s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'), str(day), s[i]['arrive_time'].encode('utf-8'), '0']);
                 if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
                     min = getmin(s[i]['start_time'].encode('utf-8'));
                     tele = telecode(s[i]['station_name'].encode('utf-8'));
@@ -287,16 +289,33 @@ for date in ['2018-05-21','2018-05-22','2018-05-23','2018-05-24','2018-05-25','2
                         day += 1;
                     last = min;
                     #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
-                    if True and tele and tele[2] == 'P':
+                    if True or tele and tele[2] == 'P':
                         num = num+1;
                         stat[min] = stat[min]+1;
                     if True:
                         #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
                         buffer+=(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1'+'\n');
-  
+                        time_list.append([s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'), str(day), s[i]['start_time'].encode('utf-8'), '1']);
+
   print(num);
   print(stat);
-  
+
+
+  def cmpbyTime(a1, a2):
+    if (len(a1)<5):
+        return 0;
+    if (len(a2)<5):
+        return 0;
+    t1 = getmin(a1[4]);
+    t2 = getmin(a2[4]);
+    if t1 > t2:
+        return 1;
+    if t1 < t2:
+        return -1;
+    return 0;
+
+  sort = sorted(time_list, cmpbyTime)
+
   mmdd=date.split('-')[1] + date.split('-')[2];
   with open(mmdd +'all.csv','a') as f:
     if f.tell() == 0:
