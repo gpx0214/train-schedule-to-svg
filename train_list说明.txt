@@ -222,7 +222,6 @@ station = getStation('station_name.js');
 t = getTimeTable('train_list.js');
 date = time.strftime("%Y-%m-%d");
 
-
 for date in t:
 #date = '1970-01-01';
   for type in t[date]:
@@ -300,8 +299,7 @@ for date in ['2018-05-21','2018-05-22','2018-05-23','2018-05-24','2018-05-25','2
   print(num);
   print(stat);
 
-
-  def cmpbyTime(a1, a2):
+def cmpbyTime(a1, a2):
     if (len(a1)<5):
         return 0;
     if (len(a2)<5):
