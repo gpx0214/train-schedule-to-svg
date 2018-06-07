@@ -130,6 +130,99 @@ https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2018-04-05&
     return cs
   }
 
+
+
+map = r.data.map;
+
+for (i=0;i<r.data.result.length;i++){
+result = r.data.result[i].split("|");
+
+
+/*console.log(
+"<tr>\n"
++"<td>"+result[1]+"</td>\n"
++"<td>"+result[2]+"</td>\n"
++"<td>"+result[3]+"</td>\n"
++"<td>"+result[4]+"</td>\n"
++"<td>"+result[5]+"</td>\n"
++"<td>"+map[result[6]]+"</td>\n"
++"<td>"+map[result[7]]+"</td>\n"
++"<td>"+result[8]+"</td>\n"
++"<td>"+result[9]+"</td>\n"
++"<td>"+result[10]+"</td>\n"
++"<td>"+result[11]+"</td>\n"
++"<td>"+result[13]+"</td>\n"
++"<td>"+result[14]+"</td>\n"
++"<td>"+result[15]+"</td>\n"
++"<td>"+result[16]+"</td>\n"
++"<td>"+result[17]+"</td>\n"
++"<td>"+result[18]+"</td>\n"
++"<td>"+result[19]+"</td>\n"
++"<td>"+result[20]+"</td>\n"
++"<td>"+result[21]+"</td>\n"
++"<td>"+result[22]+"</td>\n"
++"<td>"+result[23]+"</td>\n"
++"<td>"+result[24]+"</td>\n"
++"<td>"+result[25]+"</td>\n"
++"<td>"+result[26]+"</td>\n"
++"<td>"+result[27]+"</td>\n"
++"<td>"+result[28]+"</td>\n"
++"<td>"+result[29]+"</td>\n"
++"<td>"+result[30]+"</td>\n"
++"<td>"+result[31]+"</td>\n"
++"<td>"+result[32]+"</td>\n"
++"<td>"+result[33]+"</td>\n"
++"<td>"+result[34]+"</td>\n"
++"<td>"+result[35]+"</td>\n"
++"<td>"+result[0]+"</td>\n"
++"<td>"+result[12]+"</td>\n"
++"</tr>\n"
+);*/
+
+console.log(
+//result[1] + "\t|" + 
+result[2] + "|" + 
+(result[18]>0?result[18]:" ") + "|" + 
+result[4] + "|" + 
+result[5] + "|" + 
+result[16] + "|" + 
+result[6] + "|" + 
+result[17] + "|" + 
+result[7] + "|" + 
+result[8] + "|" + 
+result[9] + "|" + 
+result[10] + "|" + 
+
+result[11] + "|" + 
+result[13] + "|" + 
+result[14] + "|" + 
+result[15] + "|" + 
+result[19] + "|" + 
+result[20] + "\t|" + 
+result[21] + "\t|" + 
+result[22] + "\t|" + 
+result[23] + "\t|" + 
+result[24] + "\t|" + 
+result[25] + "\t|" + 
+result[26] + "\t|" + 
+result[27] + "\t|" + 
+result[28] + "\t|" + 
+result[29] + "\t|" + 
+result[30] + "\t|" + 
+result[31] + "\t|" + 
+result[32] + "\t|" + 
+result[33] + "\t|" + 
+result[3] + "\t|" + 
+result[34] + "\t|" + 
+result[35]// + "\t|" + 
+//result[0] + "\t|" + 
+//result[12] + "\t|" + 
+//result[36]
+);
+}
+
+
+
 #!/usr/bin/python  
 # -*- coding: utf-8 -*-
 #python3.5.3 win10 64bit MSC v.1900 64 bit (AMD64)
