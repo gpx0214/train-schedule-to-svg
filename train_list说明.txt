@@ -236,6 +236,19 @@ import random
 import time
 import os     #for cls
 
+def cmpbyTime(a1, a2):
+    if (len(a1)<5):
+        return 0;
+    if (len(a2)<5):
+        return 0;
+    t1 = getmin(a1[4]);
+    t2 = getmin(a2[4]);
+    if t1 > t2:
+        return 1;
+    if t1 < t2:
+        return -1;
+    return 0;
+
 def getmin(str):
     try:
         a,b=str.split(':')[0:2]
