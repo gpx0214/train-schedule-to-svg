@@ -235,6 +235,7 @@ import math
 import random
 import time
 import os     #for cls
+import csv
 
 def cmpbyTime(a1, a2):
     if (len(a1)<5):
@@ -351,7 +352,8 @@ for date in t:
 #列出全部到发
 #date = '2018-05-09';
 #for date in t:
-for date in ['2018-05-21','2018-05-22','2018-05-23','2018-05-24','2018-05-25','2018-05-26','2018-05-27','2018-05-28','2018-05-29','2018-05-30','2018-05-31']:
+#for date in ['2018-06-10','2018-06-11','2018-06-12','2018-06-13','2018-06-14','2018-06-15','2018-06-16','2018-06-17','2018-06-18','2018-06-19']:
+for date in ['2018-06-14','2018-06-15','2018-06-16','2018-06-17','2018-06-18','2018-06-19']:
   buffer = '';
   time_list = [];
   num = 0;
@@ -402,30 +404,17 @@ for date in ['2018-05-21','2018-05-22','2018-05-23','2018-05-24','2018-05-25','2
                         #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
                         buffer+=(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1'+'\n');
                         time_list.append([s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'), str(day), s[i]['start_time'].encode('utf-8'), '1']);
-
+  
   print(num);
   print(stat);
-
-def cmpbyTime(a1, a2):
-    if (len(a1)<5):
-        return 0;
-    if (len(a2)<5):
-        return 0;
-    t1 = getmin(a1[4]);
-    t2 = getmin(a2[4]);
-    if t1 > t2:
-        return 1;
-    if t1 < t2:
-        return -1;
-    return 0;
-
+  
   sort = sorted(time_list, cmpbyTime)
-
-  mmdd=date.split('-')[1] + date.split('-')[2];
-  with open(mmdd +'all.csv','a') as f:
+  
+  with open("/var/ftp/delay/sort"+date+".csv","w") as f:
     if f.tell() == 0:
         f.write('\xef\xbb\xbf');
-    f.write(buffer);
+    writer = csv.writer(f);
+    writer.writerows(sort);
 
 
 ###
