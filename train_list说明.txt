@@ -5,6 +5,12 @@ https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version
 https://kyfw.12306.cn/otn/resources/js/framework/favorite_name.js
 https://kyfw.12306.cn/otn/resources/js/query/qss.js
 
+http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/zmzd.js
+http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/cczd.js
+
+http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/lc_select.js
+
+
 票价
 https://kyfw.12306.cn/otn/leftTicketPrice/queryAllPublicPrice?leftTicketDTO.train_date=2018-05-01&leftTicketDTO.from_station=HZH&leftTicketDTO.to_station=BJP&purpose_codes=ADULT&randCode=bmxa
 
