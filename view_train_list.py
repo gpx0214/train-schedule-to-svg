@@ -137,11 +137,17 @@ def processA(a, date, station):
     t1 = telecode(match[1].encode('utf-8'), station)
     t2 = telecode(match[2].encode('utf-8'), station)
     if not t1:
-        print(match[1].encode('utf-8') + " telecode not found! " + match[0].encode('utf-8'));
+        if platform.system() == "Windows":
+            print(match[1].encode('gbk') + " telecode not found! " + match[0].encode('gbk'))
+        else:
+            print(match[1].encode('utf-8') + " telecode not found! " + match[0].encode('utf-8'))
         t1 = "AAA"
         #return []
     if not t2:
-        print(match[2].encode('utf-8') + " telecode not found! " + match[0].encode('utf-8'));
+        if platform.system() == "Windows":
+            print(match[2].encode('gbk') + " telecode not found! " + match[0].encode('gbk'))
+        else:
+            print(match[2].encode('utf-8') + " telecode not found! " + match[0].encode('utf-8'))
         t2 = "AAA"
         #return []
     return getSch12306(t1, t2, a['train_no'], date)
