@@ -10,6 +10,19 @@ http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/cczd.js
 
 http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/lc_select.js
 
+//统计不重复的始发-终到
+var m = new Set()
+for(date in train_list) {
+  for (type in train_list[date]) {
+    for (i in train_list[date][type]) {
+      t = train_list[date][type][i];
+      match = t.station_train_code.match(/(.*)\((.*)-(.*)\)/)
+      m.add(match[2]+'-'+match[3])
+
+    }
+  }
+}
+//3651
 
 票价
 https://kyfw.12306.cn/otn/leftTicketPrice/queryAllPublicPrice?leftTicketDTO.train_date=2018-05-01&leftTicketDTO.from_station=HZH&leftTicketDTO.to_station=BJP&purpose_codes=ADULT&randCode=bmxa
