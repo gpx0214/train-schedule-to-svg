@@ -30,26 +30,8 @@ https://kyfw.12306.cn/otn/leftTicketPrice/queryAllPublicPrice?leftTicketDTO.trai
 https://kyfw.12306.cn/otn/leftTicket/queryTicketPriceFL?train_no=5600000Z1020&from_station_no=01&to_station_no=04&seat_types=1413&train_date=2018-05-01
 https://kyfw.12306.cn/otn/leftTicket/queryTicketPrice?train_no=5600000Z1020&from_station_no=01&to_station_no=04&seat_types=1413&train_date=2018-05-01
 
-import json
-f = open('train_list.js','r',encoding= 'utf8')
-f = open('train_list.js','r')
-f.read(16)
-data = f.read()
-t = json.loads(data)
-t['2017-12-09']['Z'][0]
-print(t['2017-12-09']['Z'][0]['station_train_code'])
-t['2017-12-09']['Z'][0]['train_no']
 
-for i in range(len(t['2017-12-09']['Z'])):
-    print(t['2017-12-09']['Z'][i])
-
-z = t['2017-12-09']['Z']
-z = sorted(z,key=lambda x:x['train_no'])
-for i in range(len(z)):
-    print(z[i]['station_train_code'])
-
-
-http://172.104.124.155/kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=24000T56850P&from_station_telecode=BJP&to_station_telecode=QTP&depart_date=2018-04-04
+https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2018-04-05&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=SHH&purpose_codes=ADULT
 
 {"validateMessagesShowId":"_validatorMessage","status":true,"httpstatus":200,"messages":["选择的查询日期不在预售日期范围内"],"validateMessages":{}}
 
@@ -92,10 +74,6 @@ a.data.result[45].split("|")
 33		WY
 34	seat_feature	席别
 35	yp_ex	席别 
-
-
-https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2018-04-05&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=SHH&purpose_codes=ADULT
-
 
   function b4(ct, cv) {
     var cs = [];
@@ -240,6 +218,27 @@ result[35]// + "\t|" +
 );
 }
 
+
+import json
+f = open('train_list.js','r',encoding= 'utf8')
+f = open('train_list.js','r')
+f.read(16)
+data = f.read()
+t = json.loads(data)
+t['2017-12-09']['Z'][0]
+print(t['2017-12-09']['Z'][0]['station_train_code'])
+t['2017-12-09']['Z'][0]['train_no']
+
+for i in range(len(t['2017-12-09']['Z'])):
+    print(t['2017-12-09']['Z'][i])
+
+z = t['2017-12-09']['Z']
+z = sorted(z,key=lambda x:x['train_no'])
+for i in range(len(z)):
+    print(z[i]['station_train_code'])
+
+
+http://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=24000T56850P&from_station_telecode=BJP&to_station_telecode=QTP&depart_date=2018-04-04
 
 
 #!/usr/bin/python  
