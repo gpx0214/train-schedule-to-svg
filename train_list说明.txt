@@ -429,7 +429,7 @@ for date in ['2018-06-14','2018-06-15','2018-06-16','2018-06-17','2018-06-18','2
   
   sort = sorted(time_list, cmpbyTime)
   
-  with open("/var/ftp/delay/sort"+date+".csv","w") as f:
+  with open("/var/ftp/delay/sort"+date+".csv","wb") as f: # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf');
     writer = csv.writer(f);
