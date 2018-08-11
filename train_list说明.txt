@@ -347,7 +347,7 @@ station = getStation('station_name.js');
 t = getTimeTable('train_list.js');
 date = time.strftime("%Y-%m-%d");
 
-for date in t:
+for date in sorted(t.keys()):
   print(date);
 #date = '1970-01-01';
   for type in t[date]:
@@ -369,7 +369,7 @@ for date in t:
 #(s[0]['station_train_code'].encode('utf-8') in l) #match[0]
 #列出全部到发
 #date = '2018-05-09';
-#for date in t:
+#for date in  sorted(t.keys()):
 #for date in ['2018-06-10','2018-06-11','2018-06-12','2018-06-13','2018-06-14','2018-06-15','2018-06-16','2018-06-17','2018-06-18','2018-06-19']:
 for date in ['2018-06-14','2018-06-15','2018-06-16','2018-06-17','2018-06-18','2018-06-19']:
   print(date);
