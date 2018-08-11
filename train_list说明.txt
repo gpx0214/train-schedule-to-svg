@@ -273,7 +273,7 @@ def getmin(str):
         a,b=str.split(':')[0:2]
         return int(a)*60+int(b);
     except:
-        return -1;
+        return -1;
 
 def getStation(fn):
     #f = open(fn,'r',encoding = 'utf8'); #py3
