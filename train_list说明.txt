@@ -58,12 +58,12 @@ a.data.result[45].split("|")
 17
 
 
-
+20 gg_num 观光
 21 RW19
 22 一人软包  T31    K3/K23 包厢硬卧
 23 RW/WR
 24 RZ     T5685 Y509
-
+25 tz ZT 
 26	无座
 
 28		YW
@@ -74,6 +74,7 @@ a.data.result[45].split("|")
 33		WY
 34	seat_feature	席别
 35	yp_ex	席别 
+36  secretHBStr 可以积分兑换
 
   function b4(ct, cv) {
     var cs = [];
