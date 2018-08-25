@@ -303,7 +303,7 @@ def telecode(str):
     #print(str)
     return '';
 
-def getTimeTable(fn):
+def openTrainList(fn):
     #f = open(fn,'r',encoding= 'utf8') #py3
     with open(fn,'r') as f: #py2
         f.read(16);
@@ -345,7 +345,7 @@ def processA(a):
 
 
 station = getStation('station_name.js');
-t = getTimeTable('train_list.js');
+t = openTrainList('train_list.js');
 date = time.strftime("%Y-%m-%d");
 
 for date in sorted(t.keys()):
