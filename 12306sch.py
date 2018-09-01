@@ -1,4 +1,4 @@
-!/usr/bin/python
+#!/usr/bin/python
 #tested in python 2.7.14 on win10 x64
 from __future__ import print_function
 import os
@@ -45,7 +45,7 @@ len(sch)
 flag=0
 x=0
 y=0
-def sync(str):
+def schstr_polyline(str):
     nums=re.findall(r'(\b[GDCZTKYL]{1}[1-9][0-9]{0,3}|[1-9][0-9]{3})', str , re.I|re.M)
     kms=getkms(str,station)
     mins=getmins(str)
@@ -91,7 +91,7 @@ for i in range(24):
     print('<line x1="%d" y1="0" x2="%d" y2="3000" style="stroke:rgb(220,220,220);stroke-width:1"/>'%(i*60+30,i*60+30))
 
 for i in range(len(sch)):
-    sync(sch[i])
+    schstr_polyline(sch[i])
 
 print('</svg>')
 

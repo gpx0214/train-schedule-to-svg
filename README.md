@@ -1,6 +1,5 @@
 # train-schedule-to-svg
-read schedule and stations in *.txt files, output a svg graph.
-
+12306sch.py old version read schedule and stations in *.txt files, output a svg graph.
 
 ##sch.txt will like follow,and a blank line are needed between two table.
 <pre>
