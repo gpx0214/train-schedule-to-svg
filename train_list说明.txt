@@ -1,4 +1,5 @@
 wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js
+wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/framework/station_name.js
 
 https://kyfw.12306.cn/otn/resources/js/query/train_list.js?scriptVersion=1.0
 https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9031
