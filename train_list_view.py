@@ -101,7 +101,7 @@ def processA(a):
         print ("data error " + match[0].encode('utf-8'));
         return '';
 
-def Tprint(t):
+def train_list_type_str(t):
   s = '';
   for date in sorted(t.keys()):
     s += (date.encode('utf-8'));
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     print('input file:' + fn0);
     try:
         t = openTrainList(fn0);
-        print(Tprint(t))
+        print(train_list_type_str(t))
         os.system('pause');
     except Exception, e:
         print(str(Exception))
