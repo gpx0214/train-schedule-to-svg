@@ -12,18 +12,64 @@ http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/cczd.js
 http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/lc_select.js
 
 //统计不重复的始发-终到
-var m = new Set()
+function hash(str) {
+  var c = str.charAt(0);
+  var offset={
+    "Z":10000,
+    "T":20000,
+    "K":30000,
+    "G":40000,
+    "D":50000,
+    "C":60000,
+    "S":60000,
+    "Y":00000,
+    "P":00000,
+  }
+  var num = Number(str.replace(/\D/,'')) % 10000;
+  return (offset[c] || 0) + num -1;
+}
+
+var m = new Set();
+var arr = new Array(200000);
+var stat = new Array(2000);
 for(date in train_list) {
   for (type in train_list[date]) {
     for (i in train_list[date][type]) {
       t = train_list[date][type][i];
       match = t.station_train_code.match(/(.*)\((.*)-(.*)\)/)
       m.add(match[2]+'-'+match[3])
-
+      arr[hash(match[1])] = t.train_no;
+      stat[Math.floor(hash(match[1])/100)] = (stat[hash(match[1])/100] || 0) + 1;
     }
   }
 }
-//3651
+
+//m.size 3651
+//arr
+
+var cnt = 0;
+var step = 100;
+var stat = new Array(Math.ceil(70000/step));
+for (i in arr) {
+  if (arr[i]) {
+    stat[Math.floor(i/step)] = (stat[Math.floor(i/step)] || 0) + 1;
+    cnt++;
+  }
+}
+console.log(cnt);
+
+var str = '';
+var cnt = 0;
+for (var i=0; i<Math.ceil(70000/step);i++) {
+  str += ( ('    '+(stat[i]||0)).slice(-3) + ((i+1)%10?'':'\n') + ((i+1)%100?'':'\n'));
+  if(stat[i]||0) {
+    cnt++;
+  }
+}
+
+console.log(str);
+console.log(cnt);
+
 
 票价
 https://kyfw.12306.cn/otn/leftTicketPrice/queryAllPublicPrice?leftTicketDTO.train_date=2018-05-01&leftTicketDTO.from_station=HZH&leftTicketDTO.to_station=BJP&purpose_codes=ADULT&randCode=bmxa

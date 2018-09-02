@@ -110,6 +110,27 @@ def train_list_type_str(t):
     s += '\n'
   return s;
 
+def hash_no(s):
+    items = [('Z',10000),('T',20000),('K',30000),\
+             ('G',40000),('D',50000),('C',60000),\
+             ('Y',00000),('S',60000),('P',00000)]; #('Y',70000),('S',71000),('P',80000)
+    d = dict(items);
+    type = d[s[0]] if s[0] in d else 0 ;
+    n = int(re.sub(r'\D+', '', s));
+    return type + n
+
+'''
+for date in sorted(t.keys()):
+  #for type in t[date]:
+  for type in ['Z']:
+    #for i in range(0,len(t[date][type])):
+    for i in range(0,1):
+        a = t[date][type][i];
+        match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
+        hash_no(match[0]); #.encode('utf-8');
+        print(a['train_no'].encode('utf-8'));
+'''
+
 if __name__ == '__main__':
     try:
         fn0 = sys.argv[1];
