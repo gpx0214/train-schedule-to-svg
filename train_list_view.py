@@ -12,6 +12,7 @@ import random
 import time
 import os     #for cls
 import sys
+import platform
 import csv
 
 def cmpbyTime(a1, a2):
@@ -110,6 +111,7 @@ def train_list_type_str(t):
     s += '\n'
   return s;
 
+
 def hash_no(s):
     items = [('Z',10000),('T',20000),('K',30000),\
              ('G',40000),('D',50000),('C',60000),\
@@ -119,17 +121,38 @@ def hash_no(s):
     n = int(re.sub(r'\D+', '', s));
     return type + n
 
-'''
-for date in sorted(t.keys()):
-  #for type in t[date]:
-  for type in ['Z']:
-    #for i in range(0,len(t[date][type])):
-    for i in range(0,1):
-        a = t[date][type][i];
-        match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
-        hash_no(match[0]); #.encode('utf-8');
-        print(a['train_no'].encode('utf-8'));
-'''
+def train_list_train_no_array(t, maxlen):
+    arr = ['' for i in range(maxlen)];
+    for date in sorted(t.keys()):
+      for type in t[date]:
+      #for type in ['Z']:
+        for i in range(0,len(t[date][type])):
+        #for i in range(0,1):
+            a = t[date][type][i];
+            match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
+            arr[hash_no(match[0].encode('utf-8'))-1] = a['train_no'].encode('utf-8');
+    return arr;
+
+def train_list_stat_block(arr, step, maxlen):
+    cnt = 0;
+    #step = 100;
+    stat = [0 for i in range(int(math.ceil(maxlen/step)))];
+    for i in range(len(arr)):
+      if arr[i]:
+        stat[int(math.floor(i/step))]+=1;
+        cnt+=1;
+    print(str(cnt) + " trains");
+    return stat;
+
+def print_block(stat):
+    s = '';
+    cnt = 0;
+    for i in range(len(stat)):
+      s += ( ("    " + str(stat[i]))[-4:] + ('' if (i+1)%10 else '\n') + ('' if (i+1)%100 else '\n'));
+      if stat[i]:
+        cnt+=1;
+    return s, cnt;
+
 
 if __name__ == '__main__':
     try:
@@ -140,8 +163,15 @@ if __name__ == '__main__':
     print('input file:' + fn0);
     try:
         t = openTrainList(fn0);
-        print(train_list_type_str(t))
-        os.system('pause');
+        arr = train_list_train_no_array(t, 70000);
+        stat = train_list_stat_block(arr, 100, 70000);
+        s,block = print_block(stat);
+        print(str(block) + " blocks");
+        print(s);
+        print(train_list_type_str(t));
+        if platform.system() == "Windows":
+            os.system('pause');
     except Exception, e:
         print(str(Exception))
-        os.system('pause');
+        if platform.system() == "Windows":
+            os.system('pause');
