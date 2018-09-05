@@ -303,6 +303,14 @@ import time
 import os     #for cls
 import csv
 
+def print_stat(stat):
+    buffer = '';
+    for i in range(len(stat)):
+        buffer += (("    " + str(stat[i]))[-4:] \
+                + ('' if (i+1)%20 else '\n') \
+                + ('' if (i+1)%60 else '\n'));
+    return buffer
+
 def cmpbyTime(a1, a2):
     if (len(a1)<5):
         return 0;
@@ -473,7 +481,7 @@ for date in sorted(t.keys()):
                         time_list.append([s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'), str(day), s[i]['start_time'].encode('utf-8'), '1']);
   
   print(num);
-  print(stat);
+  print(print_stat(stat));
   
   sort = sorted(time_list, cmpbyTime)
   
