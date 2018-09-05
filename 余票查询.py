@@ -65,7 +65,7 @@ def getmin(str):
     except:
         return -1;
 
-def getSch(t1, t2, train_no):
+def getSch(t1, t2, train_no, date):
     url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no="+ train_no +"&from_station_telecode="+ t1 +"&to_station_telecode="+ t2 +"&depart_date=" + date;
     #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {"User-Agent":"Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"}
