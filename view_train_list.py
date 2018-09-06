@@ -59,7 +59,7 @@ def getStation(fn):
     return s
 
 
-def telecode(str):
+def telecode(str, station):
     for i in range(len(station)):
         if str == station[i][1]:
             return station[i][2]
@@ -75,11 +75,11 @@ def openTrainList(fn):
     return json.loads(data)
 
 
-def processA(a):
+def processA(a, station):
     match = re.findall(r'(.*)\((.*)-(.*)\)',
                        a['station_train_code'], re.I | re.M)[0]
-    t1 = telecode(match[1].encode('utf-8'))
-    t2 = telecode(match[2].encode('utf-8'))
+    t1 = telecode(match[1].encode('utf-8'), station)
+    t2 = telecode(match[2].encode('utf-8'), station)
     if not t1:
         #print(match[1].encode('utf-8') + " telecode not found!");
         return ''
@@ -113,7 +113,7 @@ def processA(a):
         return ''
 
 
-def downloadAllSch12306(t):
+def downloadAllSch12306(t, station):
     for date in sorted(t.keys()):
         print(date)
         #date = '1970-01-01';
@@ -130,7 +130,7 @@ def downloadAllSch12306(t):
                     # else:
                         #print(a['train_no'].encode('utf-8') + ' local');
                 else:
-                    r = processA(t[date][type][i])
+                    r = processA(t[date][type][i], station)
 
 
 def train_list_type_str(t):
@@ -212,7 +212,7 @@ if __name__ == '__main__':
         print(s)
         print(train_list_type_str(t))
         station = getStation(fn1)
-        downloadAllSch12306(t)
+        downloadAllSch12306(t, station)
         if platform.system() == "Windows":
             os.system('pause')
     except Exception, e:
