@@ -49,6 +49,7 @@ def getStation(fn):
     s.append(["tsn", "唐山南", "TNP", "tangshannan", "tsn", "-1"])
     s.append(["gye", "古冶", "GYP", "guye", "gy", "-1"])
     s.append(["jlo", "九龙", "JLO", "jiulong", "jl", "-1"])
+    s.append(["", "香港西九龙", "XJA", "xianggangxijiulong", "xgxjl", "-1"])
     s.append(['jsw', '金山卫', 'BGH', 'jinshanwei', 'jsw', '-1'])
     s.append(['mji', '梅江', 'MKQ', 'meijiang', 'mj', '-1'])
     s.append(['ylo', '元龙', 'YLY', 'yuanlong', 'yl', '-1'])
@@ -75,7 +76,7 @@ def openTrainList(fn):
     return json.loads(data)
 
 
-def processA(a, station):
+def processA(a, date, station):
     match = re.findall(r'(.*)\((.*)-(.*)\)',
                        a['station_train_code'], re.I | re.M)[0]
     t1 = telecode(match[1].encode('utf-8'), station)
@@ -126,11 +127,11 @@ def downloadAllSch12306(t, station):
                     sch = json.loads(data)
                     if len(sch['data']['data']) == 0:
                         print(a['train_no'].encode('utf-8') + " zero")
-                        processA(t[date][type][i])
+                        processA(t[date][type][i], date, station)
                     # else:
                         #print(a['train_no'].encode('utf-8') + ' local');
                 else:
-                    r = processA(t[date][type][i], station)
+                    r = processA(t[date][type][i], date, station)
 
 
 def train_list_type_str(t):
