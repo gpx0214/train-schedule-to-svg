@@ -16,4 +16,5 @@ MAILTO=""
 #5,15,25,35,45,55 * * * * root /usr/bin/python2.7 /var/ftp/zwdcx_email.py >/dev/null 2>&1
 */5 * * * * root /usr/bin/python2.7 /var/ftp/zwdcx.py >/dev/null 2>&1
 #0 * * * * root /usr/bin/wget -N /var/ftp --no-check-certificate -O https://kyfw.12306.cn/otn/resources/js/query/train_list.js
-0 6 * * * root /usr/bin/wget -N /var/ftp --no-check-certificate -O /var/ftp/train_list.js https://kyfw.12306.cn/otn/resources/js/query/train_list.js
+#0 6 * * * root /usr/bin/wget -N /var/ftp --no-check-certificate -O /var/ftp/train_list.js https://kyfw.12306.cn/otn/resources/js/query/train_list.js
+33 2 * * * root /usr/bin/wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -O /var/ftp/train_list_`date -d today +"%y%m%d"`.js && /var/ftp/view_train_list.py /var/ftp/train_list_`date -d today +"%y%m%d"`.js >/dev/null 2>&1
