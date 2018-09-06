@@ -11,7 +11,8 @@ import time
 import os     #for cls
 import csv
 
-//TODO
+# TODO
+
 def processA(a):
     match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
     t1 = telecode(match[1].encode('utf-8'));
@@ -157,7 +158,7 @@ def getLeftTicket(t1,t2,date):
             if len(sp)>36 and sp[3][0] == 'C':
                 print(sp[3] +' '+ sp[2]+' '+ sp[4]+' '+ sp[5]);
                 if not os.path.exists('sch/'+sp[2].encode('utf-8')+'.json'):
-                    b = getSch(sp[4], sp[5], sp[2]);
+                    b = getSch(sp[4], sp[5], sp[2], date);
                     with open("20180808.csv","a") as f:
                         f.write(b);
         return t1 +' '+ t2;
@@ -172,7 +173,7 @@ for date in ['2018-08-09','2018-08-10','2018-08-11','2018-08-12','2018-08-13','2
   getLeftTicket('TJP','YKP',date);
   getLeftTicket('YKP','TJP',date);
 
-getSch('BJP','TJP','280000260415')
+getSch('BJP','TJP','280000260415','2018-08-08');
 getLeftTicket('YKP','TXP','2018-08-08');
 
 
