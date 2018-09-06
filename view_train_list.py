@@ -4,16 +4,16 @@
 
 #TODO 临时文件 train_list 和 station_name 需要抽模块
 
-import requests #
-import re
-import json
-import math
-import random
-import time
-import os     #for cls
+import os
 import sys
 import platform
+import time
+import math
+import random
+import re
+import json
 import csv
+import requests
 
 def cmpbyTime(a1, a2):
     if (len(a1)<5):
@@ -136,13 +136,12 @@ def train_list_train_no_array(t, maxlen):
 def train_list_stat_block(arr, step, maxlen):
     cnt = 0;
     #step = 100;
-    stat = [0 for i in range(int(math.ceil(maxlen/step)))];
+    stat = [0 for i in range(1+(maxlen-1)//step)];
     for i in range(len(arr)):
       if arr[i]:
-        stat[int(math.floor(i/step))]+=1;
+        stat[i//step]+=1;
         cnt+=1;
-    print(str(cnt) + " trains");
-    return stat;
+    return stat, cnt;
 
 def print_block(stat):
     s = '';
@@ -164,8 +163,9 @@ if __name__ == '__main__':
     try:
         t = openTrainList(fn0);
         arr = train_list_train_no_array(t, 70000);
-        stat = train_list_stat_block(arr, 100, 70000);
+        stat,train_num = train_list_stat_block(arr, 100, 70000);
         s,block = print_block(stat);
+        print(str(train_num) + " trains");
         print(str(block) + " blocks");
         print(s);
         print(train_list_type_str(t));
@@ -175,3 +175,4 @@ if __name__ == '__main__':
         print(str(Exception))
         if platform.system() == "Windows":
             os.system('pause');
+
