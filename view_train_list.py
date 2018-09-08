@@ -39,8 +39,9 @@ def getmin(str):
 
 
 def getStation(fn):
-    # f = open(os.path.join(path, fn),'r',encoding = 'utf8'); #py3
-    with open(os.path.join(path, fn), 'r') as f:  # py2
+    global path0
+    # f = open(os.path.join(path0, fn),'r',encoding = 'utf8'); #py3
+    with open(os.path.join(path0, fn), 'r') as f:  # py2
         str = f.read()
     a = re.findall(r'\'\@([^\']+)\'', str, re.I | re.M)[0]
     s = a.split('@')
@@ -69,14 +70,16 @@ def telecode(str, station):
 
 
 def openTrainList(fn):
-    # f = open(os.path.join(path, fn),'r',encoding= 'utf8') #py3
-    with open(os.path.join(path, fn), 'r') as f:  # py2
+    global path0
+    # f = open(os.path.join(path0, fn),'r',encoding= 'utf8') #py3
+    with open(os.path.join(path0, fn), 'r') as f:  # py2
         f.read(16)
         data = f.read()
     return json.loads(data)
 
 
 def processA(a, date, station):
+    global path0
     match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'], re.I | re.M)[0]
     t1 = telecode(match[1].encode('utf-8'), station)
     t2 = telecode(match[2].encode('utf-8'), station)
@@ -104,7 +107,7 @@ def processA(a, date, station):
         print('ValueError ' + match[0].encode('utf-8'))
         return ''
     if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
-        with open(os.path.join(path, 'sch/'+a['train_no'].encode('utf-8')+'.json'), 'wb') as f:
+        with open(os.path.join(path0, 'sch/'+a['train_no'].encode('utf-8')+'.json'), 'wb') as f:
             f.write(resp.content)
         print(match[0].encode('utf-8') + ' ' + str(len(sch['data']['data'])))
         return match[0].encode('utf-8')
@@ -114,15 +117,16 @@ def processA(a, date, station):
 
 
 def downloadAllSch12306(t, station):
+    global path0
     for date in sorted(t.keys()):
         print(date)
         #date = '1970-01-01';
         for type in t[date]:
             for i in range(0, len(t[date][type])):
                 a = t[date][type][i]
-                if os.path.exists(os.path.join(path, \
+                if os.path.exists(os.path.join(path0, \
                         'sch/' + a['train_no'].encode('utf-8')+'.json')):
-                    f = open(os.path.join(path, \
+                    f = open(os.path.join(path0, \
                         'sch/' + a['train_no'].encode('utf-8')+'.json'), 'r')
                     data = f.read()
                     sch = json.loads(data)
@@ -194,16 +198,17 @@ def print_block(stat):
 
 
 if __name__ == '__main__':
-    global path
-    path = os.path.dirname(os.path.realpath(__file__))
+    global path0
+    path0 = os.path.dirname(os.path.realpath(__file__))
+    print("path:" + path0)
     try:
         fn0 = sys.argv[1]
     except:
-        fn0 = os.path.join(path, 'train_list.js')
+        fn0 = os.path.join(path0, 'train_list.js')
     try:
         fn1 = sys.argv[2]
     except:
-        fn1 = os.path.join(path, 'station_name.js')
+        fn1 = os.path.join(path0, 'station_name.js')
     print('input train_list file:   ' + fn0)
     print('input station_name file: ' + fn1)
 
@@ -217,7 +222,7 @@ if __name__ == '__main__':
         print(s)
         print(train_list_type_str(t))
         station = getStation(fn1)
-        #downloadAllSch12306(t, station)
+        downloadAllSch12306(t, station)
         if platform.system() == "Windows":
             os.system('pause')
     except Exception, e:
