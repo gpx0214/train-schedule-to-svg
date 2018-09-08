@@ -189,3 +189,45 @@ with open('/var/ftp/delay/sort2018-07-27.csv','r') as f:
     if f.read(3)!='\xef\xbb\xbf':
         f.seek(0,0);
     data = f.read();
+
+'''
+fn = "C:\\Users\\Administrator\\ticket1\\2018-09-23_XJA_CBQ.json"
+
+with open(fn,'r') as f: #py2
+    data=f.read();
+
+j = json.loads(data)
+
+buffer= '';
+for obj in j:
+    #obj['TRNO'].encode('utf-8')
+    #obj['FST'].encode('utf-8')
+    #obj['EST'].encode('utf-8')
+    #getSch(obj['FST'].encode('utf-8'), obj['EST'].encode('utf-8'), obj['TRNO'].encode('utf-8'), date)
+    train_code = obj['STCODE'].encode('utf-8')
+    #getSchT(obj['STCODE'].encode('utf-8'), date)
+    with open('sch/'+ train_code +'_T.json','r') as f:
+        f.read(3);
+        data = f.read();
+    s = json.loads(data)
+    day = 0;
+    last = 0;
+    time_list = [];
+    print(s[0]['STCODE'].encode('utf-8') + "\n")
+    buffer += (s[0]['STCODE'].encode('utf-8') + "\n")
+    for i in range(0, len(s)):
+                print (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8')\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'].encode('utf-8'))\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME'].encode('utf-8')) + "\n");
+                buffer += (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8')\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'].encode('utf-8'))\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME'].encode('utf-8')) + "\n");
+    buffer += ("\n");
+
+print(buffer.decode('utf-8'));
+
+with open('XJA.txt','wb') as f:
+            if f.tell() == 0:
+                f.write('\xef\xbb\xbf');
+            f.write(buffer)
+'''
