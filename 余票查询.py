@@ -177,7 +177,7 @@ getSch('BJP','TJP','280000260415','2018-08-08');
 getLeftTicket('YKP','TXP','2018-08-08');
 
 
-https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=2018-08-11&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=TJP&purpose_codes=ADULT
+# https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=2018-08-11&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=TJP&purpose_codes=ADULT
 
 buffer = '';
 time_list = [];
