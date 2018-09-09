@@ -15,5 +15,5 @@ MAILTO=""
 #10,40 * * * * root /usr/bin/python2.7 /var/ftp/1.py >/dev/null 2>&1
 #5,15,25,35,45,55 * * * * root /usr/bin/python2.7 /var/ftp/zwdcx_email.py >/dev/null 2>&1
 */5 * * * * root /usr/bin/python2.7 /var/ftp/zwdcx.py >/dev/null 2>&1 &
-3 0,1,2,3,4,5 * * * root /bin/bash /var/ftp/wget_station_name.sh >/var/ftp/log_wget_view.txt 2>&1 &
+4 0,2,5,10,15,22 * * * root /bin/bash /var/ftp/wget_station_name.sh >/var/ftp/log_wget_view.txt 2>&1 &
 33 2 * * * root /bin/bash /var/ftp/wget_train_list.sh >/var/ftp/log_wget_view.txt 2>&1 &
