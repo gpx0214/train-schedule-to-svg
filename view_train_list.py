@@ -1,18 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#from __future__ import print_function
-
+# tested in python 2.7.14 on win10 x64
 # TODO 临时文件 train_list 和 station_name 需要抽模块
+
+#from __future__ import print_function
 
 import os
 import sys
 import platform
-import time
-import math
-import random
 import re
 import json
 import csv
+import time
+import math
+import random
 import requests
 
 def cmpbyTime(a1, a2):
