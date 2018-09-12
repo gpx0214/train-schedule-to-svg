@@ -16,6 +16,7 @@ import math
 import random
 import requests
 
+
 def cmpbyTime(a1, a2):
     if (len(a1) < 5):
         return 0
@@ -39,8 +40,8 @@ def getmin(str):
 
 
 def getStation(fn):
-    # f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), fn),'r',encoding = 'utf8'); #py3
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), fn), 'r') as f:  # py2
+    # f = open(fn, 'r',encoding = 'utf8'); #py3
+    with open(fn, 'r') as f:  # py2
         str = f.read()
     a = re.findall(r'\'\@([^\']+)\'', str, re.I | re.M)[0]
     s = a.split('@')
@@ -69,13 +70,14 @@ def telecode(str, station):
 
 
 def openTrainList(fn):
-    # f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), fn),'r',encoding= 'utf8') #py3
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), fn), 'r') as f:  # py2
+    # f = open(fn, 'r',encoding= 'utf8') #py3
+    with open(fn, 'r') as f:  # py2
         f.read(16)
         data = f.read()
     return json.loads(data)
 
 
+'''
 def processA(a, date, station):
     match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'], re.I | re.M)[0]
     t1 = telecode(match[1].encode('utf-8'), station)
@@ -110,8 +112,81 @@ def processA(a, date, station):
     else:
         print ("data error " + match[0].encode('utf-8'))
         return ''
+'''
 
 
+def processA(a, date, station):
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          'sch/' + a['train_no'].encode('utf-8')+'.json')
+    except:
+        fn = 'sch/' + a['train_no'].encode('utf-8')+'.json'
+    if os.path.exists(fn):
+        with open(fn, 'r') as f:
+            data = f.read()
+        try:
+            sch = json.loads(data)
+            if sch['status'] == True and sch['httpstatus'] == 200 \
+                and len(sch['data']['data']):
+                return sch['data']['data']
+        except ValueError:
+            print('ValueError ' + a['train_no'])
+    print("processA")
+
+    match = re.findall(r'(.*)\((.*)-(.*)\)',
+                       a['station_train_code'], re.I | re.M)[0]
+    t1 = telecode(match[1].encode('utf-8'), station)
+    t2 = telecode(match[2].encode('utf-8'), station)
+    if not t1:
+        #print(match[1].encode('utf-8') + " telecode not found!");
+        return []
+    if not t2:
+        #print(match[2].encode('utf-8') + " telecode not found!");
+        return []
+    return getSch12306(t1, t2, a['train_no'], date)
+
+
+def getSch12306(t1, t2, train_no, date):
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), \
+             'sch/' + train_no + '.json')
+    except:
+        fn = 'sch/' + train_no + '.json'
+    if os.path.exists(fn):
+        with open(fn, 'r') as f:
+            data = f.read()
+        sch = json.loads(data)
+        if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
+            return sch['data']['data']
+
+    url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=" + train_no + \
+        "&from_station_telecode=" + t1 + \
+        "&to_station_telecode=" + t2 + "&depart_date=" + date
+    #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"}
+    try:
+        resp = requests.get(url, headers=header)
+    except requests.exceptions.ConnectionError:
+        print('ConnectionError ' + train_no)
+        return []
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    try:
+        sch = json.loads(body)
+    except ValueError:
+        print('ValueError ' + train_no)
+        return []
+    if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
+        with open('sch/' + train_no + '.json', 'wb') as f:
+            f.write(resp.content)
+        print(train_no + ' ' + str(len(sch['data']['data'])))
+        return sch['data']['data']
+    else:
+        print ("data error " + train_no)
+        return []
+
+
+'''
 def downloadAllSch12306(t, station):
     for date in sorted(t.keys()):
         print(date)
@@ -119,10 +194,33 @@ def downloadAllSch12306(t, station):
         for type in t[date]:
             for i in range(0, len(t[date][type])):
                 a = t[date][type][i]
-                if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
-                        'sch/' + a['train_no'].encode('utf-8')+'.json')):
-                    f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
-                        'sch/' + a['train_no'].encode('utf-8')+'.json'), 'r')
+                if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                               'sch/' + a['train_no'].encode('utf-8')+'.json')):
+                    f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                          'sch/' + a['train_no'].encode('utf-8')+'.json'), 'r')
+                    data = f.read()
+                    sch = json.loads(data)
+                    if len(sch['data']['data']) == 0:
+                        print(a['train_no'].encode('utf-8') + " zero")
+                        processA(t[date][type][i], date, station)
+                    # else:
+                        #print(a['train_no'].encode('utf-8') + ' local');
+                else:
+                    r = processA(t[date][type][i], date, station)
+'''
+
+
+def checkAllSch12306(t, station):
+    for date in sorted(t.keys()):
+        print(date)
+        #date = '1970-01-01';
+        for type in t[date]:
+            for i in range(0, len(t[date][type])):
+                a = t[date][type][i]
+                if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                               'sch/' + a['train_no'].encode('utf-8')+'.json')):
+                    f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                          'sch/' + a['train_no'].encode('utf-8')+'.json'), 'r')
                     data = f.read()
                     sch = json.loads(data)
                     if len(sch['data']['data']) == 0:
@@ -145,8 +243,8 @@ def train_list_type_str(t):
 
 
 def hash_no(s):
-    items = [('Z', 10000), ('T', 20000), ('K', 30000), \
-             ('G', 40000), ('D', 50000), ('C', 60000), \
+    items = [('Z', 10000), ('T', 20000), ('K', 30000),
+             ('G', 40000), ('D', 50000), ('C', 60000),
              ('Y', 00000), ('S', 60000), ('P', 00000)]  # ('Y',70000),('S',71000),('P',80000)
     d = dict(items)
     type = d[s[0]] if s[0] in d else 0
@@ -191,15 +289,18 @@ def print_block(stat):
             cnt += 1
     return s, cnt
 
+
 if __name__ == '__main__':
     try:
         fn0 = sys.argv[1]
     except:
-        fn0 = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'train_list.js')
+        fn0 = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), 'train_list.js')
     try:
         fn1 = sys.argv[2]
     except:
-        fn1 = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'station_name.js')
+        fn1 = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), 'station_name.js')
     print('input train_list file:   ' + fn0)
     print('input station_name file: ' + fn1)
 
@@ -213,7 +314,8 @@ if __name__ == '__main__':
         print(s)
         print(train_list_type_str(t))
         station = getStation(fn1)
-        downloadAllSch12306(t, station)
+        #downloadAllSch12306(t, station)
+        checkAllSch12306(t, station)
         if platform.system() == "Windows":
             os.system('pause')
     except Exception, e:
