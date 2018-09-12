@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # tested in python 2.7.14 on win10 x64
-# TODO 临时文件 train_list 和 station_name 需要抽模块
 
 #from __future__ import print_function
 
@@ -75,45 +74,6 @@ def openTrainList(fn):
         f.read(16)
         data = f.read()
     return json.loads(data)
-
-
-'''
-def processA(a, date, station):
-    match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'], re.I | re.M)[0]
-    t1 = telecode(match[1].encode('utf-8'), station)
-    t2 = telecode(match[2].encode('utf-8'), station)
-    if not t1:
-        #print(match[1].encode('utf-8') + " telecode not found!");
-        return ''
-    if not t2:
-        #print(match[2].encode('utf-8') + " telecode not found!");
-        return ''
-    url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=" + \
-         a['train_no'] + "&from_station_telecode=" + t1 + \
-        "&to_station_telecode=" + t2 + "&depart_date=" + date
-    #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
-    header = {"User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 Safari/537.36"}
-    try:
-        resp = requests.get(url, headers=header)
-    except requests.exceptions.ConnectionError:
-        print('ConnectionError ' + match[0].encode('utf-8'))
-        return ''
-    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
-    try:
-        sch = json.loads(body)
-    except ValueError:
-        print('ValueError ' + match[0].encode('utf-8'))
-        return ''
-    if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sch/'+a['train_no'].encode('utf-8')+'.json'), 'wb') as f:
-            f.write(resp.content)
-        print(match[0].encode('utf-8') + ' ' + str(len(sch['data']['data'])))
-        return match[0].encode('utf-8')
-    else:
-        print ("data error " + match[0].encode('utf-8'))
-        return ''
-'''
-
 
 def processA(a, date, station):
     try:
@@ -191,30 +151,6 @@ def getSch12306(t1, t2, train_no, date):
     else:
         print ("data error " + train_no)
         return []
-
-
-'''
-def downloadAllSch12306(t, station):
-    for date in sorted(t.keys()):
-        print(date)
-        #date = '1970-01-01';
-        for type in t[date]:
-            for i in range(0, len(t[date][type])):
-                a = t[date][type][i]
-                if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                               'sch/' + a['train_no'].encode('utf-8')+'.json')):
-                    f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                          'sch/' + a['train_no'].encode('utf-8')+'.json'), 'r')
-                    data = f.read()
-                    sch = json.loads(data)
-                    if len(sch['data']['data']) == 0:
-                        print(a['train_no'].encode('utf-8') + " zero")
-                        processA(t[date][type][i], date, station)
-                    # else:
-                        #print(a['train_no'].encode('utf-8') + ' local');
-                else:
-                    r = processA(t[date][type][i], date, station)
-'''
 
 
 def checkAllSch12306(t, station):
