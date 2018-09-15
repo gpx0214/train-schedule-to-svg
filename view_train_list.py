@@ -13,6 +13,7 @@ import csv
 import time
 import math
 import random
+
 import requests
 
 
@@ -144,7 +145,7 @@ def getSch12306(t1, t2, train_no, date):
         print('ValueError ' + train_no)
         return []
     if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
-        with open('sch/' + train_no + '.json', 'wb') as f:
+        with open(fn, 'wb') as f:
             f.write(resp.content)
         print(train_no + ' ' + str(len(sch['data']['data'])))
         return sch['data']['data']
@@ -234,6 +235,7 @@ if __name__ == '__main__':
     print('input station_name file: ' + fn1)
 
     try:
+    #if True:
         t = openTrainList(fn0)
         arr = train_list_train_no_array(t, 70000)
         stat, train_num = train_list_stat_block(arr, 100, 70000)
@@ -243,7 +245,6 @@ if __name__ == '__main__':
         print(s)
         print(train_list_type_str(t))
         station = getStation(fn1)
-        #downloadAllSch12306(t, station)
         checkAllSch12306(t, station)
         if platform.system() == "Windows":
             os.system('pause')

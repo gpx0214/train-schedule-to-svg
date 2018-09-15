@@ -2,14 +2,17 @@
 # -*- coding: utf-8 -*-
 #python3.5.3 win10 64bit MSC v.1900 64 bit (AMD64)
 #from __future__ import print_function
-import requests #
+import os
+import sys
+import platform
 import re
 import json
+import csv
+import time
 import math
 import random
-import time
-import os     #for cls
-import csv
+
+import requests
 
 # TODO
 
