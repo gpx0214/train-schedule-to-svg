@@ -8,6 +8,12 @@ wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/framework/sta
 \cp -p 1.txt 2.txt
 vi ~/.bashrc
 
+车站地址
+http://www.12306.cn/mormhweb/kyyyz/ky_heb/201001/t20100124_1161.html
+...
+http://www.12306.cn/mormhweb/kyyyz/ky_heb/201001/t20100124_1196.html
+
+
 https://kyfw.12306.cn/otn/resources/js/query/train_list.js?scriptVersion=1.0
 https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9031
 https://kyfw.12306.cn/otn/resources/js/framework/favorite_name.js
