@@ -11,7 +11,8 @@ fi
 #echo ${t0}
 
 #download only new file
-/usr/bin/wget -N --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -P ${path} && ${path}view_train_list.py ${path}train_list.js
+/usr/bin/wget -N --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -P ${path}
+#/usr/bin/wget -N --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -P ${path} && ${path}view_train_list.py ${path}train_list.js
 
 #always teain_list_yymmdd.js
 #date=`date -d today +"%y%m%d"`
@@ -32,6 +33,7 @@ fi
 #echo $((${t1}-${t0}))
 if ((${t1} > ${t0}));then
 echo t1 newer
+${path}view_train_list.py ${path}train_list.js
 yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}train_list.js)"`
 cp -p ${path}train_list.js ${path}train_list_${yymmdd}.js
 else
