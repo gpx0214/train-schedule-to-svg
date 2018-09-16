@@ -352,6 +352,7 @@ if __name__ == '__main__':
         print(train_list_type_str(t))
         station = getStation(fn1)
         checkAllSch12306(t, station)
+        savecsv(t,station)
         if platform.system() == "Windows":
             os.system('pause')
     except Exception, e:
