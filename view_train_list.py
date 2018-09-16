@@ -17,6 +17,15 @@ import random
 import requests
 
 
+def print_stat(stat):
+    buffer = ''
+    for i in range(len(stat)):
+        buffer += (("    " + str(stat[i]))[-4:]
+                   + ('' if (i+1) % 20 else '\n')
+                   + ('' if (i+1) % 60 else '\n'))
+    return buffer
+
+
 def cmpbyTime(a1, a2):
     if (len(a1) < 5):
         return 0
@@ -76,10 +85,11 @@ def openTrainList(fn):
         data = f.read()
     return json.loads(data)
 
+
 def processA(a, date, station):
     try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                          'sch/' + a['train_no'].encode('utf-8')+'.json')
+        fn = os.path.join(os.path.dirname(os.path.abspath(
+            __file__)), 'sch/' + a['train_no'].encode('utf-8')+'.json')
     except:
         fn = 'sch/' + a['train_no'].encode('utf-8')+'.json'
     if os.path.exists(fn):
@@ -99,18 +109,22 @@ def processA(a, date, station):
     t2 = telecode(match[2].encode('utf-8'), station)
     if not t1:
         if platform.system() == "Windows":
-            print(match[1].encode('gbk') + " telecode not found! " + match[0].encode('gbk'))
+            print(match[1].encode('gbk') +
+                  " telecode not found! " + match[0].encode('gbk'))
         else:
-            print(match[1].encode('utf-8') + " telecode not found! " + match[0].encode('utf-8'))
+            print(match[1].encode('utf-8') +
+                  " telecode not found! " + match[0].encode('utf-8'))
         t1 = "AAA"
-        #return []
+        # return []
     if not t2:
         if platform.system() == "Windows":
-            print(match[2].encode('gbk') + " telecode not found! " + match[0].encode('gbk'))
+            print(match[2].encode('gbk') +
+                  " telecode not found! " + match[0].encode('gbk'))
         else:
-            print(match[2].encode('utf-8') + " telecode not found! " + match[0].encode('utf-8'))
+            print(match[2].encode('utf-8') +
+                  " telecode not found! " + match[0].encode('utf-8'))
         t2 = "AAA"
-        #return []
+        # return []
     return getSch12306(t1, t2, a['train_no'], date)
 
 
@@ -162,6 +176,91 @@ def checkAllSch12306(t, station):
                 processA(t[date][type][i], date, station)
 
 
+def savecsv(t, station):
+    for date in sorted(t.keys()):
+        print(date)
+        #buffer = ''
+        time_list = []
+        num = 0
+        stat = [0 for i in range(1440)]
+        for type in t[date]:
+            for i in range(0, len(t[date][type])):
+                a = t[date][type][i]
+                match = re.findall(r'(.*)\((.*)-(.*)\)',
+                                   a['station_train_code'], re.I | re.M)[0]
+                if (match[0] in a['train_no']) == False:
+                    # print(match[0] +' '+ a['train_no']); #切换上下行
+                    continue
+                schdata = processA(t[date][type][i], date, station)
+                s = schToCsv(schdata)
+                #print(s)
+                num += 2*(len(s)-1)
+                for row in s:
+                    time_list.append(row)
+                    if len(row) >= 6:
+                        minute = getmin(row[4])
+                        stat[minute] += 1
+                    #tele = telecode(row[1]);
+                    # if True or tele and tele[2] == 'P':
+                    #num = num+1;
+                    #stat[minute] = stat[minute]+1;
+        print(num)
+        print(print_stat(stat))
+        sort = sorted(time_list, cmpbyTime)
+        if len(sort):
+            try:
+                fn = os.path.join(os.path.dirname(
+                    os.path.abspath(__file__)), "delay/sort"+date+".csv")
+            except:
+                fn = "delay/sort"+date+".csv"
+            with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+                if f.tell() == 0:
+                    f.write('\xef\xbb\xbf')
+                writer = csv.writer(f)
+                writer.writerows(sort)
+
+#savecsv(t, station)
+
+
+def schToCsv(s):
+    #buffer = ''
+    ret = []
+    day = 0
+    last = 0
+    for i in range(0, len(s)):
+        # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8')); # 打印时刻
+        if getmin(s[i]['arrive_time'].encode('utf-8')) > -1 and i > 0:
+            minute = getmin(s[i]['arrive_time'].encode('utf-8'))
+            if minute < last:
+                day += 1
+            last = minute
+            # TODO
+            #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
+            #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
+            '''buffer += (s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8')
+                       + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0'+'\n')'''
+            ret.append([
+                s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'),
+                str(day), s[i]['arrive_time'].encode('utf-8'), '0'
+            ])
+
+        if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
+            minute = getmin(s[i]['start_time'].encode('utf-8'))
+            if minute < last:
+                day += 1
+            last = minute
+            #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
+            #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
+            '''buffer += (s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8')
+                       + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1'+'\n')'''
+            ret.append([
+                s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'),
+                str(day), s[i]['start_time'].encode('utf-8'), '1'
+            ])
+    # return buffer
+    return ret
+
+
 def train_list_type_str(t):
     s = ''
     for date in sorted(t.keys()):
@@ -188,7 +287,7 @@ def train_list_train_no_array(t, maxlen):
         for type in t[date]:
             # for type in ['Z']:
             for i in range(0, len(t[date][type])):
-                    # for i in range(0,1):
+                # for i in range(0,1):
                 a = t[date][type][i]
                 match = re.findall(r'(.*)\((.*)-(.*)\)',
                                    a['station_train_code'], re.I | re.M)[0]
@@ -235,7 +334,7 @@ if __name__ == '__main__':
     print('input station_name file: ' + fn1)
 
     try:
-    #if True:
+        # if True:
         t = openTrainList(fn0)
         arr = train_list_train_no_array(t, 70000)
         stat, train_num = train_list_stat_block(arr, 100, 70000)
