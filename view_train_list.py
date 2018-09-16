@@ -194,7 +194,7 @@ def savecsv(t, station):
                     continue
                 schdata = processA(t[date][type][i], date, station)
                 s = schToCsv(schdata)
-                num += 2*(len(s)-1)
+                num += len(s)
                 for row in s:
                     #time_list.append(row)
                     if len(row) >= 6:
