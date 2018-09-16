@@ -359,3 +359,12 @@ if __name__ == '__main__':
         print(str(Exception))
         if platform.system() == "Windows":
             os.system('pause')
+
+
+'''
+from view_train_list import *
+
+t = openTrainList('train_list.js')
+station = getStation('station_name.js')
+savecsv(t,station)
+'''
