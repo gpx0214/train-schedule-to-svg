@@ -180,9 +180,10 @@ def savecsv(t, station):
     for date in sorted(t.keys()):
         print(date)
         #buffer = ''
-        time_list = []
+        #time_list = []
         num = 0
         stat = [0 for i in range(1440)]
+        ret = [[] for i in range(1440)]
         for type in t[date]:
             for i in range(0, len(t[date][type])):
                 a = t[date][type][i]
@@ -193,20 +194,26 @@ def savecsv(t, station):
                     continue
                 schdata = processA(t[date][type][i], date, station)
                 s = schToCsv(schdata)
-                #print(s)
                 num += 2*(len(s)-1)
                 for row in s:
-                    time_list.append(row)
+                    #time_list.append(row)
                     if len(row) >= 6:
                         minute = getmin(row[4])
-                        stat[minute] += 1
+                        #stat[minute] += 1
+                        ret[minute].append(row)
                     #tele = telecode(row[1]);
                     # if True or tele and tele[2] == 'P':
                     #num = num+1;
                     #stat[minute] = stat[minute]+1;
         print(num)
+        #sort = sorted(time_list, cmpbyTime)
+        sort = []
+        for key in range(len(ret)):
+            stat[key] = len(ret[key])
+            for row in ret[key]:
+                sort.append(row)
         print(print_stat(stat))
-        sort = sorted(time_list, cmpbyTime)
+
         if len(sort):
             try:
                 fn = os.path.join(os.path.dirname(
