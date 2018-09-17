@@ -58,7 +58,7 @@ def getStation(fn):
         s[i] = s[i].split('|')
     s.append(["tsn", "唐山南", "TNP", "tangshannan", "tsn", "-1"])
     s.append(["gye", "古冶", "GYP", "guye", "gy", "-1"])
-    s.append(["jlo", "九龙", "JLO", "jiulong", "jl", "-1"])
+    s.append(["jlo", "九龙", "JQO", "jiulong", "jl", "-1"])
     s.append(["", "香港西九龙", "XJA", "xianggangxijiulong", "xgxjl", "-1"])
     s.append(['jsw', '金山卫', 'BGH', 'jinshanwei', 'jsw', '-1'])
     s.append(['mji', '梅江', 'MKQ', 'meijiang', 'mj', '-1'])
