@@ -316,10 +316,11 @@ processA(t[date]['O'][468]);
 processA(t[date]['O'][469]);
 
 #查找位置
-for type in t[date]:
-    for i in range(0,len(t[date][type])):
-        if ('K7651' == re.findall(r'(.*)\((.*)-(.*)\)', t[date][type][i]['station_train_code'] , re.I|re.M)[0][0] ):
-            print("t[\'" + type.encode('utf-8') + "\'][\'" + str(i) + "\']")
+for date in sorted(t.keys()):
+    for type in t[date]:
+        for i in range(0,len(t[date][type])):
+            if ('D927' == re.findall(r'(.*)\((.*)-(.*)\)', t[date][type][i]['station_train_code'] , re.I|re.M)[0][0] ):
+                print("t[\'" + date + "\'][\'" + type.encode('utf-8') + "\'][" + str(i) + "]")
 
 #telecode('九龙');
 #k = t.keys();

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # tested in python 2.7.14 on win10 x64
 
-#from __future__ import print_function
+from __future__ import print_function
 
 import os
 import sys
@@ -267,6 +267,76 @@ def schToCsv(s):
     # return buffer
     return ret
 
+def openMilage(fn):
+    with open(fn, 'r') as f:  # py2
+        data = f.read()
+    m = data.split('\n')
+    for i in range(len(m)):
+        m[i] = m[i].split(' ')
+    return m
+
+def getkm(s, m):
+    for i in range(len(m)):
+        if len(m[i]) > 1 and s == m[i][0]:
+            return m[i][1]
+    return -1
+
+#(1440-x0)/x1=(y-y0)(y1-y) = k
+#(y-y0)=(y1-y)*(1440-x0)/x1
+#(y-y0)=(y1-y)*k  
+#y=y0+y1*k-y*k
+#(1+k)y=y0+y1*k
+#y=(y0+y1*k)/(1+k)
+#k:
+#y=y0/(1+k)+y1*(1+k-1)/(1+k)
+#y=y0/(1+k)+y1-y1/(1+k)
+#y=(y0-y1)/(1+k)+y1
+#(lasty-y)/(1+(1440-lastx)/x)+y
+#(lasty-y)*x/((1440+x-lastx))+y
+#1/k:
+#y=y0(1+k-k)/(1+k)+y1*k/(1+k)
+#y=y0-y0*k/(1+k)+y1*k/(1+k)
+#y=y0+(y1-y0)*k/(1+k)
+#y=y0+(y1-y0)*(1/(1/k))/((1/k)/(1/k)+(1/(1/k)))
+#y=y0+(y1-y0)*1/((1/k)+1)
+#lasty+(lasty-y)/(1+x/(1440-lastx))
+
+def schToPolyline(s, m):
+    if (len(s)) <= 0:
+        return ''
+    buffer = ''
+    day = 0
+    lastx = 0
+    lasty = 0
+    buffer += '<polyline name="%s" class="G" style="fill:none;stroke:blue;stroke-width:1;opacity:0.8" points="' % (s[0]['station_train_code'].encode('utf-8'))
+    for i in range(0, len(s)):
+        x = getmin(s[i]['arrive_time'].encode('utf-8'))
+        y = getkm(s[i]['station_name'].encode('utf-8'), m)
+        if getmin(s[i]['arrive_time'].encode('utf-8')) > -1 and i > 0:
+            if x < lastx:
+                day += 1
+                #1440, (lasty-y)*x/((1440+x-lastx))+y
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="G" style="fill:none;stroke:blue;stroke-width:1;opacity:0.8" points="%d,%d' \
+                    % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y), s[0]['station_train_code'].encode('utf-8'), day,\
+                    1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y) )
+            lastx = x
+            lasty = y
+        buffer += '%s,%s ' % (x, y)
+        
+        x = getmin(s[i]['start_time'].encode('utf-8'))
+        y = getkm(s[i]['station_name'].encode('utf-8'), m)
+        if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
+            if x < lastx:
+                day += 1
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="G" style="fill:none;stroke:blue;stroke-width:1;opacity:0.8" points="%d,%d' \
+                    % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y), s[0]['station_train_code'].encode('utf-8'), day,\
+                    1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y) )
+            lastx = x
+            lasty = y
+        buffer += '%s,%s ' % (x, y)
+    buffer += '"/>\n'
+    return buffer
+
 
 def train_list_type_str(t):
     s = ''
@@ -367,4 +437,5 @@ from view_train_list import *
 t = openTrainList('train_list.js')
 station = getStation('station_name.js')
 savecsv(t,station)
+m = openMilage('test/京广高速线里程.txt')
 '''
