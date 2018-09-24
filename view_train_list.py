@@ -596,11 +596,11 @@ from view_train_list import *
 t = openTrainList('train_list.js')
 station = getStation('station_name.js')
 #savecsv(t,station)
-m = openMilage('test/京广高速线里程.txt')
+m = openMilage('test/京沪高速线里程.txt')
 c = readcsv('delay/sort2018-09-30.csv')
-buffer,_ = csvToSvg(m, c, "[GCD]\d+")
+buffer,_ = csvToSvg(m, c, "(?!G7[012356]\d{1,3})[G]\d{1,4}")
 
-fn = 'test/180930京广高速.svg'
+fn = 'test/180930京沪高速.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
