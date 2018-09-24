@@ -397,7 +397,7 @@ def schToPolyline(s, m):
     for i in range(0, len(s)):
         x = getmin(s[i]['arrive_time'].encode('utf-8'))
         y = getkm(s[i]['station_name'].encode('utf-8'), m)
-        if x > -1 and i > 0:
+        if y > -1 and i > 0:
             if x < lastx:
                 day += 1
                 #1440, (lasty-y)*x/((1440+x-lastx))+y
@@ -406,11 +406,11 @@ def schToPolyline(s, m):
                        0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
             lastx = x
             lasty = y
-        buffer += '%s,%s ' % (x, y)
-
+            buffer += '%s,%s ' % (x, y)
+        
         x = getmin(s[i]['start_time'].encode('utf-8'))
         y = getkm(s[i]['station_name'].encode('utf-8'), m)
-        if x > -1 and i < len(s)-1:
+        if y > -1 and i < len(s)-1:
             if x < lastx:
                 day += 1
                 buffer += '%d,%d "/>\n<polyline name="%s+%d" class="G" style="fill:none;stroke:blue;stroke-width:1;opacity:0.8" points="%d,%d ' \
@@ -418,7 +418,7 @@ def schToPolyline(s, m):
                        0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
             lastx = x
             lasty = y
-        buffer += '%s,%s ' % (x, y)
+            buffer += '%s,%s ' % (x, y)
     buffer += '"/>\n'
     return buffer
 
@@ -431,12 +431,12 @@ def csvToPolyline(c, m):
     day = 0
     lastx = 0
     lasty = 0
-    buffer += '<polyline name="%s" class="G" style="fill:none;stroke:blue;stroke-width:1;opacity:0.8" points="' % (
-        c[0][0])
+    buffer += '<polyline name="%s" class="G" style="fill:none;stroke:blue;stroke-width:1;opacity:0.8" points="' \
+        % (c[0][0])
     for i in range(0, len(c)):
         x = getmin(c[i][4])
         y = getkm(c[i][1], m)
-        if x > -1 and i > 0:
+        if y > -1:
             if x < lastx:
                 day += 1
                 #1440, (lasty-y)*x/((1440+x-lastx))+y
@@ -445,7 +445,7 @@ def csvToPolyline(c, m):
                        0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
             lastx = x
             lasty = y
-        buffer += '%s,%s ' % (x, y)
+            buffer += '%s,%s ' % (x, y)
     buffer += '"/>\n'
     return buffer
 
@@ -606,3 +606,4 @@ with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     f.write(buffer)
 
 '''
+#s = processA(t['2018-09-30']['G'][1525], '2018-09-30', station)
