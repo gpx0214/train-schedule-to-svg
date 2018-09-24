@@ -450,7 +450,8 @@ def csvToPolyline(c, m):
     return buffer
 
 
-def csvToSvg(m, c):
+def csvToSvg(m, c, rule=''):
+    r = re.compile('^' + rule + '$', re.IGNORECASE|re.MULTILINE)
     maxlen = 70000
     arr = [[] for i in range(maxlen)]
 
@@ -487,7 +488,7 @@ def csvToSvg(m, c):
         if len(arr[i]) == 2:
             if arr[i][0][1] != arr[i][1][1]:
                 flag = 1
-        if flag:
+        if flag and len(r.findall(arr[i][0][0])) > 0:
             num += 1
             arr[i] = sorted(arr[i], cmpbyTrain0)
             buffer += csvToPolyline(arr[i], m)
@@ -597,9 +598,9 @@ station = getStation('station_name.js')
 #savecsv(t,station)
 m = openMilage('test/京广高速线里程.txt')
 c = readcsv('delay/sort2018-09-30.csv')
-buffer,_ = csvToSvg(m, c)
+buffer,_ = csvToSvg(m, c, "[GCD]\d+")
 
-fn = 'delay/0930京广.svg'
+fn = 'test/180930京广高速.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
