@@ -353,9 +353,12 @@ def openMilage(fn):
             f.seek(0, 0)
         data = f.read()
     m = data.split('\n')
+    ret = []
     for i in range(len(m)):
-        m[i] = m[i].split(' ')
-    return m
+        sp = m[i].split(' ')
+        if len(sp) > 2:
+            ret.append(sp)
+    return ret
 
 
 def getkm(s, m):
