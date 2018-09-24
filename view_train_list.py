@@ -356,7 +356,7 @@ def openMilage(fn):
     ret = []
     for i in range(len(m)):
         sp = m[i].split(' ')
-        if len(sp) > 2:
+        if len(sp) >= 2:
             ret.append(sp)
     return ret
 
