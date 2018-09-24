@@ -269,6 +269,8 @@ def schToCsv(s):
 
 def openMilage(fn):
     with open(fn, 'r') as f:  # py2
+        if f.read(3)!='\xef\xbb\xbf':
+            f.seek(0,0)
         data = f.read()
     m = data.split('\n')
     for i in range(len(m)):
