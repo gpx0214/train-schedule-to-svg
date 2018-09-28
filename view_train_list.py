@@ -278,7 +278,7 @@ def savecsv(t, station):
             stat[key] = len(ret[key])
             for row in ret[key]:
                 sort.append(row)
-        print(print_stat(stat))
+        #print(print_stat(stat))
 
         if len(sort):
             try:
@@ -588,12 +588,12 @@ if __name__ == '__main__':
         fn0 = sys.argv[1]
     except:
         fn0 = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), 'train_list.js')
+            os.path.abspath(__file__)), 'js/train_list.js')
     try:
         fn1 = sys.argv[2]
     except:
         fn1 = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), 'station_name.js')
+            os.path.abspath(__file__)), 'js/station_name.js')
     print('input train_list file:   ' + fn0)
     print('input station_name file: ' + fn1)
 
@@ -621,8 +621,8 @@ if __name__ == '__main__':
 '''
 from view_train_list import *
 
-t = openTrainList('train_list.js')
-station = getStation('station_name.js')
+t = openTrainList('js/train_list.js')
+station = getStation('js/station_name.js')
 #savecsv(t,station)
 m = openMilage('test/京沪高速线里程.txt')
 c = readcsv('delay/sort2018-09-30.csv')
