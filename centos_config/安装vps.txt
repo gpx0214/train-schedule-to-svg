@@ -2,7 +2,15 @@ wget -nH -m ftp://host/path
 wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js
 
 
-7za a -t7z -r delay.7z delay
+7za a -t7z -r js.7z js/
+7za a -t7z -r sch.7z sch/
+
+7za a -t7z -r script.7z *.py
+7za a -t7z -r script.7z *.sh
+7za a -t7z -r script.7z *.htm
+
+7za a -t7z -r delay.7z delay/
+
 
 https://blog.csdn.net/morose999/article/details/51363846?locationNum=15
 如何使GD支持webpq
