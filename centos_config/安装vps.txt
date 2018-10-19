@@ -584,3 +584,8 @@ chkconfig --add nginx
 
 /sbin/chkconfig --level 345 nginx on
 
+
+#vsftpd
+yum -y insyall vsftpd
+vim /etc/vsftpd/vsftpd.conf
+
