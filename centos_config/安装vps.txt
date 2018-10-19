@@ -2,7 +2,7 @@ wget -nH -m ftp://host/path
 wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js
 
 
-7za a -t7z -r js.7z js/
+7za a -t7z -r js.7z js/ -xr\!*.gz
 7za a -t7z -r sch.7z sch/
 
 7za a -t7z -r script.7z *.py
