@@ -11,8 +11,8 @@ import re
 import json
 import csv
 import time
-import math
-import random
+#import math
+#import random
 
 import requests
 
@@ -147,7 +147,7 @@ def telecode(str, station):
 def openTrainList(fn):
     # f = open(fn, 'r',encoding= 'utf8') #py3
     with open(fn, 'r') as f:  # py2
-        f.read(16)
+        _ = f.read(16)
         data = f.read()
     return json.loads(data)
 
