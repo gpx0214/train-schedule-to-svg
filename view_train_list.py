@@ -237,60 +237,62 @@ def getSch12306(t1, t2, train_no, date):
 def checkAllSch12306(t, station):
     for date in sorted(t.keys()):
         print(date)
-        for type in t[date]:
-            for i in range(0, len(t[date][type])):
-                processA(t[date][type][i], date, station)
+        checkDaySch12306(t[date], station, date)
+
+def checkDaySch12306(d, station, date):
+    for type in d:
+        for i in range(0, len(d[type])):
+            processA(d[type][i], date, station)
 
 
 def savecsv(t, station):
     for date in sorted(t.keys()):
         print(date)
-        #buffer = ''
-        #time_list = []
-        num = 0
-        stat = [0 for i in range(1440)]
-        ret = [[] for i in range(1440)]
-        for type in t[date]:
-            for i in range(0, len(t[date][type])):
-                a = t[date][type][i]
-                match = re.findall(r'(.*)\((.*)-(.*)\)',
-                                   a['station_train_code'], re.I | re.M)[0]
-                if (match[0] in a['train_no']) == False:
-                    # print(match[0] +' '+ a['train_no']); #切换上下行
-                    continue
-                schdata = processA(t[date][type][i], date, station)
-                s = schToCsv(schdata)
-                num += len(s)
-                for row in s:
-                    # time_list.append(row)
-                    if len(row) >= 6:
-                        minute = getmin(row[4])
-                        #stat[minute] += 1
-                        ret[minute].append(row)
-                    #tele = telecode(row[1]);
-                    # if True or tele and tele[2] == 'P':
-                    #num = num+1;
-                    #stat[minute] = stat[minute]+1;
-        print(num)
-        #sort = sorted(time_list, cmpbyTime)
-        sort = []
-        for key in range(len(ret)):
-            stat[key] = len(ret[key])
-            for row in ret[key]:
-                sort.append(row)
-        #print(print_stat(stat))
+        savedatecsv(t[date], station, date)
 
-        if len(sort):
-            try:
-                fn = os.path.join(os.path.dirname(
-                    os.path.abspath(__file__)), "delay/sort"+date+".csv")
-            except:
-                fn = "delay/sort"+date+".csv"
-            with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-                if f.tell() == 0:
-                    f.write('\xef\xbb\xbf')
-                writer = csv.writer(f)
-                writer.writerows(sort)
+def savedatecsv(d, station, date):
+    num = 0
+    stat = [0 for i in range(1440)]
+    ret = [[] for i in range(1440)]
+    for type in d:
+        for i in range(0, len(d[type])):
+            a = d[type][i]
+            match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'], re.I | re.M)[0]
+            if (match[0] in a['train_no']) == False:
+                    # print(match[0] +' '+ a['train_no']); #切换上下行
+                continue
+            schdata = processA(d[type][i], date, station)
+            s = schToCsv(schdata)
+            num += len(s)
+            for row in s:
+                if len(row) >= 6:
+                    minute = getmin(row[4])
+                    #stat[minute] += 1
+                    ret[minute].append(row)
+                #tele = telecode(row[1]);
+                # if True or tele and tele[2] == 'P':
+                #num = num+1;
+                #stat[minute] = stat[minute]+1;
+    print(num)
+    #sort = sorted(time_list, cmpbyTime)
+    sort = []
+    for key in range(len(ret)):
+        stat[key] = len(ret[key])
+        for row in ret[key]:
+            sort.append(row)
+    # print(print_stat(stat))
+    
+    if len(sort):
+        try:
+            fn = os.path.join(os.path.dirname(
+                os.path.abspath(__file__)), "delay/sort"+date+".csv")
+        except:
+            fn = "delay/sort"+date+".csv"
+        with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+            if f.tell() == 0:
+                f.write('\xef\xbb\xbf')
+            writer = csv.writer(f)
+            writer.writerows(sort)
 
 #savecsv(t, station)
 
@@ -313,8 +315,7 @@ def schToCsv(s):
             '''buffer += (s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8')
                        + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0'+'\n')'''
             ret.append([
-                s[0]['station_train_code'].encode(
-                    'utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'),
+                s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'),
                 str(day), s[i]['arrive_time'].encode('utf-8'), '0'
             ])
 
@@ -328,8 +329,7 @@ def schToCsv(s):
             '''buffer += (s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8')
                        + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1'+'\n')'''
             ret.append([
-                s[0]['station_train_code'].encode(
-                    'utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'),
+                s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'),
                 str(day), s[i]['start_time'].encode('utf-8'), '1'
             ])
     # return buffer
@@ -406,12 +406,13 @@ def schToPolyline(s, m):
                 #1440, (lasty-y)*x/((1440+x-lastx))+y
                 buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' \
                     % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
-                       s[0]['station_train_code'].encode('utf-8'), day, s[0]['station_train_code'].encode('utf-8')[:1],
+                       s[0]['station_train_code'].encode(
+                           'utf-8'), day, s[0]['station_train_code'].encode('utf-8')[:1],
                        0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
             lastx = x
             lasty = y
             buffer += '%s,%s ' % (x, y)
-        
+
         x = getmin(s[i]['start_time'].encode('utf-8'))
         y = getkm(s[i]['station_name'].encode('utf-8'), m)
         if y > -1 and i < len(s)-1:
@@ -419,7 +420,8 @@ def schToPolyline(s, m):
                 day += 1
                 buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' \
                     % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
-                       s[0]['station_train_code'].encode('utf-8'), day, s[0]['station_train_code'].encode('utf-8')[:1],
+                       s[0]['station_train_code'].encode(
+                           'utf-8'), day, s[0]['station_train_code'].encode('utf-8')[:1],
                        0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
             lastx = x
             lasty = y
@@ -439,7 +441,7 @@ def csvToPolyline(c, m):
     buffer += '<polyline name="%s" class="%s" points="' \
         % (c[0][0], c[0][0][:1])
     for i in range(0, len(c)):
-        x = getmin(c[i][4]) # + (2 if int(c[i][5])>0 else (-3)) #
+        x = getmin(c[i][4])  # + (2 if int(c[i][5])>0 else (-3)) #
         y = getkm(c[i][1], m)
         if y > -1:
             if x < lastx:
@@ -457,7 +459,7 @@ def csvToPolyline(c, m):
 
 
 def csvToSvg(m, c, rule=''):
-    r = re.compile('^' + rule + '$', re.IGNORECASE|re.MULTILINE)
+    r = re.compile('^' + rule + '$', re.IGNORECASE | re.MULTILINE)
     maxlen = 70000
     arr = [[] for i in range(maxlen)]
 
@@ -498,16 +500,17 @@ polyline {
 
 '''
     for i in range(24):
-        buffer += ('<line class="hour" x1="%d" y1="0" x2="%d" y2="3000" />\n' % (i*60, i*60))
+        buffer += ('<line class="hour" x1="%d" y1="0" x2="%d" y2="3000" />\n' %
+                   (i*60, i*60))
         buffer += ('<line class="halfhour" x1="%d" y1="0" x2="%d" y2="3000" />\n' %
                    (i*60+30, i*60+30))
-    
+
     for i in range(len(m)):
         buffer += ('<text x="0" y="%d">%s %s</text>\n' %
                    (int(m[i][1]) if int(m[i][1]) > 16 else (int(m[i][1]) + 16), m[i][0], m[i][1]))
         buffer += ('<line class="station" x1="0" y1="%s" x2="1440" y2="%s" />\n' %
                    (m[i][1], m[i][1]))
-    
+
     num = 0
     for i in range(maxlen):
         flag = 0
@@ -528,11 +531,16 @@ polyline {
 def train_list_type_str(t):
     s = ''
     for date in sorted(t.keys()):
-        s += (date.encode('utf-8'))
-        for type in t[date]:
-            s += ('\t' + type.encode('utf-8') + ' ' + str(len(t[date][type])))
-        s += '\n'
+        s += train_list_day_type_str(t[date],date)
     return s
+
+def train_list_day_type_str(d,date):
+    ss = ''
+    ss += (date.encode('utf-8'))
+    for type in t[date]:
+        ss += ('\t' + type.encode('utf-8') + ' ' + str(len(t[date][type])))
+    ss += '\n'
+    return ss
 
 
 def hash_no(s):
@@ -553,10 +561,8 @@ def train_list_train_no_array(t, maxlen):
             for i in range(0, len(t[date][type])):
                 # for i in range(0,1):
                 a = t[date][type][i]
-                match = re.findall(r'(.*)\((.*)-(.*)\)',
-                                   a['station_train_code'], re.I | re.M)[0]
-                arr[hash_no(match[0].encode('utf-8')) -
-                    1] = a['train_no'].encode('utf-8')
+                match = re.findall(r'(.*)\((.*)-(.*)\)',a['station_train_code'], re.I | re.M)[0]
+                arr[hash_no(match[0].encode('utf-8')) -1] = a['train_no'].encode('utf-8')
     return arr
 
 
