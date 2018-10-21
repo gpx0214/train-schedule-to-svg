@@ -597,3 +597,18 @@ chkconfig --add nginx
 yum -y insyall vsftpd
 vim /etc/vsftpd/vsftpd.conf
 
+local_root=/media/ftp/pub  
+chroot_local_user=YES  
+anon_root=/var/www/html/
+
+
+#ssh修改端口
+vi /etc/ssh/sshd_config
+vi /etc/ssh/ssh_config
+
+#Port 22
+Port 2222
+
+service sshd restart
+
+打开防火墙
