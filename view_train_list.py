@@ -213,7 +213,7 @@ def getSch12306(t1, t2, train_no, date):
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header, timeout=15, max_retries=3, dely_between_retries=3)
+        resp = requests.get(url, headers=header, timeout=15)
     except requests.exceptions.ConnectionError:
         print('ConnectionError ' + train_no)
         resp = requests.get(url, headers=header, timeout=15)
