@@ -213,10 +213,9 @@ def getSch12306(t1, t2, train_no, date):
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header)
-    except requests.exceptions.ConnectionError:
-        print('ConnectionError ' + train_no)
-        resp = requests.get(url, headers=header)
+        resp = requests.get(url, headers=header, timeout = 20)
+    except:
+        print('Error ' + train_no)
         return []
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     try:
@@ -242,7 +241,9 @@ def checkAllSch12306(t, station):
 def checkDateSch12306(d, station, date):
     for type in d:
         for i in range(0, len(d[type])):
-            processA(d[type][i], date, station)
+            sch = processA(d[type][i], date, station)
+            if len(sch) == 0:
+                processA(d[type][i], date, station)
 
 
 def savecsv(t, station):
