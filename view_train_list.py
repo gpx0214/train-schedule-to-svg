@@ -237,9 +237,9 @@ def getSch12306(t1, t2, train_no, date):
 def checkAllSch12306(t, station):
     for date in sorted(t.keys()):
         print(date)
-        checkDaySch12306(t[date], station, date)
+        checkDateSch12306(t[date], station, date)
 
-def checkDaySch12306(d, station, date):
+def checkDateSch12306(d, station, date):
     for type in d:
         for i in range(0, len(d[type])):
             processA(d[type][i], date, station)
@@ -602,8 +602,8 @@ if __name__ == '__main__':
             os.path.abspath(__file__)), 'js/station_name.js')
     print('input train_list file:   ' + fn0)
     print('input station_name file: ' + fn1)
-
-    try:
+    
+    '''try:
         # if True:
         t = openTrainList(fn0)
         arr = train_list_train_no_array(t, 70000)
@@ -621,8 +621,79 @@ if __name__ == '__main__':
     except Exception, e:
         print(str(Exception))
         if platform.system() == "Windows":
-            os.system('pause')
+            os.system('pause')'''
+    
+    station = getStation(fn1)
+    
+    with open(fn0, 'r') as f:
+        _ = f.read(16)
+        data = f.read()
+    
+    ret = []
+    layer=0
+    index=0
+    kv = 0
+    lastq = -1
+    lastcolon = -1
+    lastkey = ''
+    quot = 0
+    while index < len(data):
+        c = data[index]
+        if c == "{":
+            if layer == 1:
+                #print("%s %d"%(data[index],index))
+                kv = 0
+            layer+=1
+        elif c == "[":
+            layer+=1
+        elif c == "}":
+            if layer == 1:
+                #print("%s %d"%(data[index],index))
+                kv = 0
+                print("%s %d %d %s %s"%(lastkey,lastcolon+1,index,data[lastcolon+1],data[index-1]))
+                ret.append([lastkey,lastcolon+1,index])
+            layer-=1
+        elif c == "]":
+            layer-=1
+        elif c == ":":
+            if layer == 1:
+                #print("%s %d"%(data[index],index))
+                kv = 1
+                lastcolon = index
+        elif c == ",":
+            if layer == 1:
+                #print("%s %d"%(data[index],index))
+                kv = 0
+                print("%s %d %d %s %s"%(lastkey,lastcolon+1,index,data[lastcolon+1],data[index-1]))
+                ret.append([lastkey,lastcolon+1,index])
+        elif c == '"':
+            if layer == 1:
+                #print("%s %d %d"%(data[index],index,quot))
+                if quot == 0:
+                    lastq = index
+                    quot = 1
+                elif quot == 1:
+                    #print("%s"%(data[lastq+1:index]))
+                    lastkey = data[lastq+1:index]
+                    quot = 0
+        
+        index+=1
+    
+    ret = sorted(ret)
 
+    for i in range(len(ret)):
+        #print(i)
+        #start = ret[i][1]
+        #end = ret[i][2]
+        #print(start)
+        #print(end)
+        #d = json.loads(data[start:end])
+        d = json.loads(data[ret[i][1]:ret[i][2]])
+        date = ret[i][0]
+        print(date)
+        checkDateSch12306(d,station,date)
+        savedatecsv(d, station, date)
+        del d
 
 '''
 from view_train_list import *
