@@ -692,7 +692,7 @@ if __name__ == '__main__':
         d = json.loads(data[ret[i][1]:ret[i][2]])
         date = ret[i][0]
         print(date)
-        train_list_day_type_str(d, date)
+        print(train_list_day_type_str(d, date))
         checkDateSch12306(d, station, date)
         savedatecsv(d, station, date)
         del d
