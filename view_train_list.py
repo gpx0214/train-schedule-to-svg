@@ -538,8 +538,8 @@ def train_list_type_str(t):
 def train_list_day_type_str(d,date):
     ss = ''
     ss += (date.encode('utf-8'))
-    for type in t[date]:
-        ss += ('\t' + type.encode('utf-8') + ' ' + str(len(t[date][type])))
+    for type in d:
+        ss += ('\t' + type.encode('utf-8') + ' ' + str(len(d[type])))
     ss += '\n'
     return ss
 
@@ -692,7 +692,8 @@ if __name__ == '__main__':
         d = json.loads(data[ret[i][1]:ret[i][2]])
         date = ret[i][0]
         print(date)
-        checkDateSch12306(d,station,date)
+        train_list_day_type_str(d, date)
+        checkDateSch12306(d, station, date)
         savedatecsv(d, station, date)
         del d
 

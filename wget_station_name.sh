@@ -11,7 +11,8 @@ fi
 #echo ${t0}
 
 #download only new file
-/usr/bin/wget -N --no-check-certificate https://kyfw.12306.cn/otn/resources/js/framework/station_name.js -P ${path}js/
+#/usr/bin/wget -N --no-check-certificate https://kyfw.12306.cn/otn/resources/js/framework/station_name.js -P ${path}js/
+/usr/bin/wget -N --no-check-certificate https://www.12306.cn/index/script/core/common/station_name.js -P ${path}js/
 
 t1='0'
 if [ -f "${path}js/station_name.js" ];then
@@ -41,7 +42,8 @@ fi
 #echo ${t0}
 
 #download only new file
-/usr/bin/wget -N --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/qss.js -P ${path}js/
+#/usr/bin/wget -N --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/qss.js -P ${path}js/
+/usr/bin/wget -N --no-check-certificate https://www.12306.cn/index/script/core/common/qss.js -P ${path}js/
 
 t1='0'
 if [ -f "${path}js/qss.js" ];then
