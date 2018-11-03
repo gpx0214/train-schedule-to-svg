@@ -10,6 +10,36 @@ wget -P --no-check-certificate -O /var/ftp/station_name.js https://kyfw.12306.cn
 \cp -p 1.txt 2.txt
 vi ~/.bashrc
 
+https://www.12306.cn/index/script/core/common/station_name.js
+https://www.12306.cn/index/script/core/common/qss.js
+
+正晚点
+https://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/CCCX.jsp
+https://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%B3%A4%C9%B3&cc=Z35&cxlx=0&rq=2018-11-02&czEn=-E9-95-BF-E6-B2-99&tp=1541174877075
+https://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%B3%A4%C9%B3&cc=Z35&cxlx=1&rq=2018-11-03&czEn=-E9-95-BF-E6-B2-99&tp=1541174426436
+
+https://kyfw.12306.cn/otn/zwdch/query?cxlx=1&cz=%E9%95%BF%E6%B2%99&cc=C6971&czEn=-E9-95-BF-E6-B2-99&randCode=
+GET POST
+
+车站车次 无Cookie 
+https://kyfw.12306.cn/otn/czxx/query?train_start_date=2018-11-03&train_station_name=%E5%8C%97%E4%BA%AC&train_station_code=BJP&randCode=
+https://kyfw.12306.cn/otn/czxx/query?train_start_date=2018-03-06&train_station_code=VNP
+
+车次搜索
+https://search.12306.cn/search/v1/train/search?keyword=G&date=20181203
+https://search.12306.cn/search/v1/train/search?callback=a&keyword=G66&date=20181103&_=1541176682814
+车次车站
+https://www.12306.cn/index/otn/index12306/queryStopStations?train_no=6c00000G6605&depart_date=2018-11-03
+检票口
+https://www.12306.cn/index/otn/index12306/queryTicketCheck
+Cookie: BIGipServerotn=334496266.64545.0000;
+
+查询同城站起售时
+https://www.12306.cn/index/otn/index12306/queryScSname
+POST 
+Cookie: BIGipServerotn=334496266.64545.0000;
+station_telecode=BJP 放URL上也可以
+
 车站地址
 http://www.12306.cn/mormhweb/kyyyz/ky_heb/201001/t20100124_1161.html
 ...
