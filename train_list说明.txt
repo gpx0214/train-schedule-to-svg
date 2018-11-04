@@ -3,7 +3,7 @@ wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/framework/sta
 
 wget -P --no-check-certificate -O /var/ftp/station_name.js https://kyfw.12306.cn/otn/resources/js/framework/station_name.js
 
-7za a -t7z js.7z js/
+7za a -t7z js.7z js/ -xr\!*.gz
 7za a -t7z sch.7z sch/
 7za a -t7z delay.7z delay/
 
