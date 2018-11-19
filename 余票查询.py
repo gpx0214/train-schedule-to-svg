@@ -170,10 +170,16 @@ for date in ['2018-08-09','2018-08-10','2018-08-11','2018-08-12','2018-08-13','2
 getSch12306('BJP','TJP','280000260415','2018-08-08');
 getLeftTicket('YKP','TXP','2018-08-08');
 
-for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2018-11-25','2018-11-26','2018-11-27']:
+for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2018-11-25','2018-11-26','2018-11-27','2018-11-28','2018-11-29']:
   print(date);
+  getLeftTicket('HBB','SYT',date);
+  getLeftTicket('SYT','HBB',date);
+  getLeftTicket('DLT','SYT',date);
+  getLeftTicket('SYT','DLT',date);
   getLeftTicket('BJP','SYT',date);
   getLeftTicket('SYT','BJP',date);
+  getLeftTicket('TJP','SYT',date);
+  getLeftTicket('SYT','TJP',date);
 
 
 # https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=2018-08-11&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=TJP&purpose_codes=ADULT
