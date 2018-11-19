@@ -16,52 +16,6 @@ import requests
 
 # TODO
 
-def processA(a):
-    match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
-    t1 = telecode(match[1].encode('utf-8'));
-    t2 = telecode(match[2].encode('utf-8'));
-    if not t1:
-        #print(match[1].encode('utf-8') + " telecode not found!");
-        return '';
-    if not t2:
-        #print(match[2].encode('utf-8') + " telecode not found!");
-        return '';
-    url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no="+ a['train_no'] +"&from_station_telecode="+ t1 +"&to_station_telecode="+ t2 +"&depart_date=" + date;
-    #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
-    header = {"User-Agent":"Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"}
-    try:
-        resp = requests.get(url,headers=header);
-    except requests.exceptions.ConnectionError:
-        print('ConnectionError ' + match[0].encode('utf-8'));
-        return '';
-    body = resp.content.decode('utf-8');   #bytes -> str (ucs2)
-    try:
-        sch = json.loads(body);
-    except ValueError:
-        print('ValueError ' + match[0].encode('utf-8'));
-        return '';
-    if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']) :
-        with open('sch/'+a['train_no'].encode('utf-8')+'.json','wb') as f:
-            f.write(resp.content)
-        print(match[0].encode('utf-8') + ' ' + str(len(sch['data']['data'])));
-        return match[0].encode('utf-8');
-    else:
-        print ("data error " + match[0].encode('utf-8'));
-        return '';
-
-
-    match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'] , re.I|re.M)[0];
-    t1 = telecode(match[1].encode('utf-8'));
-    t2 = telecode(match[2].encode('utf-8'));
-    if not t1:
-        #print(match[1].encode('utf-8') + " telecode not found!");
-        return '';
-    if not t2:
-        #print(match[2].encode('utf-8') + " telecode not found!");
-        return '';
-    a['train_no'].encode('utf-8')
-
-
 def getmin(str):
     try:
         a,b=str.split(':')[0:2]
@@ -69,69 +23,106 @@ def getmin(str):
     except:
         return -1;
 
-def getSch(t1, t2, train_no, date):
-    url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no="+ train_no +"&from_station_telecode="+ t1 +"&to_station_telecode="+ t2 +"&depart_date=" + date;
+
+def getStation(fn):
+    # f = open(fn, 'r',encoding = 'utf8'); #py3
+    with open(fn, 'r') as f:  # py2
+        str = f.read()
+    a = re.findall(r'\'\@([^\']+)\'', str, re.I | re.M)[0]
+    s = a.split('@')
+    for i in range(len(s)):
+        s[i] = s[i].split('|')
+    s.append(["tsn", "唐山南", "TNP", "tangshannan", "tsn", "-1"])
+    s.append(["gye", "古冶", "GYP", "guye", "gy", "-1"])
+    s.append(["jlo", "九龙", "JQO", "jiulong", "jl", "-1"])
+    s.append(["xgl", "香港西九龙", "XJA", "hkwestkowloon", "xgxjl", "-1"])
+    s.append(['jsw', '金山卫', 'BGH', 'jinshanwei', 'jsw', '-1'])
+    s.append(['mji', '梅江', 'MKQ', 'meijiang', 'mj', '-1'])
+    s.append(['ylo', '元龙', 'YLY', 'yuanlong', 'yl', '-1'])
+    s.append(['bdl', '八达岭', 'ILP', 'badaling', 'bdl', '-1'])
+    s.append(['nsb', '南山北', 'NBQ', 'nanshanbei', 'nsb', '-1'])
+    s.append(['', '车墩', 'CDH', 'chedun', 'cd', '-1'])
+    s.append(['', '羊木', 'YMJ', 'yangmu', 'ym', '-1'])
+    return s
+
+def processA(a, date, station):
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(
+            __file__)), 'sch/' + a['train_no'].encode('utf-8')+'.json')
+    except:
+        fn = 'sch/' + a['train_no'].encode('utf-8')+'.json'
+    if os.path.exists(fn):
+        with open(fn, 'r') as f:
+            data = f.read()
+        try:
+            sch = json.loads(data)
+            if sch['status'] == True and sch['httpstatus'] == 200 \
+                    and len(sch['data']['data']):
+                return sch['data']['data']
+        except ValueError:
+            print('ValueError ' + a['train_no'])
+
+    match = re.findall(r'(.*)\((.*)-(.*)\)',a['station_train_code'], re.I | re.M)[0]
+    t1 = telecode(match[1].encode('utf-8'), station)
+    t2 = telecode(match[2].encode('utf-8'), station)
+    if not t1:
+        if platform.system() == "Windows":
+            print(match[1].encode('gbk') +
+                  " telecode not found! " + match[0].encode('gbk'))
+        else:
+            print(match[1].encode('utf-8') +
+                  " telecode not found! " + match[0].encode('utf-8'))
+        t1 = "AAA"
+        # return []
+    if not t2:
+        if platform.system() == "Windows":
+            print(match[2].encode('gbk') +
+                  " telecode not found! " + match[0].encode('gbk'))
+        else:
+            print(match[2].encode('utf-8') +
+                  " telecode not found! " + match[0].encode('utf-8'))
+        t2 = "AAA"
+        # return []
+    return getSch12306(t1, t2, a['train_no'], date)
+
+def getSch12306(t1, t2, train_no, date):
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          'sch/' + train_no + '.json')
+    except:
+        fn = 'sch/' + train_no + '.json'
+    if os.path.exists(fn):
+        with open(fn, 'r') as f:
+            data = f.read()
+        sch = json.loads(data)
+        if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
+            return sch['data']['data']
+
+    url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=" + train_no + \
+        "&from_station_telecode=" + t1 + \
+        "&to_station_telecode=" + t2 + "&depart_date=" + date
     #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
-    header = {"User-Agent":"Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"}
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     try:
-        resp = requests.get(url,headers=header);
-    except requests.exceptions.ConnectionError:
-        print('ConnectionError ' + train_no);
-        return '';
-    body = resp.content.decode('utf-8');   #bytes -> str (ucs2)
+        resp = requests.get(url, headers=header, timeout = 20)
+    except:
+        print('Error ' + train_no)
+        return []
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     try:
-        sch = json.loads(body);
+        sch = json.loads(body)
     except ValueError:
-        print('ValueError ' + train_no);
-        return '';
-    if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']) :
-        with open('sch/'+ train_no +'.json','wb') as f:
+        print('ValueError ' + train_no)
+        return []
+    if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
+        with open(fn, 'wb') as f:
             f.write(resp.content)
-        print(train_no + ' ' + str(len(sch['data']['data'])));
-        s = sch['data']['data'];
-        day = 0;
-        last = 0;
-        buffer= '';
-        time_list = [];
-        for i in range(0, len(s)):
-                #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8'));
-                if getmin(s[i]['arrive_time'].encode('utf-8')) > -1 and i > 0:
-                    min = getmin(s[i]['arrive_time'].encode('utf-8'));
-                    tele = telecode(s[i]['station_name'].encode('utf-8'));
-                    if min < last:
-                        day += 1;
-                    last = min;
-                    #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
-                    if True:
-                        #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
-                        buffer+= (s[0]['station_train_code'].encode('utf-8') + ',' \
-                        + s[i]['station_name'].encode('utf-8') + ',' \
-                        + s[i]['station_no'].encode('utf-8') + ',' \
-                        + str(day) + ',' \
-                        + s[i]['arrive_time'].encode('utf-8') + ',' \
-                        + '0'+'\n');
-                        time_list.append([\
-                        s[0]['station_train_code'].encode('utf-8'), \
-                        s[i]['station_name'].encode('utf-8'), \
-                        s[i]['station_no'].encode('utf-8'), \
-                        str(day), \
-                        s[i]['arrive_time'].encode('utf-8'), \
-                        '0']);
-                if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
-                    min = getmin(s[i]['start_time'].encode('utf-8'));
-                    tele = telecode(s[i]['station_name'].encode('utf-8'));
-                    if min < last:
-                        day += 1;
-                    last = min;
-                    #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
-                    if True:
-                        #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
-                        buffer+= (s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1'+'\n');
-                        time_list.append([s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'), str(day), s[i]['start_time'].encode('utf-8'), '1']);
-        return buffer;
+        print(train_no + ' ' + str(len(sch['data']['data'])))
+        return sch['data']['data']
     else:
-        print ("data error " + train_no);
-        return '';
+        print ("data error " + train_no)
+        return []
 
 
 
@@ -158,12 +149,12 @@ def getLeftTicket(t1,t2,date):
         print(t1 + ' ' + t2  +' '+ str(len(ticket['data']['result'])));
         for i in ticket['data']['result']:
             sp = i.split('|');
-            if len(sp)>36 and sp[3][0] == 'C':
+            if len(sp)>36:
                 print(sp[3] +' '+ sp[2]+' '+ sp[4]+' '+ sp[5]);
                 if not os.path.exists('sch/'+sp[2].encode('utf-8')+'.json'):
-                    b = getSch(sp[4], sp[5], sp[2], date);
-                    with open("20180808.csv","a") as f:
-                        f.write(b);
+                    s = getSch12306(sp[4], sp[5], sp[2], date);
+                    #with open("20180808.csv","a") as f:
+                        #f.write(b);
         return t1 +' '+ t2;
     else:
         print ("data error " + t1 +' '+ t2);
@@ -176,8 +167,13 @@ for date in ['2018-08-09','2018-08-10','2018-08-11','2018-08-12','2018-08-13','2
   getLeftTicket('TJP','YKP',date);
   getLeftTicket('YKP','TJP',date);
 
-getSch('BJP','TJP','280000260415','2018-08-08');
+getSch12306('BJP','TJP','280000260415','2018-08-08');
 getLeftTicket('YKP','TXP','2018-08-08');
+
+for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2018-11-25','2018-11-26','2018-11-27']:
+  print(date);
+  getLeftTicket('BJP','SYT',date);
+  getLeftTicket('SYT','BJP',date);
 
 
 # https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=2018-08-11&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=TJP&purpose_codes=ADULT
@@ -206,7 +202,7 @@ for obj in j:
     #obj['TRNO'].encode('utf-8')
     #obj['FST'].encode('utf-8')
     #obj['EST'].encode('utf-8')
-    #getSch(obj['FST'].encode('utf-8'), obj['EST'].encode('utf-8'), obj['TRNO'].encode('utf-8'), date)
+    #getSch12306(obj['FST'].encode('utf-8'), obj['EST'].encode('utf-8'), obj['TRNO'].encode('utf-8'), date)
     train_code = obj['STCODE'].encode('utf-8')
     #getSchT(obj['STCODE'].encode('utf-8'), date)
     with open('sch/'+ train_code +'_T.json','r') as f:
