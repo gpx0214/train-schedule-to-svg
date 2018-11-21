@@ -74,6 +74,7 @@ function hash(str) {
   return (offset[c] || 0) + num -1;
 }
 
+var d = {}
 var m = new Set();
 var arr = new Array(200000);
 var stat = new Array(2000);
@@ -83,6 +84,7 @@ for(date in train_list) {
       t = train_list[date][type][i];
       match = t.station_train_code.match(/(.*)\((.*)-(.*)\)/)
       m.add(match[2]+'-'+match[3])
+      d[match[2]+'-'+match[3]] = (d[match[2]+'-'+match[3]] || 0) + 1;
       arr[hash(match[1])] = t.train_no;
       stat[Math.floor(hash(match[1])/100)] = (stat[hash(match[1])/100] || 0) + 1;
     }
@@ -91,6 +93,22 @@ for(date in train_list) {
 
 //m.size 3651
 //arr
+
+var line_num = [];
+for (i in d) {
+  line_num.push({
+    fromto:i,
+    num: d[i]
+  })
+}
+
+line_num.sort(function(a,b){return b.num - a.num})
+
+str = ""
+for (i in line_num) {
+  str+=(("    " + Math.ceil(line_num[i].num / 30)).slice(-4) + " " + line_num[i].fromto + "\n")
+}
+console.log(str)
 
 var cnt = 0;
 var step = 100;
