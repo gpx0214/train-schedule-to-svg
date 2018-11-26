@@ -56,7 +56,7 @@ http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/cczd.js
 
 http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/lc_select.js
 
-//统计不重复的始发-终到
+
 function hash(str) {
   var c = str.charAt(0);
   var offset={
@@ -75,6 +75,7 @@ function hash(str) {
 }
 
 var d = {}
+var st = {}
 var m = new Set();
 var arr = new Array(200000);
 var stat = new Array(2000);
@@ -85,6 +86,8 @@ for(date in train_list) {
       match = t.station_train_code.match(/(.*)\((.*)-(.*)\)/)
       m.add(match[2]+'-'+match[3])
       d[match[2]+'-'+match[3]] = (d[match[2]+'-'+match[3]] || 0) + 1;
+      st[match[2]] = (st[match[2]] || 0) + 1;
+      st[match[3]] = (st[match[3]] || 0) + 1;
       arr[hash(match[1])] = t.train_no;
       stat[Math.floor(hash(match[1])/100)] = (stat[hash(match[1])/100] || 0) + 1;
     }
@@ -94,6 +97,7 @@ for(date in train_list) {
 //m.size 3651
 //arr
 
+//统计不重复的始发-终到
 var line_num = [];
 for (i in d) {
   line_num.push({
@@ -110,6 +114,24 @@ for (i in line_num) {
 }
 console.log(str)
 
+//统计不重复的始发站
+var st_num = [];
+for (i in st) {
+  st_num.push({
+    station:i,
+    num: st[i]
+  })
+}
+
+st_num.sort(function(a,b){return b.num - a.num})
+
+str = ""
+for (i in st_num) {
+  str+=(("    " + Math.ceil(st_num[i].num / 30)).slice(-4) + " " + st_num[i].station + "\n")
+}
+console.log(str)
+
+//统计车次分布
 var cnt = 0;
 var step = 100;
 var stat = new Array(Math.ceil(70000/step));
