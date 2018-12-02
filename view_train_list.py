@@ -442,7 +442,7 @@ def csvToPolyline(c, m):
     buffer += '<polyline name="%s" class="%s" points="' \
         % (c[0][0], c[0][0][:1])
     for i in range(0, len(c)):
-        x = getmin(c[i][4])  # + (2 if int(c[i][5])>0 else (-3)) #
+        x = getmin(c[i][4])  # + (3 if int(c[i][5])>0 else (-2)) #
         y = getkm(c[i][1], m)
         if y > -1:
             if x < lastx:
