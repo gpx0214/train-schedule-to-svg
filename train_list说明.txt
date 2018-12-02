@@ -15,11 +15,14 @@ https://www.12306.cn/index/script/core/common/qss.js
 
 正晚点
 https://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/CCCX.jsp
+https://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/CCCX.jsp
 https://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%B3%A4%C9%B3&cc=Z35&cxlx=0&rq=2018-11-02&czEn=-E9-95-BF-E6-B2-99&tp=1541174877075
 https://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%B3%A4%C9%B3&cc=Z35&cxlx=1&rq=2018-11-03&czEn=-E9-95-BF-E6-B2-99&tp=1541174426436
 
 https://kyfw.12306.cn/otn/zwdch/query?cxlx=1&cz=%E9%95%BF%E6%B2%99&cc=C6971&czEn=-E9-95-BF-E6-B2-99&randCode=
 GET POST
+{"validateMessagesShowId":"_validatorMessage","status":true,"httpstatus":200,"data":{"message":"G5次列车，到达上海站的时间为11:38","flag":false},"messages":[],"validateMessages":{}}
+{"validateMessagesShowId":"_validatorMessage","status":true,"httpstatus":200,"data":{"message":"查询失败！","flag":false},"messages":[],"validateMessages":{}}
 
 车站车次 无Cookie 
 https://kyfw.12306.cn/otn/czxx/query?train_start_date=2018-11-03&train_station_name=%E5%8C%97%E4%BA%AC&train_station_code=BJP&randCode=
