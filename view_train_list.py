@@ -246,6 +246,20 @@ def checkDateSch12306(d, station, date):
                 processA(d[type][i], date, station)
 
 #181103 new 12306 web
+def searchAllTrain_no(date):
+    dfs12306("K",date)
+    dfs12306("D",date)
+    dfs12306("G",date)
+    dfs12306("C",date)
+    dfs12306("Z",date)
+    dfs12306("T",date)
+    dfs12306("P",date)
+    dfs12306("Y",date)
+    dfs12306("",date)
+    dfs12306("10",date)
+    dfs12306("50",date)
+    dfs12306("90",date)
+
 def dfs12306(kw, date):
     jump = 0
     if kw == "Y" or kw == "":
@@ -258,7 +272,6 @@ def dfs12306(kw, date):
     for i in range(len(res)):
         if res[i]['station_train_code'].startswith(kw):
             max_index = i
-        getSch12306(res[i]['from_station'], res[i]['to_station'], res[i]['train_no'], date)
     max_str = ""
     if not jump:
         if max_index + 1 < 200 and not jump:
