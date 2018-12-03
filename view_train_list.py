@@ -153,11 +153,11 @@ def openTrainList(fn):
 
 
 def processA(a, date, station):
+    name = 'sch/' + a['train_no'].encode('utf-8')+'.json'
     try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(
-            __file__)), 'sch/' + a['train_no'].encode('utf-8')+'.json')
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
-        fn = 'sch/' + a['train_no'].encode('utf-8')+'.json'
+        fn = name
     if os.path.exists(fn):
         with open(fn, 'r') as f:
             data = f.read()
@@ -194,11 +194,11 @@ def processA(a, date, station):
 
 
 def getSch12306(t1, t2, train_no, date):
+    name = 'sch/' + train_no + '.json'
     try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                          'sch/' + train_no + '.json')
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
-        fn = 'sch/' + train_no + '.json'
+        fn = name
     if os.path.exists(fn):
         with open(fn, 'r') as f:
             data = f.read()
@@ -245,6 +245,45 @@ def checkDateSch12306(d, station, date):
             if len(sch) == 0:
                 processA(d[type][i], date, station)
 
+#181103 new 12306 web
+def getsearch(kw, date):
+    yyyymmdd = date.replace("-", "")
+    name = 'search/' + yyyymmdd + '_' + kw + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if os.path.exists(fn):
+        with open(fn, 'r') as f:
+            data = f.read()
+        search = json.loads(data)
+        if search['status'] == True and len(search['data']):
+            print('read %3s %3d %5s-%5s'%(kw, len(search['data']), search['data'][0]['station_train_code'], search['data'][-1]['station_train_code']) )
+            return search['data']
+    
+    url = "https://search.12306.cn/search/v1/train/search?keyword=" + kw + "&date=" + yyyymmdd
+    #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
+    try:
+        resp = requests.get(url, headers=header, timeout = 20)
+    except:
+        print('Error ' + kw)
+        return []
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    try:
+        search = json.loads(body)
+    except ValueError:
+        print('ValueError ' + kw)
+        return []
+    if search['status'] == True and len(search['data']):
+        with open(fn, 'wb') as f:
+            f.write(resp.content)
+        print('save %3s %3d %5s-%5s'%(kw, len(search['data']), search['data'][0]['station_train_code'], search['data'][-1]['station_train_code']) )
+        return search['data']
+    else:
+        print ("empty " + kw)
+        return []
 
 def savecsv(t, station):
     for date in sorted(t.keys()):
@@ -540,7 +579,7 @@ def train_list_day_type_str(d,date):
     ss += (date.encode('utf-8'))
     for type in d:
         ss += ('\t' + type.encode('utf-8') + ' ' + str(len(d[type])))
-    ss += '\n'
+    #ss += '\n'
     return ss
 
 
@@ -709,7 +748,6 @@ if __name__ == '__main__':
         #d = json.loads(data[start:end])
         d = json.loads(data[ret[i][1]:ret[i][2]])
         date = ret[i][0]
-        print(date)
         print(train_list_day_type_str(d, date))
         checkDateSch12306(d, station, date)
         savedatecsv(d, station, date)
