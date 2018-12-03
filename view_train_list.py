@@ -553,6 +553,24 @@ def hash_no(s):
     n = int(re.sub(r'\D+', '', s))
     return type + n
 
+def unhash_no(n):
+    items = [('Z', 10000), ('T', 20000), ('K', 30000),
+             ('G', 40000), ('D', 50000), ('C', 60000),
+             ('Y', 00000), ('S', 60000), ('P', 00000)]  # ('Y',70000),('S',71000),('P',80000)
+    head = ["","Z","T","K","G","D","C"]
+    if n > 70000:
+        return ""
+    type = head[(n-1) // 10000]
+    if n <= 1000:
+        type = "Y"
+    if n <= 100:
+        type = "P"
+    if n > 60000 and n <= 61000:
+        type = "C"
+    for i in range(len(items)):
+        if type == items[i][0]:
+            return type + str(n-items[i][1])
+    return str(n)
 
 def train_list_train_no_array(t, maxlen):
     arr = ['' for i in range(maxlen)]
