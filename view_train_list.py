@@ -246,7 +246,35 @@ def checkDateSch12306(d, station, date):
                 processA(d[type][i], date, station)
 
 #181103 new 12306 web
-def getsearch(kw, date):
+def dfs12306(kw, date):
+    jump = 0
+    if kw == "Y" or kw == "":
+        jump = 1
+    max_depth = 3
+    res = []
+    if not jump:
+        res = getsearch12306(kw, date)
+    max_index = -1
+    for i in range(len(res)):
+        if res[i]['station_train_code'].startswith(kw):
+            max_index = i
+        getSch12306(res[i]['from_station'], res[i]['to_station'], res[i]['train_no'], date)
+    max_str = ""
+    if not jump:
+        if max_index + 1 < 200 and not jump:
+            return
+        max_str = res[max_index]['station_train_code']
+    if len(kw) >= max_depth:
+        print("max_depth")
+        return
+    for i in range(10):
+        k = kw + str(i)
+        if re.sub(r'\D+', '', k).startswith('0'):
+            continue
+        if k in max_str or k > max_str or len(re.sub(r'\D+', '', max_str)) < 4:
+            dfs12306(k, date)
+
+def getsearch12306(kw, date):
     yyyymmdd = date.replace("-", "")
     name = 'search/' + yyyymmdd + '_' + kw + '.json'
     try:
