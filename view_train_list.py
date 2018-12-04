@@ -246,7 +246,43 @@ def checkDateSch12306(d, station, date):
                 processA(d[type][i], date, station)
 
 #181103 new 12306 web
-def searchAllTrain_no(date):
+def searchAll(date):
+  st = ["90","50","10","C","D","G","","K","Y","P","T","Z"]
+  maxlen = 70000
+  arr = [None for x in range(maxlen)]
+  while(len(st)):
+    kw = st.pop()
+    jump = 0
+    if kw == "Y" or kw == "":
+        jump = 1
+    max_depth = 3
+    res = []
+    if not jump:
+        res = getsearch12306(kw, date)
+    max_index = -1
+    for i in range(len(res)):
+        arr[hash_no(res[i]['station_train_code'].encode('utf-8')) -1] = res[i]
+        if res[i]['station_train_code'].startswith(kw):
+            max_index = i
+    max_str = ""
+    if not jump:
+        if max_index + 1 < 200:
+            continue
+        max_str = res[max_index]['station_train_code']
+    if len(kw) >= max_depth:
+        print("max_depth")
+        continue
+    for i in range(9,-1,-1):
+        k = kw + str(i)
+        if re.sub(r'\D+', '', k).startswith('0'):
+            continue
+        if k in max_str or k > max_str or len(re.sub(r'\D+', '', max_str)) < 4:
+            st.append(k)
+  return arr
+
+'''
+#recursive
+def searchAll(date):
     dfs12306("G",date)
     dfs12306("D",date)
     dfs12306("C",date)
@@ -286,6 +322,7 @@ def dfs12306(kw, date):
             continue
         if k in max_str or k > max_str or len(re.sub(r'\D+', '', max_str)) < 4:
             dfs12306(k, date)
+'''
 
 def getsearch12306(kw, date):
     yyyymmdd = date.replace("-", "")
