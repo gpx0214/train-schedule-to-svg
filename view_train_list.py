@@ -113,7 +113,8 @@ def getmin(str):
     except:
         return -1
 
-#station_name.js
+
+# station_name.js
 def getStation(fn):
     # f = open(fn, 'r',encoding = 'utf8'); #py3
     with open(fn, 'r') as f:  # py2
@@ -143,7 +144,8 @@ def telecode(str, station):
     # print(str)
     return ''
 
-#train_list.js
+
+# train_list.js
 def openTrainList(fn):
     # f = open(fn, 'r',encoding= 'utf8') #py3
     with open(fn, 'r') as f:  # py2
@@ -151,7 +153,47 @@ def openTrainList(fn):
         data = f.read()
     return json.loads(data)
 
-#timetable train_list.js
+
+# timetable train_list.js
+def processS(a, date, station):
+    name = 'sch/' + a['train_no'].encode('utf-8')+'.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if os.path.exists(fn):
+        with open(fn, 'r') as f:
+            data = f.read()
+        try:
+            sch = json.loads(data)
+            if sch['status'] == True and sch['httpstatus'] == 200 \
+                    and len(sch['data']['data']):
+                return sch['data']['data']
+        except ValueError:
+            print('ValueError ' + a['train_no'])
+    #
+    t1 = telecode(a['from_station'].encode('utf-8'), station)
+    t2 = telecode(a['to_station'].encode('utf-8'), station)
+    if not t1:
+        if platform.system() == "Windows":
+            print(a['from_station'].encode('gbk') +
+                  " telecode not found! " + a['station_train_code'].encode('gbk'))
+        else:
+            print(a['from_station'].encode('utf-8') +
+                  " telecode not found! " + a['station_train_code'].encode('utf-8'))
+        t1 = "AAA"
+    if not t2:
+        if platform.system() == "Windows":
+            print(a['to_station'].encode('gbk') +
+                  " telecode not found! " + a['station_train_code'].encode('gbk'))
+        else:
+            print(a['to_station'].encode('utf-8') +
+                  " telecode not found! " + a['station_train_code'].encode('utf-8'))
+        t2 = "AAA"
+    return getSch12306(t1, t2, a['train_no'], date)
+
+
+# timetable train_list.js
 def processA(a, date, station):
     name = 'sch/' + a['train_no'].encode('utf-8')+'.json'
     try:
@@ -168,8 +210,9 @@ def processA(a, date, station):
                 return sch['data']['data']
         except ValueError:
             print('ValueError ' + a['train_no'])
-
-    match = re.findall(r'(.*)\((.*)-(.*)\)',a['station_train_code'], re.I | re.M)[0]
+    #
+    match = re.findall(r'(.*)\((.*)-(.*)\)',
+                       a['station_train_code'], re.I | re.M)[0]
     t1 = telecode(match[1].encode('utf-8'), station)
     t2 = telecode(match[2].encode('utf-8'), station)
     if not t1:
@@ -192,7 +235,8 @@ def processA(a, date, station):
         # return []
     return getSch12306(t1, t2, a['train_no'], date)
 
-#timetable
+
+# timetable
 def getSch12306(t1, t2, train_no, date):
     name = 'sch/' + train_no + '.json'
     try:
@@ -205,7 +249,7 @@ def getSch12306(t1, t2, train_no, date):
         sch = json.loads(data)
         if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
             return sch['data']['data']
-
+    #
     url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=" + train_no + \
         "&from_station_telecode=" + t1 + \
         "&to_station_telecode=" + t2 + "&depart_date=" + date
@@ -213,9 +257,9 @@ def getSch12306(t1, t2, train_no, date):
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header, timeout = 20)
+        resp = requests.get(url, headers=header, timeout=20)
     except:
-        print('Error ' + train_no)
+        print('Net Error ' + train_no)
         return []
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     try:
@@ -229,111 +273,37 @@ def getSch12306(t1, t2, train_no, date):
         print(train_no + ' ' + str(len(sch['data']['data'])))
         return sch['data']['data']
     else:
-        print ("data error " + train_no)
+        print ('data error %s %s %s %s' % (train_no, t1, t2, date))
         return []
 
-#181103 new 12306 search/v1
-def searchAll(date):
-  st = ["90","50","10","C","D","G","","K","Y","P","T","Z"]
-  maxlen = 70000
-  arr = [None for x in range(maxlen)]
-  while(len(st)):
-    kw = st.pop()
-    jump = 0
-    if kw == "Y" or kw == "":
-        jump = 1
-    max_depth = 3
-    res = []
-    if not jump:
-        res = getsearch12306(kw, date)
-    max_index = -1
-    for i in range(len(res)):
-        arr[hash_no(res[i]['station_train_code'].encode('utf-8')) -1] = res[i]
-        if res[i]['station_train_code'].startswith(kw):
-            max_index = i
-    max_str = ""
-    if not jump:
-        if max_index + 1 < 200:
-            continue
-        max_str = res[max_index]['station_train_code']
-    if len(kw) >= max_depth:
-        print("max_depth")
-        continue
-    for i in range(9,-1,-1):
-        k = kw + str(i)
-        if re.sub(r'\D+', '', k).startswith('0'):
-            continue
-        if k in max_str or k > max_str or len(re.sub(r'\D+', '', max_str)) < 4:
-            st.append(k)
-  return arr
 
-'''
-#recursive
-def searchAll(date):
-    dfs12306("G",date)
-    dfs12306("D",date)
-    dfs12306("C",date)
-    dfs12306("Z",date)
-    dfs12306("T",date)
-    dfs12306("K",date)
-    dfs12306("",date)
-    dfs12306("P",date)
-    dfs12306("Y",date)
-    dfs12306("10",date)
-    dfs12306("50",date)
-    dfs12306("90",date)
-
-def dfs12306(kw, date):
-    jump = 0
-    if kw == "Y" or kw == "":
-        jump = 1
-    max_depth = 3
-    res = []
-    if not jump:
-        res = getsearch12306(kw, date)
-    max_index = -1
-    for i in range(len(res)):
-        if res[i]['station_train_code'].startswith(kw):
-            max_index = i
-    max_str = ""
-    if not jump:
-        if max_index + 1 < 200:
-            return
-        max_str = res[max_index]['station_train_code']
-    if len(kw) >= max_depth:
-        print("max_depth")
-        return
-    for i in range(10):
-        k = kw + str(i)
-        if re.sub(r'\D+', '', k).startswith('0'):
-            continue
-        if k in max_str or k > max_str or len(re.sub(r'\D+', '', max_str)) < 4:
-            dfs12306(k, date)
-'''
-
-def getsearch12306(kw, date):
+# 181103 new 12306 search/v1
+def getsearch12306(kw, date, cache=0):
     yyyymmdd = date.replace("-", "")
     name = 'search/' + yyyymmdd + '_' + kw + '.json'
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    if os.path.exists(fn):
+    if cache and os.path.exists(fn):
         with open(fn, 'r') as f:
             data = f.read()
         search = json.loads(data)
         if search['status'] == True and len(search['data']):
-            print('read %3s %3d %5s-%5s'%(kw, len(search['data']), search['data'][0]['station_train_code'], search['data'][-1]['station_train_code']) )
+            print('read  %-3s %3d %5s-%5s' % (kw, len(search['data']),
+                                              search['data'][0]['station_train_code'],
+                                              search['data'][-1]['station_train_code']))
             return search['data']
-    
-    url = "https://search.12306.cn/search/v1/train/search?keyword=" + kw + "&date=" + yyyymmdd
+
+    url = "https://search.12306.cn/search/v1/train/search?keyword=" + \
+        kw + "&date=" + yyyymmdd
     #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header, timeout = 20)
+        resp = requests.get(url, headers=header, timeout=20)
     except:
-        print('Error ' + kw)
+        print('Net Error ' + kw)
         return []
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     try:
@@ -344,17 +314,110 @@ def getsearch12306(kw, date):
     if search['status'] == True and len(search['data']):
         with open(fn, 'wb') as f:
             f.write(resp.content)
-        print('save %3s %3d %5s-%5s'%(kw, len(search['data']), search['data'][0]['station_train_code'], search['data'][-1]['station_train_code']) )
+        print('save  %-3s %3d %5s-%5s' % (kw, len(search['data']),
+                                          search['data'][0]['station_train_code'],
+                                          search['data'][-1]['station_train_code']))
         return search['data']
     else:
-        print ("empty " + kw)
+        print ('empty %-3s' % (kw))
         return []
 
-#train_list.js
+
+def searchAll12306(date, cache=0):
+    st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+    maxlen = 70000
+    arr = [None for i in range(maxlen)]
+    while(len(st)):
+        kw = st.pop()
+        jump = 0
+        if kw == "Y" or kw == "":
+            jump = 1
+        max_depth = 3
+        res = []
+        if not jump:
+            res = getsearch12306(kw, date, cache)
+        max_index = -1
+        for i in range(len(res)):
+            arr[hash_no(res[i]['station_train_code'].encode(
+                'utf-8')) - 1] = res[i]
+            if res[i]['station_train_code'].startswith(kw):
+                max_index = i
+        max_str = ""
+        if not jump:
+            if max_index + 1 < 200:
+                continue
+            max_str = res[max_index]['station_train_code']
+        if len(kw) >= max_depth:
+            print("max_depth")
+            continue
+        for i in range(9, -1, -1):
+            k = kw + str(i)
+            if re.sub(r'\D+', '', k).startswith('0'):
+                continue
+            if k in max_str or k > max_str or len(re.sub(r'\D+', '', max_str)) < 4:
+                st.append(k)
+    return arr
+
+
+def checkSearch12306(arr, station, date):
+    for i in range(0, len(arr)):
+        if arr[i] == None:
+            continue
+        sch = processS(arr[i], date, station)
+        if len(sch) == 0:
+            processS(arr[i], date, station)
+
+
+def savesearchcsv(arr, station, date):
+    num = 0
+    stat = [0 for i in range(1440)]
+    ret = [[] for i in range(1440)]
+    for i in range(0, len(arr)):
+        if arr[i] == None:
+            continue
+        a = arr[i]
+        if (a['station_train_code'] in a['train_no']) == False:
+            # print(a['station_train_code'] +' '+ a['train_no']); #切换上下行
+            continue
+        schdata = processS(a, date, station)
+        s = schToCsv(schdata)
+        num += len(s)
+        for row in s:
+            if len(row) >= 6:
+                minute = getmin(row[4])
+                #stat[minute] += 1
+                ret[minute].append(row)
+            #tele = telecode(row[1]);
+            # if True or tele and tele[2] == 'P':
+            #num = num+1;
+            #stat[minute] = stat[minute]+1;
+    print(num)
+    #sort = sorted(time_list, cmpbyTime)
+    sort = []
+    for key in range(len(ret)):
+        stat[key] = len(ret[key])
+        for row in ret[key]:
+            sort.append(row)
+    # print(print_stat(stat))
+    if len(sort):
+        try:
+            fn = os.path.join(os.path.dirname(
+                os.path.abspath(__file__)), "delay/sort"+date+".csv")
+        except:
+            fn = "delay/sort"+date+".csv"
+        with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+            if f.tell() == 0:
+                f.write('\xef\xbb\xbf')
+            writer = csv.writer(f)
+            writer.writerows(sort)
+
+
+# train_list.js
 def checkAllSch12306(t, station):
     for date in sorted(t.keys()):
         print(date)
         checkDateSch12306(t[date], station, date)
+
 
 def checkDateSch12306(d, station, date):
     for type in d:
@@ -363,10 +426,12 @@ def checkDateSch12306(d, station, date):
             if len(sch) == 0:
                 processA(d[type][i], date, station)
 
+
 def savecsv(t, station):
     for date in sorted(t.keys()):
         print(date)
         savedatecsv(t[date], station, date)
+
 
 def savedatecsv(d, station, date):
     num = 0
@@ -375,9 +440,10 @@ def savedatecsv(d, station, date):
     for type in d:
         for i in range(0, len(d[type])):
             a = d[type][i]
-            match = re.findall(r'(.*)\((.*)-(.*)\)', a['station_train_code'], re.I | re.M)[0]
+            match = re.findall(r'(.*)\((.*)-(.*)\)',
+                               a['station_train_code'], re.I | re.M)[0]
             if (match[0] in a['train_no']) == False:
-                    # print(match[0] +' '+ a['train_no']); #切换上下行
+                # print(match[0] +' '+ a['train_no']); #切换上下行
                 continue
             schdata = processA(d[type][i], date, station)
             s = schToCsv(schdata)
@@ -399,7 +465,7 @@ def savedatecsv(d, station, date):
         for row in ret[key]:
             sort.append(row)
     # print(print_stat(stat))
-    
+    #
     if len(sort):
         try:
             fn = os.path.join(os.path.dirname(
@@ -430,11 +496,21 @@ def schToCsv(s):
             # TODO
             #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
             #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
-            '''buffer += (s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8')
-                       + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0'+'\n')'''
+            '''buffer += (
+                s[0]['station_train_code'].encode('utf-8')
+                + ',' + s[i]['station_name'].encode('utf-8')
+                + ',' + s[i]['station_no'].encode('utf-8')
+                + ',' + str(day)
+                + ',' + s[i]['arrive_time'].encode('utf-8')
+                + ',' + '1'+'\n'
+            )'''
             ret.append([
-                s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'),
-                str(day), s[i]['arrive_time'].encode('utf-8'), '0'
+                s[0]['station_train_code'].encode('utf-8'),
+                s[i]['station_name'].encode('utf-8'),
+                s[i]['station_no'].encode('utf-8'),
+                str(day),
+                s[i]['arrive_time'].encode('utf-8'),
+                '0'
             ])
 
         if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
@@ -444,11 +520,21 @@ def schToCsv(s):
             last = minute
             #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
             #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
-            '''buffer += (s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8')
-                       + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1'+'\n')'''
+            '''buffer += (
+                s[0]['station_train_code'].encode('utf-8')
+                + ',' + s[i]['station_name'].encode('utf-8')
+                + ',' + s[i]['station_no'].encode('utf-8')
+                + ',' + str(day)
+                + ',' + s[i]['start_time'].encode('utf-8')
+                + ',' + '1'+'\n'
+            )'''
             ret.append([
-                s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'),
-                str(day), s[i]['start_time'].encode('utf-8'), '1'
+                s[0]['station_train_code'].encode('utf-8'),
+                s[i]['station_name'].encode('utf-8'),
+                s[i]['station_no'].encode('utf-8'),
+                str(day),
+                s[i]['start_time'].encode('utf-8'),
+                '1'
             ])
     # return buffer
     return ret
@@ -465,6 +551,7 @@ def readcsv(fn):
     return c
 
 
+# line
 def openMilage(fn):
     with open(fn, 'r') as f:  # py2
         if f.read(3) != '\xef\xbb\xbf':
@@ -485,28 +572,27 @@ def getkm(s, m):
             return m[i][1]
     return -1
 
-# (1440-x0)/x1=(y-y0)(y1-y) = k
-# (y-y0)=(y1-y)*(1440-x0)/x1
-# (y-y0)=(y1-y)*k
-# y=y0+y1*k-y*k
-# (1+k)y=y0+y1*k
-# y=(y0+y1*k)/(1+k)
-# k:
-# y=y0/(1+k)+y1*(1+k-1)/(1+k)
-# y=y0/(1+k)+y1-y1/(1+k)
-# y=(y0-y1)/(1+k)+y1
-# (lasty-y)/(1+(1440-lastx)/x)+y
-# (lasty-y)*x/((1440+x-lastx))+y
-# 1/k:
-# y=y0(1+k-k)/(1+k)+y1*k/(1+k)
-# y=y0-y0*k/(1+k)+y1*k/(1+k)
-# y=y0+(y1-y0)*k/(1+k)
-# y=y0+(y1-y0)*(1/(1/k))/((1/k)/(1/k)+(1/(1/k)))
-# y=y0+(y1-y0)*1/((1/k)+1)
-# lasty+(lasty-y)/(1+x/(1440-lastx))
-
 
 def schToPolyline(s, m):
+    # (1440-x0)/x1=(y-y0)(y1-y) = k
+    # (y-y0)=(y1-y)*(1440-x0)/x1
+    # (y-y0)=(y1-y)*k
+    # y=y0+y1*k-y*k
+    # (1+k)y=y0+y1*k
+    # y=(y0+y1*k)/(1+k)
+    # k:
+    # y=y0/(1+k)+y1*(1+k-1)/(1+k)
+    # y=y0/(1+k)+y1-y1/(1+k)
+    # y=(y0-y1)/(1+k)+y1
+    # (lasty-y)/(1+(1440-lastx)/x)+y
+    # (lasty-y)*x/((1440+x-lastx))+y
+    # 1/k:
+    # y=y0(1+k-k)/(1+k)+y1*k/(1+k)
+    # y=y0-y0*k/(1+k)+y1*k/(1+k)
+    # y=y0+(y1-y0)*k/(1+k)
+    # y=y0+(y1-y0)*(1/(1/k))/((1/k)/(1/k)+(1/(1/k)))
+    # y=y0+(y1-y0)*1/((1/k)+1)
+    # lasty+(lasty-y)/(1+x/(1440-lastx))
     if (len(s)) <= 0:
         return ''
     buffer = ''
@@ -514,7 +600,8 @@ def schToPolyline(s, m):
     lastx = 0
     lasty = 0
     buffer += '<polyline name="%s" class="%s" points="' % (
-        s[0]['station_train_code'].encode('utf-8'), s[0]['station_train_code'].encode('utf-8')[:1])
+        s[0]['station_train_code'].encode('utf-8'),
+        s[0]['station_train_code'].encode('utf-8')[:1])
     for i in range(0, len(s)):
         x = getmin(s[i]['arrive_time'].encode('utf-8'))
         y = getkm(s[i]['station_name'].encode('utf-8'), m)
@@ -524,8 +611,8 @@ def schToPolyline(s, m):
                 #1440, (lasty-y)*x/((1440+x-lastx))+y
                 buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' \
                     % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
-                       s[0]['station_train_code'].encode(
-                           'utf-8'), day, s[0]['station_train_code'].encode('utf-8')[:1],
+                       s[0]['station_train_code'].encode('utf-8'), day,
+                       s[0]['station_train_code'].encode('utf-8')[:1],
                        0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
             lastx = x
             lasty = y
@@ -538,8 +625,8 @@ def schToPolyline(s, m):
                 day += 1
                 buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' \
                     % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
-                       s[0]['station_train_code'].encode(
-                           'utf-8'), day, s[0]['station_train_code'].encode('utf-8')[:1],
+                       s[0]['station_train_code'].encode('utf-8'), day,
+                       s[0]['station_train_code'].encode('utf-8')[:1],
                        0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
             lastx = x
             lasty = y
@@ -649,10 +736,11 @@ polyline {
 def train_list_type_str(t):
     s = ''
     for date in sorted(t.keys()):
-        s += train_list_day_type_str(t[date],date)
+        s += train_list_day_type_str(t[date], date)
     return s
 
-def train_list_day_type_str(d,date):
+
+def train_list_day_type_str(d, date):
     ss = ''
     ss += (date.encode('utf-8'))
     for type in d:
@@ -670,11 +758,12 @@ def hash_no(s):
     n = int(re.sub(r'\D+', '', s))
     return type + n
 
+
 def unhash_no(n):
     items = [('Z', 10000), ('T', 20000), ('K', 30000),
              ('G', 40000), ('D', 50000), ('C', 60000),
              ('Y', 00000), ('S', 60000), ('P', 00000)]  # ('Y',70000),('S',71000),('P',80000)
-    head = ["","Z","T","K","G","D","C"]
+    head = ["", "Z", "T", "K", "G", "D", "C"]
     if n > 70000:
         return ""
     type = head[(n-1) // 10000]
@@ -689,6 +778,7 @@ def unhash_no(n):
             return type + str(n-items[i][1])
     return str(n)
 
+
 def train_list_train_no_array(t, maxlen):
     arr = ['' for i in range(maxlen)]
     for date in sorted(t.keys()):
@@ -697,8 +787,10 @@ def train_list_train_no_array(t, maxlen):
             for i in range(0, len(t[date][type])):
                 # for i in range(0,1):
                 a = t[date][type][i]
-                match = re.findall(r'(.*)\((.*)-(.*)\)',a['station_train_code'], re.I | re.M)[0]
-                arr[hash_no(match[0].encode('utf-8')) -1] = a['train_no'].encode('utf-8')
+                match = re.findall(r'(.*)\((.*)-(.*)\)',
+                                   a['station_train_code'], re.I | re.M)[0]
+                arr[hash_no(match[0].encode('utf-8')) -
+                    1] = a['train_no'].encode('utf-8')
     return arr
 
 
@@ -738,8 +830,9 @@ if __name__ == '__main__':
             os.path.abspath(__file__)), 'js/station_name.js')
     print('input train_list file:   ' + fn0)
     print('input station_name file: ' + fn1)
-    
-    '''try:
+
+    '''
+    try:
         # if True:
         t = openTrainList(fn0)
         arr = train_list_train_no_array(t, 70000)
@@ -757,17 +850,18 @@ if __name__ == '__main__':
     except Exception, e:
         print(str(Exception))
         if platform.system() == "Windows":
-            os.system('pause')'''
-    
+            os.system('pause')
+    '''
+
     station = getStation(fn1)
-    
+
     with open(fn0, 'r') as f:
         _ = f.read(16)
         data = f.read()
-    
+
     ret = []
-    layer=0
-    index=0
+    layer = 0
+    index = 0
     kv = 0
     lastq = -1
     lastcolon = -1
@@ -779,18 +873,19 @@ if __name__ == '__main__':
             if layer == 1:
                 #print("%s %d"%(data[index],index))
                 kv = 0
-            layer+=1
+            layer += 1
         elif c == "[":
-            layer+=1
+            layer += 1
         elif c == "}":
             if layer == 1:
                 #print("%s %d"%(data[index],index))
                 kv = 0
-                print("%s %d %d %s %s"%(lastkey,lastcolon+1,index,data[lastcolon+1],data[index-1]))
-                ret.append([lastkey,lastcolon+1,index])
-            layer-=1
+                print("%s %d %d %s %s" %
+                      (lastkey, lastcolon+1, index, data[lastcolon+1], data[index-1]))
+                ret.append([lastkey, lastcolon+1, index])
+            layer -= 1
         elif c == "]":
-            layer-=1
+            layer -= 1
         elif c == ":":
             if layer == 1:
                 #print("%s %d"%(data[index],index))
@@ -800,8 +895,9 @@ if __name__ == '__main__':
             if layer == 1:
                 #print("%s %d"%(data[index],index))
                 kv = 0
-                print("%s %d %d %s %s"%(lastkey,lastcolon+1,index,data[lastcolon+1],data[index-1]))
-                ret.append([lastkey,lastcolon+1,index])
+                print("%s %d %d %s %s" %
+                      (lastkey, lastcolon+1, index, data[lastcolon+1], data[index-1]))
+                ret.append([lastkey, lastcolon+1, index])
         elif c == '"':
             if layer == 1:
                 #print("%s %d %d"%(data[index],index,quot))
@@ -809,20 +905,20 @@ if __name__ == '__main__':
                     lastq = index
                     quot = 1
                 elif quot == 1:
-                    #print("%s"%(data[lastq+1:index]))
+                    # print("%s"%(data[lastq+1:index]))
                     lastkey = data[lastq+1:index]
                     quot = 0
-        
-        index+=1
-    
+
+        index += 1
+
     ret = sorted(ret)
 
     for i in range(len(ret)):
-        #print(i)
+        # print(i)
         #start = ret[i][1]
         #end = ret[i][2]
-        #print(start)
-        #print(end)
+        # print(start)
+        # print(end)
         #d = json.loads(data[start:end])
         d = json.loads(data[ret[i][1]:ret[i][2]])
         date = ret[i][0]
