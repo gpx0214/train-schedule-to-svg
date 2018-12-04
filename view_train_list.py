@@ -274,7 +274,7 @@ def dfs12306(kw, date):
             max_index = i
     max_str = ""
     if not jump:
-        if max_index + 1 < 200 and not jump:
+        if max_index + 1 < 200:
             return
         max_str = res[max_index]['station_train_code']
     if len(kw) >= max_depth:
