@@ -17,8 +17,9 @@ import time
 import requests
 
 
+import datetime
 def date_diff(date, d):
-    return (datetime.datetime.strptime(date, '%Y-%m-%d')+datetime.timedelta(days=d)).strftime('%Y-%m-%d');
+    return (datetime.datetime.strptime(date, '%Y-%m-%d')+datetime.timedelta(days=d)).strftime('%Y-%m-%d')
 
 
 def print_stat(stat):
@@ -344,8 +345,7 @@ def searchAll12306(date, cache=1):
                 res, ret = getsearch12306(kw, date, cache)
         max_index = -1
         for i in range(len(res)):
-            arr[hash_no(res[i]['station_train_code'].encode(
-                'utf-8')) - 1] = res[i]
+            arr[hash_no(res[i]['station_train_code'].encode('utf-8')) - 1] = res[i]
             if res[i]['station_train_code'].startswith(kw):
                 max_index = i
         max_str = ""
@@ -797,8 +797,7 @@ def train_list_train_no_array(t, maxlen):
                 a = t[date][type][i]
                 match = re.findall(r'(.*)\((.*)-(.*)\)',
                                    a['station_train_code'], re.I | re.M)[0]
-                arr[hash_no(match[0].encode('utf-8')) -
-                    1] = a['train_no'].encode('utf-8')
+                arr[hash_no(match[0].encode('utf-8')) - 1] = a['train_no'].encode('utf-8')
     return arr
 
 
