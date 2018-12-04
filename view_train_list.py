@@ -247,15 +247,15 @@ def checkDateSch12306(d, station, date):
 
 #181103 new 12306 web
 def searchAllTrain_no(date):
-    dfs12306("K",date)
-    dfs12306("D",date)
     dfs12306("G",date)
+    dfs12306("D",date)
     dfs12306("C",date)
     dfs12306("Z",date)
     dfs12306("T",date)
+    dfs12306("K",date)
+    dfs12306("",date)
     dfs12306("P",date)
     dfs12306("Y",date)
-    dfs12306("",date)
     dfs12306("10",date)
     dfs12306("50",date)
     dfs12306("90",date)
