@@ -17,6 +17,10 @@ import time
 import requests
 
 
+def date_diff(date, d):
+    return (datetime.datetime.strptime(date, '%Y-%m-%d')+datetime.timedelta(days=d)).strftime('%Y-%m-%d');
+
+
 def print_stat(stat):
     buffer = ''
     for i in range(len(stat)):
