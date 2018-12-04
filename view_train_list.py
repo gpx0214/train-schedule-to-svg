@@ -370,7 +370,7 @@ def checkSearch12306(arr, station, date):
             processS(arr[i], date, station)
 
 
-def savesearchcsv(arr, station, date):
+def savedatecsvS(arr, station, date):
     num = 0
     stat = [0 for i in range(1440)]
     ret = [[] for i in range(1440)]
@@ -393,7 +393,7 @@ def savesearchcsv(arr, station, date):
             # if True or tele and tele[2] == 'P':
             #num = num+1;
             #stat[minute] = stat[minute]+1;
-    print(num)
+    # print(num)
     #sort = sorted(time_list, cmpbyTime)
     sort = []
     for key in range(len(ret)):
@@ -412,6 +412,7 @@ def savesearchcsv(arr, station, date):
                 f.write('\xef\xbb\xbf')
             writer = csv.writer(f)
             writer.writerows(sort)
+    return num
 
 
 # train_list.js
@@ -459,7 +460,7 @@ def savedatecsv(d, station, date):
                 # if True or tele and tele[2] == 'P':
                 #num = num+1;
                 #stat[minute] = stat[minute]+1;
-    print(num)
+    # print(num)
     #sort = sorted(time_list, cmpbyTime)
     sort = []
     for key in range(len(ret)):
@@ -479,6 +480,7 @@ def savedatecsv(d, station, date):
                 f.write('\xef\xbb\xbf')
             writer = csv.writer(f)
             writer.writerows(sort)
+    return num
 
 #savecsv(t, station)
 
@@ -818,6 +820,7 @@ def print_block(stat):
             cnt += 1
     return s, cnt
 
+
 def markJsonSlice(data):
     ret = []
     layer = 0
@@ -914,8 +917,7 @@ if __name__ == '__main__':
         _ = f.read(16)
         data = f.read()
 
-    ret = markJsonSlice(data)
-    ret = sorted(ret)
+    ret = sorted(markJsonSlice(data))
 
     for i in range(len(ret)):
         # print(i)
@@ -924,12 +926,16 @@ if __name__ == '__main__':
         # print(start)
         # print(end)
         #d = json.loads(data[start:end])
+        s = ''
         d = json.loads(data[ret[i][1]:ret[i][2]])
         date = ret[i][0]
-        print(train_list_day_type_str(d, date))
+        s += (train_list_day_type_str(d, date))
         checkDateSch12306(d, station, date)
-        savedatecsv(d, station, date)
+        n = savedatecsv(d, station, date)
+        s += "\t" + str(n)
+        print(s)
         del d
+
 
 '''
 from view_train_list import *
