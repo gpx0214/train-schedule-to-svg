@@ -278,7 +278,7 @@ def getSch12306(t1, t2, train_no, date):
 
 
 # 181103 new 12306 search/v1
-def getsearch12306(kw, date, cache=0):
+def getsearch12306(kw, date, cache=1):
     yyyymmdd = date.replace("-", "")
     name = 'search/' + yyyymmdd + '_' + kw + '.json'
     try:
@@ -293,7 +293,7 @@ def getsearch12306(kw, date, cache=0):
             print('read  %-3s %3d %5s-%5s' % (kw, len(search['data']),
                                               search['data'][0]['station_train_code'],
                                               search['data'][-1]['station_train_code']))
-            return search['data']
+            return search['data'], len(search['data'])
 
     url = "https://search.12306.cn/search/v1/train/search?keyword=" + \
         kw + "&date=" + yyyymmdd
@@ -304,26 +304,26 @@ def getsearch12306(kw, date, cache=0):
         resp = requests.get(url, headers=header, timeout=20)
     except:
         print('Net Error ' + kw)
-        return []
+        return [], -1
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     try:
         search = json.loads(body)
     except ValueError:
         print('ValueError ' + kw)
-        return []
+        return [], -1
     if search['status'] == True and len(search['data']):
         with open(fn, 'wb') as f:
             f.write(resp.content)
         print('save  %-3s %3d %5s-%5s' % (kw, len(search['data']),
                                           search['data'][0]['station_train_code'],
                                           search['data'][-1]['station_train_code']))
-        return search['data']
+        return search['data'], len(search['data'])
     else:
         print ('empty %-3s' % (kw))
-        return []
+        return [], 0
 
 
-def searchAll12306(date, cache=0):
+def searchAll12306(date, cache=1):
     st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
     maxlen = 70000
     arr = [None for i in range(maxlen)]
@@ -335,7 +335,9 @@ def searchAll12306(date, cache=0):
         max_depth = 3
         res = []
         if not jump:
-            res = getsearch12306(kw, date, cache)
+            res, ret = getsearch12306(kw, date, cache)
+            if ret == -1:
+                res, ret = getsearch12306(kw, date, cache)
         max_index = -1
         for i in range(len(res)):
             arr[hash_no(res[i]['station_train_code'].encode(
