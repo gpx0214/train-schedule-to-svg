@@ -818,49 +818,7 @@ def print_block(stat):
             cnt += 1
     return s, cnt
 
-
-if __name__ == '__main__':
-    try:
-        fn0 = sys.argv[1]
-    except:
-        fn0 = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), 'js/train_list.js')
-    try:
-        fn1 = sys.argv[2]
-    except:
-        fn1 = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), 'js/station_name.js')
-    print('input train_list file:   ' + fn0)
-    print('input station_name file: ' + fn1)
-
-    '''
-    try:
-        # if True:
-        t = openTrainList(fn0)
-        arr = train_list_train_no_array(t, 70000)
-        stat, train_num = train_list_stat_block(arr, 100, 70000)
-        s, block = print_block(stat)
-        print(str(train_num) + " trains")
-        print(str(block) + " blocks")
-        print(s)
-        print(train_list_type_str(t))
-        station = getStation(fn1)
-        checkAllSch12306(t, station)
-        savecsv(t, station)
-        if platform.system() == "Windows":
-            os.system('pause')
-    except Exception, e:
-        print(str(Exception))
-        if platform.system() == "Windows":
-            os.system('pause')
-    '''
-
-    station = getStation(fn1)
-
-    with open(fn0, 'r') as f:
-        _ = f.read(16)
-        data = f.read()
-
+def markJsonSlice(data):
     ret = []
     layer = 0
     index = 0
@@ -910,9 +868,53 @@ if __name__ == '__main__':
                     # print("%s"%(data[lastq+1:index]))
                     lastkey = data[lastq+1:index]
                     quot = 0
-
         index += 1
+    return ret
 
+
+if __name__ == '__main__':
+    try:
+        fn0 = sys.argv[1]
+    except:
+        fn0 = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), 'js/train_list.js')
+    try:
+        fn1 = sys.argv[2]
+    except:
+        fn1 = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), 'js/station_name.js')
+    print('input train_list file:   ' + fn0)
+    print('input station_name file: ' + fn1)
+
+    '''
+    try:
+        # if True:
+        t = openTrainList(fn0)
+        arr = train_list_train_no_array(t, 70000)
+        stat, train_num = train_list_stat_block(arr, 100, 70000)
+        s, block = print_block(stat)
+        print(str(train_num) + " trains")
+        print(str(block) + " blocks")
+        print(s)
+        print(train_list_type_str(t))
+        station = getStation(fn1)
+        checkAllSch12306(t, station)
+        savecsv(t, station)
+        if platform.system() == "Windows":
+            os.system('pause')
+    except Exception, e:
+        print(str(Exception))
+        if platform.system() == "Windows":
+            os.system('pause')
+    '''
+
+    station = getStation(fn1)
+
+    with open(fn0, 'r') as f:
+        _ = f.read(16)
+        data = f.read()
+
+    ret = markJsonSlice(data)
     ret = sorted(ret)
 
     for i in range(len(ret)):
