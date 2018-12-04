@@ -113,7 +113,7 @@ def getmin(str):
     except:
         return -1
 
-
+#station_name.js
 def getStation(fn):
     # f = open(fn, 'r',encoding = 'utf8'); #py3
     with open(fn, 'r') as f:  # py2
@@ -143,7 +143,7 @@ def telecode(str, station):
     # print(str)
     return ''
 
-
+#train_list.js
 def openTrainList(fn):
     # f = open(fn, 'r',encoding= 'utf8') #py3
     with open(fn, 'r') as f:  # py2
@@ -151,7 +151,7 @@ def openTrainList(fn):
         data = f.read()
     return json.loads(data)
 
-
+#timetable train_list.js
 def processA(a, date, station):
     name = 'sch/' + a['train_no'].encode('utf-8')+'.json'
     try:
@@ -192,7 +192,7 @@ def processA(a, date, station):
         # return []
     return getSch12306(t1, t2, a['train_no'], date)
 
-
+#timetable
 def getSch12306(t1, t2, train_no, date):
     name = 'sch/' + train_no + '.json'
     try:
@@ -232,20 +232,7 @@ def getSch12306(t1, t2, train_no, date):
         print ("data error " + train_no)
         return []
 
-
-def checkAllSch12306(t, station):
-    for date in sorted(t.keys()):
-        print(date)
-        checkDateSch12306(t[date], station, date)
-
-def checkDateSch12306(d, station, date):
-    for type in d:
-        for i in range(0, len(d[type])):
-            sch = processA(d[type][i], date, station)
-            if len(sch) == 0:
-                processA(d[type][i], date, station)
-
-#181103 new 12306 web
+#181103 new 12306 search/v1
 def searchAll(date):
   st = ["90","50","10","C","D","G","","K","Y","P","T","Z"]
   maxlen = 70000
@@ -362,6 +349,19 @@ def getsearch12306(kw, date):
     else:
         print ("empty " + kw)
         return []
+
+#train_list.js
+def checkAllSch12306(t, station):
+    for date in sorted(t.keys()):
+        print(date)
+        checkDateSch12306(t[date], station, date)
+
+def checkDateSch12306(d, station, date):
+    for type in d:
+        for i in range(0, len(d[type])):
+            sch = processA(d[type][i], date, station)
+            if len(sch) == 0:
+                processA(d[type][i], date, station)
 
 def savecsv(t, station):
     for date in sorted(t.keys()):
