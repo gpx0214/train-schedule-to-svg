@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# tested in python 2.7.14 on win10 x64
+# tested in python 2.7.15 on win10 x64
+# tested in python 2.7.5 on centos7 x64
 
 from __future__ import print_function
 
@@ -18,6 +19,8 @@ import requests
 
 
 import datetime
+
+
 def date_diff(date, d):
     return (datetime.datetime.strptime(date, '%Y-%m-%d')+datetime.timedelta(days=d)).strftime('%Y-%m-%d')
 
@@ -520,7 +523,7 @@ def schToCsv(s):
                 s[i]['arrive_time'].encode('utf-8'),
                 '0'
             ])
-
+        #
         if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
             minute = getmin(s[i]['start_time'].encode('utf-8'))
             if minute < last:
@@ -625,7 +628,7 @@ def schToPolyline(s, m):
             lastx = x
             lasty = y
             buffer += '%s,%s ' % (x, y)
-
+        #
         x = getmin(s[i]['start_time'].encode('utf-8'))
         y = getkm(s[i]['station_name'].encode('utf-8'), m)
         if y > -1 and i < len(s)-1:
@@ -682,7 +685,7 @@ def csvToSvg(m, c, rule=''):
         if getkm(c[i][1], m) > -1:
             # print(hash_no(c[i][0]))
             arr[hash_no(c[i][0])].append(c[i])
-
+    #
     buffer = ''
     buffer += '<?xml version="1.0" standalone="no"?>\n'
     buffer += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" \n'
@@ -723,7 +726,7 @@ polyline {
                    (int(m[i][1]) if int(m[i][1]) > 16 else (int(m[i][1]) + 16), m[i][0], m[i][1]))
         buffer += ('<line class="station" x1="0" y1="%s" x2="1440" y2="%s" />\n' %
                    (m[i][1], m[i][1]))
-
+    #
     num = 0
     for i in range(maxlen):
         flag = 0
@@ -736,7 +739,7 @@ polyline {
             num += 1
             arr[i] = sorted(arr[i], cmpbyTrain0)
             buffer += csvToPolyline(arr[i], m)
-
+    #
     buffer += ('</svg>')
     return buffer, num
 
