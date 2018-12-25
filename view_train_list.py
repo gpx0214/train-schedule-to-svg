@@ -946,6 +946,25 @@ if __name__ == '__main__':
 '''
 from view_train_list import *
 
+station = getStation('js/station_name.js')
+
+base = datetime.datetime.now().strftime('%Y-%m-%d');
+for d in range(0,7):
+    date = date_diff(base,d)
+    arr = searchAll12306(date,cache=0)
+    checkSearch12306(arr, station, date)
+    savedatecsvS(arr, station, date)
+    stat, train_num = train_list_stat_block(arr, step, maxlen)
+    s, block = print_block(stat)
+    print(str(train_num) + " trains")
+    print(str(block) + " blocks")
+    print(s)
+
+'''
+
+'''
+from view_train_list import *
+
 t = openTrainList('js/train_list.js')
 station = getStation('js/station_name.js')
 #savecsv(t,station)
