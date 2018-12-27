@@ -348,7 +348,8 @@ def searchAll12306(date, cache=1):
                 res, ret = getsearch12306(kw, date, cache)
         max_index = -1
         for i in range(len(res)):
-            arr[hash_no(res[i]['station_train_code'].encode('utf-8')) - 1] = res[i]
+            arr[hash_no(res[i]['station_train_code'].encode(
+                'utf-8')) - 1] = res[i]
             if res[i]['station_train_code'].startswith(kw):
                 max_index = i
         max_str = ""
@@ -827,6 +828,71 @@ def print_block(stat):
     return s, cnt
 
 
+LeftTicketUrl = "leftTicket/queryA"
+
+
+def getLeftTicket(t1, t2, date):
+    url = "https://kyfw.12306.cn/otn/" + LeftTicketUrl + "?leftTicketDTO.train_date=" + date + \
+        "&leftTicketDTO.from_station=" + t1 + \
+        "&leftTicketDTO.to_station=" + t2 + "&purpose_codes=ADULT"
+    #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
+    try:
+        resp = requests.get(url, headers=header, timeout=20)
+    except:
+        print('Net Error ' + t1 + ' ' + t2 + ' ' + date)
+        return []
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    try:
+        ticket = json.loads(body)
+    except ValueError:
+        print('ValueError ' + t1 + ' ' + t2 + ' ' + date)
+        return []
+    if ticket['status'] == True and ticket['httpstatus'] == 200 and len(ticket['data']['result']):
+        with open('ticket/' + date + '_' + t1 + '_' + t2 + '.json', 'wb') as f:
+            f.write(resp.content)
+        print(t1 + ' ' + t2 + ' ' + date + ' ' + str(len(ticket['data']['result'])))
+        return ticket['data']['result']
+    else:
+        print ("data error " + t1 + ' ' + t2 + ' ' + date)
+        return []
+
+def checkLeftTicket(t1, t2, date):
+    ticket = getLeftTicket(t1, t2, date)
+    for i in ticket['data']['result']:
+        sp = i.split('|')
+        if len(sp) > 36:
+            print(sp[3] + ' ' + sp[2]+' ' + sp[4]+' ' + sp[5])
+            if not os.path.exists('sch/'+sp[2].encode('utf-8')+'.json'):
+                s = getSch12306(sp[4], sp[5], sp[2], date)
+                # with open("20180808.csv","a") as f:
+                # f.write(b);
+
+
+'''
+for date in ['2018-08-09','2018-08-10','2018-08-11','2018-08-12','2018-08-13','2018-08-14','2018-08-15']:
+  print(date);
+  checkLeftTicket('BJP','TJP',date);
+  checkLeftTicket('TJP','BJP',date);
+  checkLeftTicket('TJP','YKP',date);
+  checkLeftTicket('YKP','TJP',date);
+
+for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2018-11-25','2018-11-26','2018-11-27','2018-11-28','2018-11-29']:
+  print(date);
+  checkLeftTicket('HBB','SYT',date);
+  checkLeftTicket('SYT','HBB',date);
+  checkLeftTicket('DLT','SYT',date);
+  checkLeftTicket('SYT','DLT',date);
+  checkLeftTicket('BJP','SYT',date);
+  checkLeftTicket('SYT','BJP',date);
+  checkLeftTicket('TJP','SYT',date);
+  checkLeftTicket('SYT','TJP',date);
+
+# https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=2018-08-11&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=TJP&purpose_codes=ADULT
+
+'''
+
 def markJsonSlice(data):
     ret = []
     layer = 0
@@ -949,12 +1015,12 @@ from view_train_list import *
 station = getStation('js/station_name.js')
 
 base = datetime.datetime.now().strftime('%Y-%m-%d');
-for d in range(0,7):
+for d in range(1,2):
     date = date_diff(base,d)
     arr = searchAll12306(date,cache=0)
     checkSearch12306(arr, station, date)
     savedatecsvS(arr, station, date)
-    stat, train_num = train_list_stat_block(arr, step, maxlen)
+    stat, train_num = train_list_stat_block(arr, 100, 70000)
     s, block = print_block(stat)
     print(str(train_num) + " trains")
     print(str(block) + " blocks")
@@ -990,3 +1056,46 @@ with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
 
 '''
 #s = processA(t['2018-09-30']['G'][1525], '2018-09-30', station)
+
+
+'''
+fn = "C:\\Users\\Administrator\\ticket1\\2018-09-23_XJA_CBQ.json"
+
+with open(fn,'r') as f: #py2
+    data=f.read();
+
+j = json.loads(data)
+
+buffer= '';
+for obj in j:
+    #obj['TRNO'].encode('utf-8')
+    #obj['FST'].encode('utf-8')
+    #obj['EST'].encode('utf-8')
+    #getSch12306(obj['FST'].encode('utf-8'), obj['EST'].encode('utf-8'), obj['TRNO'].encode('utf-8'), date)
+    train_code = obj['STCODE'].encode('utf-8')
+    #getSchT(obj['STCODE'].encode('utf-8'), date)
+    with open('sch/'+ train_code +'_T.json','r') as f:
+        f.read(3);
+        data = f.read();
+    s = json.loads(data)
+    day = 0;
+    last = 0;
+    time_list = [];
+    print(s[0]['STCODE'].encode('utf-8') + "\n")
+    buffer += (s[0]['STCODE'].encode('utf-8') + "\n")
+    for i in range(0, len(s)):
+                print (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8')\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'].encode('utf-8'))\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME'].encode('utf-8')) + "\n");
+                buffer += (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8')\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'].encode('utf-8'))\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME'].encode('utf-8')) + "\n");
+    buffer += ("\n");
+
+print(buffer.decode('utf-8'));
+
+with open('XJA.txt','wb') as f:
+            if f.tell() == 0:
+                f.write('\xef\xbb\xbf');
+            f.write(buffer)
+'''
