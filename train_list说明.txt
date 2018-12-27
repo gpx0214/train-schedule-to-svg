@@ -60,6 +60,17 @@ http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/cczd.js
 http://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/jscss/lc_select.js
 
 
+http://hyfw.95306.cn/hyinfo/page/home-hyzx-yfss
+http://dynamic.12306.cn/yjcx/js/CZZD.js
+http://dynamic.12306.cn/yjcx/doPickJZM?param=AA&type=0&czlx=0
+http://dynamic.12306.cn/yjcx/doPickJZM?param=AA&type=1&czlx=0
+http://dynamic.12306.cn/yjcx/doPickJZM?param=AA&type=2&czlx=0
+POST
+
+http://hyfw.12306.cn/hyinfo/action/FwcszsAction_index?type=1
+http://hyfw.12306.cn/hyinfo/action/FwcszsAction_getljcz
+q=&limit=50&timestamp=1545757098789&sheng=%E6%B4%A5&shi=&ljdm=
+
 function hash(str) {
   var c = str.charAt(0);
   var offset={
@@ -194,6 +205,21 @@ a.data.result[45].split("|")
 16
 17
 
+var seatTypeForHB = {
+    SWZ: "9_商务座",
+    TZ: "P_特等座",
+    ZY: "M_一等座",
+    ZE: "O_二等座",
+    GR: "6_高级软卧",
+    RW: "4_软卧",
+    SRRB: "F_动卧",
+    YW: "3_硬卧",
+    RZ: "2_软座",
+    YZ: "1_硬座",
+    WZ: "1_无座",
+    QT: "H_其他"
+};
+
 
 20 gg_num 观光
 21 RW19
@@ -211,7 +237,8 @@ a.data.result[45].split("|")
 33		WY
 34	seat_feature	席别
 35	yp_ex	席别 
-36  secretHBStr 可以积分兑换
+36  exchange_train_flag 可以积分兑换
+37  houbu_train_flag 候补
 
   function b4(ct, cv) {
     var cs = [];
