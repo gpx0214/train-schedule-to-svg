@@ -278,7 +278,7 @@ def getSch12306(t1, t2, train_no, date):
     if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
         with open(fn, 'wb') as f:
             f.write(resp.content)
-        print(train_no + ' ' + str(len(sch['data']['data'])))
+        print('%s %s %s %2d' % (train_no, t1, t2, len(sch['data']['data'])) )
         return sch['data']['data']
     else:
         print ('data error %s %s %s %s' % (train_no, t1, t2, date))
