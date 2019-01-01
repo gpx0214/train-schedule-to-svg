@@ -13,6 +13,11 @@ vi ~/.bashrc
 https://www.12306.cn/index/script/core/common/station_name.js
 https://www.12306.cn/index/script/core/common/qss.js
 
+https://kyfw.12306.cn/otn/zzzcx/init
+https://kyfw.12306.cn/otn/zzzcx/query?queryDate=2018-12-29&from_station=BJP&to_station=NJH&from_station_name=%E5%8C%97%E4%BA%AC&to_station_name=%E5%8D%97%E4%BA%AC&randCode=&changeStationText=
+旧版中转 大于20余票数
+r.data.datas
+
 正晚点
 https://dynamic.12306.cn/mapping/kfxt/zwdcx/LCZWD/CCCX.jsp
 https://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/CCCX.jsp
