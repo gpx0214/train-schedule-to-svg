@@ -26,7 +26,6 @@ def date_diff(date, diff):
     y = int(match[0])
     m = int(match[1])
     d = int(match[2])
-    print(y, m, d)
     day_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     if y % 4 == 0:
         day_month[2 - 1] = 29
@@ -38,10 +37,8 @@ def date_diff(date, diff):
     d += diff
     #
     while d > day_month[(m-1) % 12]:
-        print(m, day_month[(m-1) % 12])
         d -= day_month[(m-1) % 12]
         m += 1
-        print(y, m, d)
         while m > 12:
             m -= 12
             y += 1
@@ -51,7 +48,6 @@ def date_diff(date, diff):
                 day_month[2 - 1] = 28
             if y % 400 == 0:
                 day_month[2 - 1] = 29
-            print(y, m, d)
     #
     while d < 1:
         m -= 1
@@ -64,10 +60,7 @@ def date_diff(date, diff):
             if y % 400 == 0:
                 day_month[2 - 1] = 29
             m += 12
-            print(y, m, d)
-        print(m, day_month[(m-1) % 12])
         d += day_month[(m-1) % 12]
-        print(y, m, d)
     #
     return '%04d-%02d-%02d' % (y, m, d)
 
