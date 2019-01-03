@@ -21,8 +21,55 @@ import requests
 import datetime
 
 
-def date_diff(date, d):
-    return (datetime.datetime.strptime(date, '%Y-%m-%d')+datetime.timedelta(days=d)).strftime('%Y-%m-%d')
+def date_diff(date, diff):
+    match = re.findall(r'(\d+)-(\d+)-(\d+)', date, re.I | re.M)[0]
+    y = int(match[0])
+    m = int(match[1])
+    d = int(match[2])
+    print(y, m, d)
+    day_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    if y % 4 == 0:
+        day_month[2 - 1] = 29
+    if y % 100 == 0:
+        day_month[2 - 1] = 28
+    if y % 400 == 0:
+        day_month[2 - 1] = 29
+    #
+    d += diff
+    #
+    while d > day_month[(m-1) % 12]:
+        print(m, day_month[(m-1) % 12])
+        d -= day_month[(m-1) % 12]
+        m += 1
+        print(y, m, d)
+        while m > 12:
+            m -= 12
+            y += 1
+            if y % 4 == 0:
+                day_month[2 - 1] = 29
+            if y % 100 == 0:
+                day_month[2 - 1] = 28
+            if y % 400 == 0:
+                day_month[2 - 1] = 29
+            print(y, m, d)
+    #
+    while d < 1:
+        m -= 1
+        while m < 1:
+            y -= 1
+            if y % 4 == 0:
+                day_month[2 - 1] = 29
+            if y % 100 == 0:
+                day_month[2 - 1] = 28
+            if y % 400 == 0:
+                day_month[2 - 1] = 29
+            m += 12
+            print(y, m, d)
+        print(m, day_month[(m-1) % 12])
+        d += day_month[(m-1) % 12]
+        print(y, m, d)
+    #
+    return '%04d-%02d-%02d' % (y, m, d)
 
 
 def print_stat(stat):
@@ -278,7 +325,7 @@ def getSch12306(t1, t2, train_no, date):
     if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
         with open(fn, 'wb') as f:
             f.write(resp.content)
-        print('%s %s %s %2d' % (train_no, t1, t2, len(sch['data']['data'])) )
+        print('%s %s %s %2d' % (train_no, t1, t2, len(sch['data']['data'])))
         return sch['data']['data']
     else:
         print ('data error %s %s %s %s' % (train_no, t1, t2, date))
@@ -852,11 +899,13 @@ def getLeftTicket(t1, t2, date):
     if ticket['status'] == True and ticket['httpstatus'] == 200 and len(ticket['data']['result']):
         with open('ticket/' + date + '_' + t1 + '_' + t2 + '.json', 'wb') as f:
             f.write(resp.content)
-        print(t1 + ' ' + t2 + ' ' + date + ' ' + str(len(ticket['data']['result'])))
+        print(t1 + ' ' + t2 + ' ' + date + ' ' +
+              str(len(ticket['data']['result'])))
         return ticket['data']['result']
     else:
         print ("data error " + t1 + ' ' + t2 + ' ' + date)
         return []
+
 
 def checkLeftTicket(t1, t2, date):
     ticket = getLeftTicket(t1, t2, date)
@@ -892,6 +941,7 @@ for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2
 # https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=2018-08-11&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=TJP&purpose_codes=ADULT
 
 '''
+
 
 def markJsonSlice(data):
     ret = []
