@@ -22,7 +22,7 @@ timedatectl set-timezone Asia/Shanghai
 date
 
 yum -y install epel-release
-yum -y lrzsz python-pip wget mtr vim zip unzip p7zip git
+yum -y install lrzsz python-pip wget mtr vim zip unzip p7zip git
 
 安装pip
 yum -y install python-pip
@@ -97,9 +97,9 @@ yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel GeoIP GeoIP
 
 git clone https://github.com/arut/nginx-rtmp-module.git
 
-wget http://nginx.org/download/nginx-1.14.0.tar.gz
-tar -zxvf nginx-1.14.0.tar.gz
-cd nginx-1.14.0
+wget http://nginx.org/download/nginx-1.14.2.tar.gz
+tar -zxvf nginx-1.14.2.tar.gz
+cd nginx-1.14.2
 
 #nginx1.14.0编译选项
 [root@vultr nginx-1.14.0]# ./configure --help
@@ -594,7 +594,7 @@ chkconfig --add nginx
 
 
 #vsftpd
-yum -y insyall vsftpd
+yum -y install vsftpd
 vim /etc/vsftpd/vsftpd.conf
 
 local_root=/media/ftp/pub  
