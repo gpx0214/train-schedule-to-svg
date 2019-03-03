@@ -65,6 +65,14 @@ def date_diff(date, diff):
     return '%04d-%02d-%02d' % (y, m, d)
 
 
+def bin_cnt(x):
+    ans = 0
+    while x:
+        x &= x - 1
+        ans += 1
+    return ans
+
+
 def print_stat(stat):
     buffer = ''
     for i in range(len(stat)):
@@ -841,7 +849,8 @@ def train_list_train_no_array(t, maxlen):
                 a = t[date][type][i]
                 match = re.findall(r'(.*)\((.*)-(.*)\)',
                                    a['station_train_code'], re.I | re.M)[0]
-                arr[hash_no(match[0].encode('utf-8')) - 1] = a['train_no'].encode('utf-8')
+                arr[hash_no(match[0].encode('utf-8')) -
+                    1] = a['train_no'].encode('utf-8')
     return arr
 
 
@@ -868,7 +877,7 @@ def print_block(stat):
     return s, cnt
 
 
-LeftTicketUrl = "leftTicket/queryA"
+LeftTicketUrl = "leftTicket/queryX"
 
 
 def getLeftTicket(t1, t2, date):
@@ -1097,6 +1106,16 @@ with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
         f.write('\xef\xbb\xbf')
     f.write(buffer)
 
+m = openMilage('test/京广线里程.txt')
+c = readcsv('delay/sort2019-02-23.csv')
+buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}")
+
+fn = 'test/190223京广线.svg'
+with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+    if f.tell() == 0:
+        f.write('\xef\xbb\xbf')
+    f.write(buffer)
+
 '''
 #s = processA(t['2018-09-30']['G'][1525], '2018-09-30', station)
 
@@ -1141,4 +1160,105 @@ with open('XJA.txt','wb') as f:
             if f.tell() == 0:
                 f.write('\xef\xbb\xbf');
             f.write(buffer)
+'''
+
+
+'''
+ret = sorted(markJsonSlice(data))
+
+base = ret[0][0]
+mask = 0
+cnt = 0
+maxlen = 70000
+arr = [None for i in range(maxlen)]
+stat = [0 for i in range(maxlen)]
+for i in range(len(ret)):
+    #date_diff(base, i)
+    date = ret[i][0]
+    d = json.loads(data[ret[i][1]:ret[i][2]])
+    print(date)
+    mask |= (1 << i)
+    for type in d:
+        for ii in range(0, len(d[type])):
+            match = re.findall(r'(.*)\((.*)-(.*)\)',d[type][ii]['station_train_code'], re.I | re.M)[0]
+            a = {}
+            a['station_train_code'] = match[0]
+            a['from_station'] = match[1]
+            a['to_station'] = match[2]
+            a['train_no'] = d[type][ii]['train_no']
+            a['total_num'] = 0
+            a['date'] = 0
+            key = hash_no(match[0].encode('utf-8')) - 1
+            if arr[key] == None:
+                arr[key] = a
+            #输出不同train_no的车次
+            if arr[key]['train_no'] != a['train_no']:
+                print('%s %s %s %s'%(arr[key]['train_no'], a['train_no'], date, arr[key]['station_train_code']))
+                arr[key]['train_no'] = a['train_no']
+                cnt += 1
+            arr[key]['date'] |= (1 << i)
+
+
+cnt = [0,0,0,0,0,0,0,0,0,0,0,0]
+x = bin_cnt(mask)
+f = '{:>5} {:0>'+str(x)+'b}'
+flag = 0
+for i in range(maxlen):
+    if arr[i]:
+        if arr[i]['date'] == mask:
+            cnt[1]+=1
+            continue
+        if bin_cnt(arr[i]['date']) * 7 < x: # bin_cnt(arr[i]['date']) / bin_cnt(mask) < 1/7
+            #print((f + ' 开行{:>3}日 ').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], bin_cnt(arr[i]['date'])))
+            cnt[9] += 1
+            continue
+        if bin_cnt(arr[i]['date']) * 7 > x * 6: # bin_cnt(arr[i]['date']) / bin_cnt(mask) > 6/7
+            #print((f + ' 停运{:>3}日 ').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], x - bin_cnt(arr[i]['date'])))
+            cnt[10] += 1
+            continue
+        flag = 0
+        for step in [2,3,4,5,6,7]:
+            if ((arr[i]['date'] & all1(x//step*step)) % all01(x//step*step, step, 1)) == 0:
+                c = (arr[i]['date'] & all1(x//step*step)) // all01(x//step*step, step, 1) # 取循环节
+                if ( all01(x//step*step, step, c) & all01(x//step*step, step, c) ) == arr[i]['date']:
+                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], c))
+                    cnt[step]+=1
+                else:
+                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], c))
+                    cnt[step]+=1
+                flag = 1
+                break
+        if flag:
+            continue
+        print(f.format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date']))
+        print(bin_count11(arr[i]['date']))
+        cnt[0] += 1
+
+
+def all1(x):
+    ans = 0
+    while x:
+        x -= 1
+        ans |= 1 << x
+    return ans
+
+def all01(x, y, c):
+    ans = 0
+    ii = 0
+    while ii < x:
+        ans |= c << ii
+        ii += y
+    return ans
+
+def bin_count11(n):
+    ans = 0
+    temp = n
+    while temp:
+        ans += 1
+        print('{:0>45b}'.format(temp))
+        temp &= n >> ans
+    return ans
+
+bin_count11(0b000000000001111111111111000011111111111111000)
+
 '''
