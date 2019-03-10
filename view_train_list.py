@@ -669,7 +669,7 @@ def schToPolyline(s, m):
             if x < lastx:
                 day += 1
                 #1440, (lasty-y)*x/((1440+x-lastx))+y
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' \
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' \
                     % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
                        s[0]['station_train_code'].encode('utf-8'), day,
                        s[0]['station_train_code'].encode('utf-8')[:1],
@@ -683,7 +683,7 @@ def schToPolyline(s, m):
         if y > -1 and i < len(s)-1:
             if x < lastx:
                 day += 1
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' \
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' \
                     % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
                        s[0]['station_train_code'].encode('utf-8'), day,
                        s[0]['station_train_code'].encode('utf-8')[:1],
@@ -703,7 +703,7 @@ def csvToPolyline(c, m):
     day = 0
     lastx = 0
     lasty = 0
-    buffer += '<polyline name="%s" class="%s" points="' \
+    buffer += '<polyline name="%s" class="polyline%s" points="' \
         % (c[0][0], c[0][0][:1])
     for i in range(0, len(c)):
         x = getmin(c[i][4])  # + (3 if int(c[i][5])>0 else (-2)) #
@@ -712,7 +712,7 @@ def csvToPolyline(c, m):
             if x < lastx:
                 day += 1
                 #1440, (lasty-y)*x/((1440+x-lastx))+y
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' \
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' \
                     % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
                        c[0][0], day, c[0][0][:1],
                        0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
@@ -755,11 +755,34 @@ line.halfhour, line.station {
 polyline {
   fill:none;opacity:0.8;
 }
-.G {
-  stroke:blue;
+.polylineG {
+  stroke:#3d668f;
 }
-.D {
-  stroke:red;
+.polylineD {
+  stroke:#a80022;
+}
+.polylineC {
+  stroke:#bf9540;
+}
+.polylineZ {
+  stroke:#004a80;
+}
+.polylineT {
+  stroke:#123da1;
+}
+.polylineK {
+  stroke:#cc4c33;
+}
+.polyline1,
+.polyline2,
+.polyline3,
+.polyline4,
+.polyline5,
+.polyline6,
+.polyline7,
+.polyline8,
+.polyline9 {
+  stroke: #305030
 }
 </style>
 
@@ -1106,11 +1129,31 @@ with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
         f.write('\xef\xbb\xbf')
     f.write(buffer)
 
-m = openMilage('test/京广线里程.txt')
-c = readcsv('delay/sort2019-02-23.csv')
-buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}")
+m = openMilage('test/京沪线里程.txt')
+c = readcsv('delay/sort2019-03-10.csv')
+buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|^\d{1,4}|D7\d{1,3}")
 
-fn = 'test/190223京广线.svg'
+fn = 'test/190310京沪线.svg'
+with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+    if f.tell() == 0:
+        f.write('\xef\xbb\xbf')
+    f.write(buffer)
+
+m = openMilage('test/京广线里程.txt')
+c = readcsv('delay/sort2019-03-10.csv')
+buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|C7[01]\d{2}|D75\d{2}|D6[67]\d{2}")
+
+fn = 'test/190310京广线.svg'
+with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+    if f.tell() == 0:
+        f.write('\xef\xbb\xbf')
+    f.write(buffer)
+
+m = openMilage('test/京九线里程.txt')
+c = readcsv('delay/sort2019-03-10.csv')
+buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|^\d{1,4}")
+
+fn = 'test/190310京九线.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
@@ -1164,9 +1207,18 @@ with open('XJA.txt','wb') as f:
 
 
 '''
+from view_train_list import *
+
+fn0 = 'js/train_list.js'
+
+with open(fn0, 'r') as f:
+        _ = f.read(16)
+        data = f.read()
+
 ret = sorted(markJsonSlice(data))
 
 base = ret[0][0]
+base_week = 0
 mask = 0
 cnt = 0
 maxlen = 70000
@@ -1220,18 +1272,22 @@ for i in range(maxlen):
         for step in [2,3,4,5,6,7]:
             if ((arr[i]['date'] & all1(x//step*step)) % all01(x//step*step, step, 1)) == 0:
                 c = (arr[i]['date'] & all1(x//step*step)) // all01(x//step*step, step, 1) # 取循环节
-                if ( all01(x//step*step, step, c) & all01(x//step*step, step, c) ) == arr[i]['date']:
-                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], c))
+                #if ( all01(x//step*step, step, c) & all01(x//step*step, step, c) ) == arr[i]['date']:
+                if ( all01(x, step, c) & all1(x)) == arr[i]['date']:
+                    print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], c))
+                    if step == 2:
+                        print("双" if (c == 0b01) else "单")
+                    if step == 7:
+                        print(cycle7(c, base_week))
                     cnt[step]+=1
                 else:
-                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], c))
+                    print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], c))
                     cnt[step]+=1
                 flag = 1
                 break
         if flag:
             continue
-        print(f.format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date']))
-        print(bin_count11(arr[i]['date']))
+        #print(f.format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date']) + ' ' + str(bin_count11(arr[i]['date'])))
         cnt[0] += 1
 
 
@@ -1255,10 +1311,50 @@ def bin_count11(n):
     temp = n
     while temp:
         ans += 1
-        print('{:0>45b}'.format(temp))
+        #print('{:0>45b}'.format(temp))
         temp &= n >> ans
     return ans
 
 bin_count11(0b000000000001111111111111000011111111111111000)
+
+def bin_count12(n):
+    ans = 0
+    temp = n
+    while temp:
+        ans += 2
+        #print('{:0>45b}'.format(temp))
+        temp &= n >> ans
+    return ans
+
+bin_count12(0b0000001010101010101010101010100)
+
+def bin_count17(n):
+    ans = 0
+    temp = n
+    while temp:
+        ans += 7
+        print('{:0>45b}'.format(temp))
+        temp &= n >> ans
+    return ans
+
+bin_count17(0b0001000000000000110000011000001)
+
+def cycle7(c, base_week):
+    model = '71234567'
+    ret = ''
+    #c = c | c << 7
+    for i in range(1,8):
+        if c & (1 << (i - base_week) % 7):
+            ret += model[i]
+    return ret
+
+cycle7(0b1000001, 0)
+cycle7(0b1000001, 1)
+cycle7(0b1000001, 2)
+cycle7(0b1000001, 3)
+cycle7(0b1000001, 4)
+cycle7(0b1000001, 5)
+cycle7(0b1000001, 6)
+cycle7(0b1000001, 7)
 
 '''

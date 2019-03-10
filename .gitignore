@@ -8,3 +8,7 @@
 /*.zip
 /*.rar
 /*.exe
+/*.dll
+curl/*
+.git/*
+.vscode/*
