@@ -266,10 +266,10 @@ polyline {
 <line class="station" x1="0" y1="2455" x2="1440" y2="2455" />
 <text x="0" y="2462">深圳西 2462</text>
 <line class="station" x1="0" y1="2462" x2="1440" y2="2462" />
-<polyline name="Z1" class="polylineZ" points="1080,6 1224,287 1230,287 1433,695 1439,695 1440,696 "/>
-<polyline name="Z1+1" class="polylineZ" points="0,696 278,1231 284,1231 402,1446 405,1446 487,1593 "/>
-<polyline name="Z2" class="polylineZ" points="1068,1593 1146,1446 1151,1446 1277,1231 1283,1231 1440,923 "/>
-<polyline name="Z2+1" class="polylineZ" points="0,923 117,695 123,695 326,287 330,287 480,6 "/>
+<polyline name="Z1" class="polylineZ" style="stroke-width:2" points="1080,6 1224,287 1230,287 1433,695 1439,695 1440,696 "/>
+<polyline name="Z1+1" class="polylineZ" style="stroke-width:2" points="0,696 278,1231 284,1231 402,1446 405,1446 487,1593 "/>
+<polyline name="Z2" class="polylineZ" style="stroke-width:2" points="1068,1593 1146,1446 1151,1446 1277,1231 1283,1231 1440,923 "/>
+<polyline name="Z2+1" class="polylineZ" style="stroke-width:2" points="0,923 117,695 123,695 326,287 330,287 480,6 "/>
 <polyline name="Z3" class="polylineZ" points="1068,6 1212,287 1218,287 1440,720 "/>
 <polyline name="Z3+1" class="polylineZ" points="0,720 251,1211 274,1211 "/>
 <polyline name="Z4" class="polylineZ" points="1388,1211 1415,1211 1440,1161 "/>
@@ -284,18 +284,18 @@ polyline {
 <polyline name="Z14+1" class="polylineZ" points="0,1655 40,1593 47,1593 125,1446 128,1446 253,1231 259,1231 538,695 557,695 755,287 761,287 "/>
 <polyline name="Z21" class="polylineZ" points="1200,6 1353,297 1357,297 "/>
 <polyline name="Z22" class="polylineZ" points="345,297 356,297 508,6 "/>
-<polyline name="Z23" class="polylineZ" points="1170,1231 1440,1676 "/>
-<polyline name="Z23+1" class="polylineZ" points="0,1676 378,2300 398,2300 487,2447 "/>
+<polyline name="Z23" class="polylineZ" style="stroke-width:2" points="1170,1231 1440,1676 "/>
+<polyline name="Z23+1" class="polylineZ" style="stroke-width:2" points="0,1676 378,2300 398,2300 487,2447 "/>
 <polyline name="Z24" class="polylineZ" points="1083,2447 1440,1864 "/>
 <polyline name="Z24+1" class="polylineZ" points="0,1864 388,1231 "/>
-<polyline name="Z35" class="polylineZ" points="709,6 1053,695 1062,695 1343,1231 1349,1231 1440,1399 "/>
-<polyline name="Z35+1" class="polylineZ" points="0,1399 105,1593 111,1593 556,2300 "/>
-<polyline name="Z36" class="polylineZ" points="985,2300 1422,1593 1428,1593 1440,1571 "/>
-<polyline name="Z36+1" class="polylineZ" points="0,1571 188,1231 194,1231 470,695 478,695 824,6 "/>
-<polyline name="Z37" class="polylineZ" points="1246,6 1440,382 "/>
-<polyline name="Z37+1" class="polylineZ" points="0,382 438,1231 "/>
-<polyline name="Z38" class="polylineZ" points="1203,1231 1440,775 "/>
-<polyline name="Z38+1" class="polylineZ" points="0,775 400,6 "/>
+<polyline name="Z35" class="polylineZ" style="stroke-width:2" points="709,6 1053,695 1062,695 1343,1231 1349,1231 1440,1399 "/>
+<polyline name="Z35+1" class="polylineZ" style="stroke-width:2" points="0,1399 105,1593 111,1593 556,2300 "/>
+<polyline name="Z36" class="polylineZ" style="stroke-width:2" points="985,2300 1422,1593 1428,1593 1440,1571 "/>
+<polyline name="Z36+1" class="polylineZ" style="stroke-width:2" points="0,1571 188,1231 194,1231 470,695 478,695 824,6 "/>
+<polyline name="Z37" class="polylineZ" style="stroke-width:2" points="1246,6 1440,382 "/>
+<polyline name="Z37+1" class="polylineZ" style="stroke-width:2" points="0,382 438,1231 "/>
+<polyline name="Z38" class="polylineZ" style="stroke-width:2" points="1203,1231 1440,775 "/>
+<polyline name="Z38+1" class="polylineZ" style="stroke-width:2" points="0,775 400,6 "/>
 <polyline name="Z43" class="polylineZ" points="1212,6 1366,297 1375,297 "/>
 <polyline name="Z44" class="polylineZ" points="336,297 349,297 502,6 "/>
 <polyline name="Z49" class="polylineZ" points="688,6 763,152 765,152 840,287 844,287 1047,695 1056,695 1320,1211 1340,1211 "/>
@@ -322,17 +322,13 @@ polyline {
 <polyline name="Z95+1" class="polylineZ" points="0,695 6,695 270,1211 290,1211 "/>
 <polyline name="Z96" class="polylineZ" points="1394,1211 1422,1211 1440,1176 "/>
 <polyline name="Z96+1" class="polylineZ" points="0,1176 250,695 256,695 349,508 352,508 410,396 414,396 478,287 484,287 554,152 560,152 651,6 "/>
-<polyline name="Z97" class="polylineZ" points="760,6 1105,695 1111,695 1388,1231 1395,1231 1440,1314 "/>
-<polyline name="Z97+1" class="polylineZ" points="0,1314 150,1593 156,1593 604,2308 "/>
-<polyline name="Z98" class="polylineZ" points="1036,2308 1086,2308 1440,1736 "/>
-<polyline name="Z98+1" class="polylineZ" points="0,1736 89,1593 95,1593 294,1231 300,1231 577,695 584,695 930,6 "/>
-<polyline name="Z99" class="polylineZ" points="177,1645 193,1645 608,2308 664,2308 "/>
-<polyline name="Z100" class="polylineZ" points="1092,2308 1440,1745 "/>
-<polyline name="Z100+1" class="polylineZ" points="0,1745 62,1645 83,1645 "/>
-<polyline name="Z107" class="polylineZ" points="1193,6 1440,456 "/>
-<polyline name="Z107+1" class="polylineZ" points="0,456 1090,2447 "/>
-<polyline name="Z108" class="polylineZ" points="888,2447 1440,1448 "/>
-<polyline name="Z108+1" class="polylineZ" points="0,1448 797,6 "/>
+<polyline name="Z97" class="polylineZ" style="stroke-width:2" points="760,6 1105,695 1111,695 1388,1231 1395,1231 1440,1314 "/>
+<polyline name="Z97+1" class="polylineZ" style="stroke-width:2" points="0,1314 150,1593 156,1593 604,2308 "/>
+<polyline name="Z98" class="polylineZ" style="stroke-width:2" points="1036,2308 1086,2308 1440,1736 "/>
+<polyline name="Z98+1" class="polylineZ" style="stroke-width:2" points="0,1736 89,1593 95,1593 294,1231 300,1231 577,695 584,695 930,6 "/>
+<polyline name="Z99" class="polylineZ" style="stroke-width:2" points="177,1645 193,1645 608,2308 664,2308 "/>
+<polyline name="Z100" class="polylineZ" style="stroke-width:2" points="1092,2308 1440,1745 "/>
+<polyline name="Z100+1" class="polylineZ" style="stroke-width:2" points="0,1745 62,1645 83,1645 "/>
 <polyline name="Z112" class="polylineZ" points="431,2300 456,2300 592,2079 598,2079 "/>
 <polyline name="Z114" class="polylineZ" points="1122,2079 1128,2079 1270,2300 1293,2300 "/>
 <polyline name="Z122" class="polylineZ" points="1322,2300 1440,2108 "/>
