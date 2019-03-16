@@ -329,7 +329,7 @@ def getSch12306(t1, t2, train_no, date):
         print('%s %s %s %2d' % (train_no, t1, t2, len(sch['data']['data'])))
         return sch['data']['data']
     else:
-        print ('data error %s %s %s %s' % (train_no, t1, t2, date))
+        print('data error %s %s %s %s' % (train_no, t1, t2, date))
         return []
 
 
@@ -375,7 +375,7 @@ def getsearch12306(kw, date, cache=1):
                                           search['data'][-1]['station_train_code']))
         return search['data'], len(search['data'])
     else:
-        print ('empty %-3s' % (kw))
+        print('empty %-3s' % (kw))
         return [], 0
 
 
@@ -928,7 +928,7 @@ def getLeftTicket(t1, t2, date):
               str(len(ticket['data']['result'])))
         return ticket['data']['result']
     else:
-        print ("data error " + t1 + ' ' + t2 + ' ' + date)
+        print("data error " + t1 + ' ' + t2 + ' ' + date)
         return []
 
 
@@ -965,6 +965,48 @@ for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2
 
 # https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=2018-08-11&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=TJP&purpose_codes=ADULT
 
+'''
+
+
+def gtzwdjsp():
+    url = 'http://www.gtbyxx.com/wxg/ky/zhengwan.jsp'
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
+    resp = requests.get(url, headers=header, timeout=20)
+    body = resp.content.decode('utf-8')
+    match = re.findall(u'<p class="warring">最后更新时间为(\d+)月(\d+)日 (\d+)点(\d+)分。</p>',
+                       body, re.I | re.M)[0]
+    ret = '%s-%s %s:%s' % (match[0].encode('utf-8'), match[1].encode(
+        'utf-8'), match[2].encode('utf-8'), match[3].encode('utf-8'))
+    return ret
+
+
+def gtzwd(date, s):
+    name = 'delay/gt_' + date + '_' + s + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    url = 'http://www.gtbyxx.com/wxg/inter/ky/getTrainZwd'
+    j = {"trainNo": s}
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
+    resp = requests.post(url, data=json.dumps(j), headers=header, timeout=20)
+    body = resp.content.decode('utf-8')
+    #
+    with open(fn, 'wb') as f:
+        f.write(resp.content)
+
+
+'''
+gtzwdjsp()
+gtzwd('2019-03-12', 'z')
+gtzwd('2019-03-12', 't')
+gtzwd('2019-03-12', 'k')
+gtzwd('2019-03-12', 'g')
+gtzwd('2019-03-12', 'd')
+gtzwd('2019-03-12', 'c')
+gtzwd('2019-03-12', 'y')
 '''
 
 
@@ -1154,6 +1196,36 @@ c = readcsv('delay/sort2019-03-10.csv')
 buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|^\d{1,4}")
 
 fn = 'test/190310京九线.svg'
+with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+    if f.tell() == 0:
+        f.write('\xef\xbb\xbf')
+    f.write(buffer)
+
+m = openMilage('test/成昆线里程.txt')
+c = readcsv('delay/sort2019-03-10.csv')
+buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|^\d{1,4}")
+
+fn = 'test/190310成昆线.svg'
+with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+    if f.tell() == 0:
+        f.write('\xef\xbb\xbf')
+    f.write(buffer)
+
+m = openMilage('test/陇海线里程.txt')
+c = readcsv('delay/sort2019-03-10.csv')
+buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|^\d{1,4}")
+
+fn = 'test/190310陇海线.svg'
+with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+    if f.tell() == 0:
+        f.write('\xef\xbb\xbf')
+    f.write(buffer)
+
+m = openMilage('test/京沪高速线里程.txt')
+c = readcsv('delay/sort2019-03-10.csv')
+buffer,_ = csvToSvg(m, c, "(?!G7[012356]\d{1,3})[G]\d{1,4}")
+
+fn = 'test/190310京沪高速.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
