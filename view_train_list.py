@@ -27,6 +27,7 @@ def date_diff(date, diff):
     m = int(match[1])
     d = int(match[2])
     day_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    day_month[2 - 1] = 28
     if y % 4 == 0:
         day_month[2 - 1] = 29
     if y % 100 == 0:
@@ -42,6 +43,7 @@ def date_diff(date, diff):
         while m > 12:
             m -= 12
             y += 1
+            day_month[2 - 1] = 28
             if y % 4 == 0:
                 day_month[2 - 1] = 29
             if y % 100 == 0:
@@ -53,6 +55,7 @@ def date_diff(date, diff):
         m -= 1
         while m < 1:
             y -= 1
+            day_month[2 - 1] = 28
             if y % 4 == 0:
                 day_month[2 - 1] = 29
             if y % 100 == 0:
@@ -1162,10 +1165,10 @@ with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     f.write(buffer)
 
 m = openMilage('test/京广高速线里程.txt')
-c = readcsv('delay/sort2018-09-30.csv')
+c = readcsv('delay/sort2019-03-17.csv')
 buffer,_ = csvToSvg(m, c, "[GDC]\d{1,4}")
 
-fn = 'test/180930京广高速.svg'
+fn = 'test/190317京广高速.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
