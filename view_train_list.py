@@ -1430,7 +1430,7 @@ cycle7(0b1000001, 7)
 def datetostr(date_bin, x):
         if date_bin == all1(x):
             return "", 1
-        if bin_cnt(date_bin) * 7 < x: # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
+        if bin_cnt(date_bin) < x / 7: # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
             #print((f + ' 开行{:>3}日 ').format(train['station_train_code'].encode('utf-8'), date_bin, bin_cnt(date_bin)))
             return ('{:0>'+str(x)+'b} 开行{:>3}日').format(date_bin, bin_cnt(date_bin)), 9
         if bin_cnt(date_bin) * 7 > x * 6: # bin_cnt(date_bin) / bin_cnt(mask) > 6/7
@@ -1470,9 +1470,9 @@ for i in range(maxlen):
         buffer += val
         buffer += '\n'
 
-with open('cycle0331-3.txt', 'wb') as f:
+with open('cycle0331-4.txt', 'wb') as f:
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
-    f.write(buffer
+    f.write(buffer)
 
 '''
