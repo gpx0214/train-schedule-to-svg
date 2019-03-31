@@ -1293,7 +1293,6 @@ with open(fn0, 'r') as f:
 ret = sorted(markJsonSlice(data))
 
 base = ret[0][0]
-base_week = 0
 mask = 0
 cnt = 0
 maxlen = 70000
@@ -1318,7 +1317,6 @@ for i in range(len(ret)):
             key = hash_no(match[0].encode('utf-8')) - 1
             if arr[key] == None:
                 arr[key] = a
-            #输出不同train_no的车次
             if arr[key]['train_no'] != a['train_no']:
                 print('%s %s %s %s'%(arr[key]['train_no'], a['train_no'], date, arr[key]['station_train_code']))
                 arr[key]['train_no'] = a['train_no']
@@ -1331,38 +1329,34 @@ x = bin_cnt(mask)
 f = '{:>5} {:0>'+str(x)+'b}'
 flag = 0
 for i in range(maxlen):
-    if arr[i]:
-        if arr[i]['date'] == mask:
+    for train in arr[i]:
+        if train['date'] == mask:
             cnt[1]+=1
             continue
-        if bin_cnt(arr[i]['date']) * 7 < x: # bin_cnt(arr[i]['date']) / bin_cnt(mask) < 1/7
-            #print((f + ' 开行{:>3}日 ').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], bin_cnt(arr[i]['date'])))
+        if bin_cnt(train['date']) * 7 < x: # bin_cnt(train['date']) / bin_cnt(mask) < 1/7
+            #print((f + ' 开行{:>3}日 ').format(train['station_train_code'].encode('utf-8'), train['date'], bin_cnt(train['date'])))
             cnt[9] += 1
             continue
-        if bin_cnt(arr[i]['date']) * 7 > x * 6: # bin_cnt(arr[i]['date']) / bin_cnt(mask) > 6/7
-            #print((f + ' 停运{:>3}日 ').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], x - bin_cnt(arr[i]['date'])))
+        if bin_cnt(train['date']) * 7 > x * 6: # bin_cnt(train['date']) / bin_cnt(mask) > 6/7
+            #print((f + ' 停运{:>3}日 ').format(train['station_train_code'].encode('utf-8'), train['date'], x - bin_cnt(train['date'])))
             cnt[10] += 1
             continue
         flag = 0
         for step in [2,3,4,5,6,7]:
-            if ((arr[i]['date'] & all1(x//step*step)) % all01(x//step*step, step, 1)) == 0:
-                c = (arr[i]['date'] & all1(x//step*step)) // all01(x//step*step, step, 1) # 取循环节
-                #if ( all01(x//step*step, step, c) & all01(x//step*step, step, c) ) == arr[i]['date']:
-                if ( all01(x, step, c) & all1(x)) == arr[i]['date']:
-                    print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], c))
-                    if step == 2:
-                        print("双" if (c == 0b01) else "单")
-                    if step == 7:
-                        print(cycle7(c, base_week))
+            if ((train['date'] & all1(x//step*step)) % all01(x//step*step, step, 1)) == 0:
+                c = (train['date'] & all1(x//step*step)) // all01(x//step*step, step, 1) # 取循环节
+                if ( all01(x//step*step, step, c) & all01(x//step*step, step, c) ) == train['date']:
+                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(train['station_train_code'].encode('utf-8'), train['date'], c))
                     cnt[step]+=1
                 else:
-                    print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date'], c))
+                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(train['station_train_code'].encode('utf-8'), train['date'], c))
                     cnt[step]+=1
                 flag = 1
                 break
         if flag:
             continue
-        #print(f.format(arr[i]['station_train_code'].encode('utf-8'), arr[i]['date']) + ' ' + str(bin_count11(arr[i]['date'])))
+        print(f.format(train['station_train_code'].encode('utf-8'), train['date']))
+        print(bin_count11(train['date']))
         cnt[0] += 1
 
 
