@@ -1323,7 +1323,7 @@ for i in range(len(ret)):
                 cnt += 1
             arr[key]['date'] |= (1 << i)
 
-
+#停用
 cnt = [0,0,0,0,0,0,0,0,0,0,0,0]
 x = bin_cnt(mask)
 f = '{:>5} {:0>'+str(x)+'b}'
@@ -1425,5 +1425,54 @@ cycle7(0b1000001, 4)
 cycle7(0b1000001, 5)
 cycle7(0b1000001, 6)
 cycle7(0b1000001, 7)
+
+
+def datetostr(date_bin, x):
+        if date_bin == all1(x):
+            return "", 1
+        if bin_cnt(date_bin) * 7 < x: # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
+            #print((f + ' 开行{:>3}日 ').format(train['station_train_code'].encode('utf-8'), date_bin, bin_cnt(date_bin)))
+            return ('{:0>'+str(x)+'b} 开行{:>3}日').format(date_bin, bin_cnt(date_bin)), 9
+        if bin_cnt(date_bin) * 7 > x * 6: # bin_cnt(date_bin) / bin_cnt(mask) > 6/7
+            #print((f + ' 停运{:>3}日 ').format(train['station_train_code'].encode('utf-8'), date_bin, x - bin_cnt(date_bin)))
+            return ('{:0>'+str(x)+'b} 停运{:>3}日').format(date_bin, x - bin_cnt(date_bin)), 10
+        for step in [2,3,4,5,6,7]:
+            if ((date_bin & all1(x//step*step)) % all01(x//step*step, step, 1)) == 0:
+                c = (date_bin & all1(x//step*step)) // all01(x//step*step, step, 1) # 取循环节
+                if ( all01(x//step*step, step, c) & all01(x//step*step, step, c) ) == date_bin:
+                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(train['station_train_code'].encode('utf-8'), date_bin, c))
+                    return ('{:0>'+str(step)+'b}').format(c), step
+                else:
+                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(train['station_train_code'].encode('utf-8'), date_bin, c))
+                    return ('{:0>'+str(step)+'b} 不完整').format(c), step
+        return ('{:0>'+str(x)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
+
+datetostr(all1(28), 28)
+datetostr(all1(28)/3, 28)
+datetostr(all1(28)/127, 28)
+datetostr(all1(28) - 1, 28)
+datetostr(1, 28)
+
+#输出去重的train_list
+cnt = [0,0,0,0,0,0,0,0,0,0,0,0]
+x = bin_cnt(mask)
+buffer = ''
+for i in range(maxlen):
+    for train in arr[i]:
+        buffer += '%s,%s,%s,%s,%d,'%(train['station_train_code'].encode('utf-8'),
+            train['from_station'].encode('utf-8'),
+            train['to_station'].encode('utf-8'),
+            train['train_no'].encode('utf-8'),
+            train['total_num']
+        )
+        val, status = datetostr(train['date'], x)
+        cnt[status] += 1
+        buffer += val
+        buffer += '\n'
+
+with open('cycle0331-3.txt', 'wb') as f:
+    if f.tell() == 0:
+        f.write('\xef\xbb\xbf')
+    f.write(buffer
 
 '''
