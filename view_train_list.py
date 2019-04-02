@@ -819,14 +819,14 @@ polyline {
     return buffer, num
 
 
-def train_list_type_str(t):
+def train_list_class_str(t):
     s = ''
     for date in sorted(t.keys()):
-        s += train_list_day_type_str(t[date], date)
+        s += train_list_day_class_str(t[date], date)
     return s
 
 
-def train_list_day_type_str(d, date):
+def train_list_day_class_str(d, date):
     ss = ''
     ss += (date.encode('utf-8'))
     for train_class in d:
@@ -1091,7 +1091,7 @@ if __name__ == '__main__':
         print(str(train_num) + " trains")
         print(str(block) + " blocks")
         print(s)
-        print(train_list_type_str(t))
+        print(train_list_class_str(t))
         station = getStation(fn1)
         checkAllSch12306(t, station)
         savecsv(t, station)
@@ -1121,7 +1121,7 @@ if __name__ == '__main__':
         s = ''
         d = json.loads(data[ret[i][1]:ret[i][2]])
         date = ret[i][0]
-        s += (train_list_day_type_str(d, date))
+        s += (train_list_day_class_str(d, date))
         checkDateSch12306(d, station, date)
         n = savedatecsv(d, station, date)
         s += "\t" + str(n)
