@@ -1287,11 +1287,13 @@ from view_train_list import *
 fn0 = 'js/train_list.js'
 
 with open(fn0, 'r') as f:
+#with open(fn0, 'r', encoding='utf-8') as f:
         _ = f.read(16)
         data = f.read()
 
 ret = sorted(markJsonSlice(data))
 
+#停用
 base = ret[0][0]
 mask = 0
 cnt = 0
@@ -1402,20 +1404,34 @@ def bin_count17(n):
     temp = n
     while temp:
         ans += 7
-        print('{:0>45b}'.format(temp))
+        #print('{:0>45b}'.format(temp))
         temp &= n >> ans
     return ans
 
 bin_count17(0b0001000000000000110000011000001)
 
+
+def left7(c, base_week):
+    c <<= base_week
+    c |=  c >> 7
+    c &= 0x7f
+    return c
+
 def cycle7(c, base_week):
     model = '71234567'
     ret = ''
-    #c = c | c << 7
-    for i in range(1,8):
-        if c & (1 << (i - base_week) % 7):
+    c <<= base_week
+    c |=  c >> 7
+    c &= 0x7f
+    if c == 0b01100011:
+        return '5671'
+    if c == 0b01000001:
+        return '67'
+    for i in range(7):
+        if c & (1 << i):
             ret += model[i]
     return ret
+
 
 cycle7(0b1000001, 0)
 cycle7(0b1000001, 1)
@@ -1425,6 +1441,77 @@ cycle7(0b1000001, 4)
 cycle7(0b1000001, 5)
 cycle7(0b1000001, 6)
 cycle7(0b1000001, 7)
+
+
+def get_one_slice(n ,x):
+    ret = []
+    a=-1
+    b=-1
+    status = 0
+    for i in range(x):
+        if n & (1 << i):
+            #print('1 %d %d'%(status,i))
+            if status == 0:
+                a=i
+            b=i
+            status = 1
+        else:
+            #print('0 %d %d'%(status,i))
+            if status == 1:
+                ret.append([a,b])
+            status = 0
+    if status == 1:
+        ret.append([a,b])
+    ans = ''
+    for i in range(len(ret)):
+        if i > 0:
+            ans += ","
+        if ret[i][0] == ret[i][1]:
+            ans += str(ret[i][0])
+            continue
+        else:
+            ans += '%d-%d'%(ret[i][0],ret[i][1])
+    return ans
+
+def get_zero_slice(n ,x):
+    ret = []
+    a=-1
+    b=-1
+    status = 1
+    for i in range(x):
+        if n & (1 << i):
+            #print('0 %d %d'%(status,i))
+            if status == 1:
+                ret.append([a,b])
+            status = 1
+        else:
+            #print('1 %d %d'%(status,i))
+            if status == 0:
+                a=i
+            b=i
+            status = 0
+    if status == 0:
+        ret.append([a,b])
+    ans = ''
+    for i in range(len(ret)):
+        if i > 0:
+            ans += ","
+        if ret[i][0] == ret[i][1]:
+            ans += str(ret[i][0])
+            continue
+        else:
+            ans += '%d-%d'%(ret[i][0],ret[i][1])
+    return ans
+
+get_one_slice(0b000000000001111111111111000011111111111111000 ,45)
+get_one_slice(0b100000000000000000000001000011111111111111000 ,45)
+get_one_slice(0b000000000000000000000000000011111111111111000 ,45)
+get_one_slice(0b111111111111111111111111111100000000000000000 ,45)
+
+get_zero_slice(0b000000000001111111111111000011111111111111000 ,45)
+get_zero_slice(0b100000000000000000000001000011111111111111000 ,45)
+get_zero_slice(0b000000000000000000000000000011111111111111000 ,45)
+get_zero_slice(0b111111111111111111111111111100000000000000000 ,45)
 
 
 def datetostr(date_bin, x):
@@ -1453,8 +1540,42 @@ datetostr(all1(28)/127, 28)
 datetostr(all1(28) - 1, 28)
 datetostr(1, 28)
 
-#输出去重的train_list
-cnt = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+base = ret[0][0]
+mask = 0
+cnt = 0
+maxlen = 70000
+arr = [[] for i in range(maxlen)]
+stat = [0 for i in range(maxlen)]
+for i in range(len(ret)):
+    #date_diff(base, i)
+    date = ret[i][0]
+    d = json.loads(data[ret[i][1]:ret[i][2]])
+    print(date)
+    mask |= (1 << i)
+    for type in d:
+        for ii in range(0, len(d[type])):
+            match = re.findall(r'(.*)\((.*)-(.*)\)',d[type][ii]['station_train_code'], re.I | re.M)[0]
+            a = {}
+            a['station_train_code'] = match[0]
+            a['from_station'] = match[1]
+            a['to_station'] = match[2]
+            a['train_no'] = d[type][ii]['train_no']
+            a['total_num'] = 0
+            a['date'] = 0
+            key = hash_no(match[0]) - 1
+            found = 0
+            for train in arr[key]:
+                if train['train_no'] == a['train_no']:
+                    train['date'] |= (1 << i)
+                    found = 1
+                    break
+            if found == 0:
+                a['date'] |= (1 << i)
+                arr[key].append(a)
+
+
+cnt = [0,0,0,0,0,0,0,0,0,0,0,0,0]
 x = bin_cnt(mask)
 buffer = ''
 for i in range(maxlen):
@@ -1470,9 +1591,12 @@ for i in range(maxlen):
         buffer += val
         buffer += '\n'
 
-with open('cycle0331-4.txt', 'wb') as f:
+with open('cycle0401-6.txt', 'wb') as f:
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
     f.write(buffer)
+
+
+w=y+y//4+c//4-2*c+(13*(m+1))//5+d-1
 
 '''
