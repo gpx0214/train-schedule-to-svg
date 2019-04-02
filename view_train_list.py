@@ -1147,16 +1147,7 @@ def get_one_slice(n, size):
             status = 0
     if status == 1:
         ret.append([a, b])
-    ans = ''
-    for i in range(len(ret)):
-        if i > 0:
-            ans += ","
-        if ret[i][0] == ret[i][1]:
-            ans += str(ret[i][0])
-            continue
-        else:
-            ans += '%d-%d' % (ret[i][0], ret[i][1])
-    return ans
+    return ret
 
 
 def get_zero_slice(n, size):
@@ -1178,6 +1169,10 @@ def get_zero_slice(n, size):
             status = 0
     if status == 0:
         ret.append([a, b])
+    return ret
+
+
+def slice_to_str(ret):
     ans = ''
     for i in range(len(ret)):
         if i > 0:
@@ -1194,9 +1189,11 @@ def compress_bin_vector(date_bin, size):
     if date_bin == all1(size):
         return "", 1
     if bin_cnt(date_bin) < size / 7:  # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
-        return ('{:0>'+str(size)+'b} 开行{:>3}日').format(date_bin, bin_cnt(date_bin)), 9
+        return "开行" + slice_to_str(get_one_slice(date_bin, size)), 9
     if bin_cnt(date_bin) * 7 > size * 6:  # bin_cnt(date_bin) / bin_cnt(mask) > 6/7
-        return ('{:0>'+str(size)+'b} 停运{:>3}日').format(date_bin, size - bin_cnt(date_bin)), 10
+        return "停运" + slice_to_str(get_zero_slice(date_bin, size)), 10
+    if bin_cnt(date_bin) == bin_count11(date_bin):
+        return slice_to_str(get_one_slice(date_bin, size)), 8
     for step in [2, 3, 4, 5, 6, 7]:
         if ((date_bin & all1(size//step*step)) % all01(size//step*step, step, 1)) == 0:
             c = (date_bin & all1(size//step*step)) // all01(size//step*step, step, 1)  # 取循环节
