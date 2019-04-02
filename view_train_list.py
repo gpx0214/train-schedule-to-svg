@@ -482,11 +482,11 @@ def checkAllSch12306(t, station):
 
 
 def checkDateSch12306(d, station, date):
-    for type in d:
-        for i in range(0, len(d[type])):
-            sch = processA(d[type][i], date, station)
+    for train_class in d:
+        for i in range(0, len(d[train_class])):
+            sch = processA(d[train_class][i], date, station)
             if len(sch) == 0:
-                processA(d[type][i], date, station)
+                processA(d[train_class][i], date, station)
 
 
 def savecsv(t, station):
@@ -499,15 +499,15 @@ def savedatecsv(d, station, date):
     num = 0
     stat = [0 for i in range(1440)]
     ret = [[] for i in range(1440)]
-    for type in d:
-        for i in range(0, len(d[type])):
-            a = d[type][i]
+    for train_class in d:
+        for i in range(0, len(d[train_class])):
+            a = d[train_class][i]
             match = re.findall(r'(.*)\((.*)-(.*)\)',
                                a['station_train_code'], re.I | re.M)[0]
             if (match[0] in a['train_no']) == False:
                 # print(match[0] +' '+ a['train_no']); #切换上下行
                 continue
-            schdata = processA(d[type][i], date, station)
+            schdata = processA(d[train_class][i], date, station)
             s = schToCsv(schdata)
             num += len(s)
             for row in s:
@@ -829,8 +829,8 @@ def train_list_type_str(t):
 def train_list_day_type_str(d, date):
     ss = ''
     ss += (date.encode('utf-8'))
-    for type in d:
-        ss += ('\t' + type.encode('utf-8') + ' ' + str(len(d[type])))
+    for train_class in d:
+        ss += ('\t' + train_class.encode('utf-8') + ' ' + str(len(d[train_class])))
     #ss += '\n'
     return ss
 
@@ -840,9 +840,9 @@ def hash_no(s):
              ('G', 40000), ('D', 50000), ('C', 60000),
              ('Y', 00000), ('S', 60000), ('P', 00000)]  # ('Y',70000),('S',71000),('P',80000)
     d = dict(items)
-    type = d[s[0]] if s[0] in d else 0
+    train_class = d[s[0]] if s[0] in d else 0
     n = int(re.sub(r'\D+', '', s))
-    return type + n
+    return train_class + n
 
 
 def unhash_no(n):
@@ -852,27 +852,27 @@ def unhash_no(n):
     head = ["", "Z", "T", "K", "G", "D", "C"]
     if n > 70000:
         return ""
-    type = head[(n-1) // 10000]
+    train_class = head[(n-1) // 10000]
     if n <= 1000:
-        type = "Y"
+        train_class = "Y"
     if n <= 100:
-        type = "P"
+        train_class = "P"
     if n > 60000 and n <= 61000:
-        type = "C"
+        train_class = "C"
     for i in range(len(items)):
-        if type == items[i][0]:
-            return type + str(n-items[i][1])
+        if train_class == items[i][0]:
+            return train_class + str(n-items[i][1])
     return str(n)
 
 
 def train_list_train_no_array(t, maxlen):
     arr = ['' for i in range(maxlen)]
     for date in sorted(t.keys()):
-        for type in t[date]:
-            # for type in ['Z']:
-            for i in range(0, len(t[date][type])):
+        for train_class in t[date]:
+            # for train_class in ['Z']:
+            for i in range(0, len(t[date][train_class])):
                 # for i in range(0,1):
-                a = t[date][type][i]
+                a = t[date][train_class][i]
                 match = re.findall(r'(.*)\((.*)-(.*)\)',
                                    a['station_train_code'], re.I | re.M)[0]
                 arr[hash_no(match[0].encode('utf-8')) -
@@ -1306,14 +1306,14 @@ for i in range(len(ret)):
     d = json.loads(data[ret[i][1]:ret[i][2]])
     print(date)
     mask |= (1 << i)
-    for type in d:
-        for ii in range(0, len(d[type])):
-            match = re.findall(r'(.*)\((.*)-(.*)\)',d[type][ii]['station_train_code'], re.I | re.M)[0]
+    for train_class in d:
+        for ii in range(0, len(d[train_class])):
+            match = re.findall(r'(.*)\((.*)-(.*)\)',d[train_class][ii]['station_train_code'], re.I | re.M)[0]
             a = {}
             a['station_train_code'] = match[0]
             a['from_station'] = match[1]
             a['to_station'] = match[2]
-            a['train_no'] = d[type][ii]['train_no']
+            a['train_no'] = d[train_class][ii]['train_no']
             a['total_num'] = 0
             a['date'] = 0
             key = hash_no(match[0].encode('utf-8')) - 1
@@ -1481,12 +1481,12 @@ def get_zero_slice(n ,x):
     for i in range(x):
         if n & (1 << i):
             #print('0 %d %d'%(status,i))
-            if status == 1:
+            if status == 0:
                 ret.append([a,b])
             status = 1
         else:
             #print('1 %d %d'%(status,i))
-            if status == 0:
+            if status == 1:
                 a=i
             b=i
             status = 0
@@ -1553,14 +1553,14 @@ for i in range(len(ret)):
     d = json.loads(data[ret[i][1]:ret[i][2]])
     print(date)
     mask |= (1 << i)
-    for type in d:
-        for ii in range(0, len(d[type])):
-            match = re.findall(r'(.*)\((.*)-(.*)\)',d[type][ii]['station_train_code'], re.I | re.M)[0]
+    for train_class in d:
+        for ii in range(0, len(d[train_class])):
+            match = re.findall(r'(.*)\((.*)-(.*)\)',d[train_class][ii]['station_train_code'], re.I | re.M)[0]
             a = {}
             a['station_train_code'] = match[0]
             a['from_station'] = match[1]
             a['to_station'] = match[2]
-            a['train_no'] = d[type][ii]['train_no']
+            a['train_no'] = d[train_class][ii]['train_no']
             a['total_num'] = 0
             a['date'] = 0
             key = hash_no(match[0]) - 1
