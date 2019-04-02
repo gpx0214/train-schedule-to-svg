@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # tested in python 2.7.15 on win10 x64
+# tested in python 2.7.14 on centos7 x64
 # tested in python 2.7.5 on centos7 x64
 
 from __future__ import print_function
@@ -16,9 +17,6 @@ import time
 #import random
 
 import requests
-
-
-import datetime
 
 
 def date_diff(date, diff):
@@ -91,37 +89,7 @@ def cmpbyTime(a1, a2):
     return 0
 
 
-def cmpbyTrain(a1, a2):
-    if (len(a1) < 5):
-        return 0
-    if (len(a2) < 5):
-        return 0
-    train1 = a1[0]
-    train2 = a2[0]
-    if train1 > train2:
-        return 1
-    if train1 < train2:
-        return -1
-    d1 = int(a1[2])
-    d2 = int(a2[2])
-    if d1 > d2:
-        return 1
-    if d1 < d2:
-        return -1
-    t1 = getmin(a1[3])
-    t2 = getmin(a2[3])
-    if t1 > t2:
-        return 1
-    if t1 < t2:
-        return -1
-    if int(a1[4]) > int(a2[4]):
-        return 1
-    if int(a1[4]) < int(a2[4]):
-        return -1
-    return 0
-
-
-def cmpbyTrain0(a1, a2):
+def cmpby0_i2_i3_m4_i5(a1, a2):
     if (len(a1) < 5):
         return 0
     if (len(a2) < 5):
@@ -150,16 +118,16 @@ def cmpbyTrain0(a1, a2):
         return 1
     if t1 < t2:
         return -1
-    if int(a1[4]) > int(a2[5]):
+    if int(a1[5]) > int(a2[5]):
         return 1
-    if int(a1[4]) < int(a2[5]):
+    if int(a1[5]) < int(a2[5]):
         return -1
     return 0
 
 
-def getmin(str):
+def getmin(s):
     try:
-        a, b = str.split(':')[0:2]
+        a, b = s.split(':')[0:2]
         return int(a)*60+int(b)
     except:
         return -1
@@ -169,8 +137,8 @@ def getmin(str):
 def getStation(fn):
     # f = open(fn, 'r',encoding = 'utf8'); #py3
     with open(fn, 'r') as f:  # py2
-        str = f.read()
-    a = re.findall(r'\'\@([^\']+)\'', str, re.I | re.M)[0]
+        s = f.read()
+    a = re.findall(r'\'\@([^\']+)\'', s, re.I | re.M)[0]
     s = a.split('@')
     for i in range(len(s)):
         s[i] = s[i].split('|')
@@ -188,11 +156,11 @@ def getStation(fn):
     return s
 
 
-def telecode(str, station):
+def telecode(s, station):
     for i in range(len(station)):
-        if str == station[i][1]:
+        if s == station[i][1]:
             return station[i][2]
-    # print(str)
+    # print(s)
     return ''
 
 
@@ -341,11 +309,13 @@ def getsearch12306(kw, date, cache=1):
             data = f.read()
         search = json.loads(data)
         if search['status'] == True and len(search['data']):
-            print('read  %-3s %3d %5s-%5s' % (kw, len(search['data']),
-                                              search['data'][0]['station_train_code'],
-                                              search['data'][-1]['station_train_code']))
+            print('read  %-3s %3d %5s-%5s' % (
+                kw, len(search['data']),
+                search['data'][0]['station_train_code'],
+                search['data'][-1]['station_train_code'])
+            )
             return search['data'], len(search['data'])
-
+    #
     url = "https://search.12306.cn/search/v1/train/search?keyword=" + \
         kw + "&date=" + yyyymmdd
     #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
@@ -365,9 +335,11 @@ def getsearch12306(kw, date, cache=1):
     if search['status'] == True and len(search['data']):
         with open(fn, 'wb') as f:
             f.write(resp.content)
-        print('save  %-3s %3d %5s-%5s' % (kw, len(search['data']),
-                                          search['data'][0]['station_train_code'],
-                                          search['data'][-1]['station_train_code']))
+        print('save  %-3s %3d %5s-%5s' % (
+            kw, len(search['data']),
+            search['data'][0]['station_train_code'],
+            search['data'][-1]['station_train_code'])
+        )
         return search['data'], len(search['data'])
     else:
         print('empty %-3s' % (kw))
@@ -664,11 +636,16 @@ def schToPolyline(s, m):
             if x < lastx:
                 day += 1
                 #1440, (lasty-y)*x/((1440+x-lastx))+y
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' \
-                    % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
-                       s[0]['station_train_code'].encode('utf-8'), day,
-                       s[0]['station_train_code'].encode('utf-8')[:1],
-                       0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' % (
+                    1440,
+                    (int(lasty)-int(y))*int(x) /
+                    ((1440+int(x)-int(lastx)))+int(y),
+                    s[0]['station_train_code'].encode('utf-8'), day,
+                    s[0]['station_train_code'].encode('utf-8')[:1],
+                    0,
+                    (int(lasty)-int(y))*int(x) /
+                    ((1440+int(x)-int(lastx)))+int(y)
+                )
             lastx = x
             lasty = y
             buffer += '%s,%s ' % (x, y)
@@ -678,11 +655,16 @@ def schToPolyline(s, m):
         if y > -1 and i < len(s)-1:
             if x < lastx:
                 day += 1
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' \
-                    % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
-                       s[0]['station_train_code'].encode('utf-8'), day,
-                       s[0]['station_train_code'].encode('utf-8')[:1],
-                       0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' % (
+                    1440,
+                    (int(lasty)-int(y))*int(x) /
+                    ((1440+int(x)-int(lastx)))+int(y),
+                    s[0]['station_train_code'].encode('utf-8'), day,
+                    s[0]['station_train_code'].encode('utf-8')[:1],
+                    0,
+                    (int(lasty)-int(y))*int(x) /
+                    ((1440+int(x)-int(lastx)))+int(y)
+                )
             lastx = x
             lasty = y
             buffer += '%s,%s ' % (x, y)
@@ -707,10 +689,15 @@ def csvToPolyline(c, m):
             if x < lastx:
                 day += 1
                 #1440, (lasty-y)*x/((1440+x-lastx))+y
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' \
-                    % (1440, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y),
-                       c[0][0], day, c[0][0][:1],
-                       0, (int(lasty)-int(y))*int(x)/((1440+int(x)-int(lastx)))+int(y))
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' % (
+                    1440,
+                    (int(lasty)-int(y))*int(x) /
+                    ((1440+int(x)-int(lastx)))+int(y),
+                    c[0][0], day, c[0][0][:1],
+                    0,
+                    (int(lasty)-int(y))*int(x) /
+                    ((1440+int(x)-int(lastx)))+int(y)
+                )
             lastx = x
             lasty = y
             buffer += '%s,%s ' % (x, y)
@@ -804,7 +791,7 @@ polyline {
                 flag = 1
         if flag and len(r.findall(arr[i][0][0])) > 0:
             num += 1
-            arr[i] = sorted(arr[i], cmpbyTrain0)
+            arr[i] = sorted(arr[i], cmpby0_i2_i3_m4_i5)
             buffer += csvToPolyline(arr[i], m)
     #
     buffer += ('</svg>')
@@ -866,10 +853,12 @@ def train_list_train_no_array(t, maxlen):
             for i in range(0, len(t[date][train_class])):
                 # for i in range(0,1):
                 a = t[date][train_class][i]
-                match = re.findall(r'(.*)\((.*)-(.*)\)',
-                                   a['station_train_code'], re.I | re.M)[0]
-                arr[hash_no(match[0].encode('utf-8')) -
-                    1] = a['train_no'].encode('utf-8')
+                match = re.findall(
+                    r'(.*)\((.*)-(.*)\)',
+                    a['station_train_code'],
+                    re.I | re.M
+                )[0]
+                arr[hash_no(match[0].encode('utf-8')) - 1] = a['train_no'].encode('utf-8')
     return arr
 
 
@@ -970,7 +959,7 @@ def gtzwdjsp():
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     resp = requests.get(url, headers=header, timeout=20)
     body = resp.content.decode('utf-8')
-    match = re.findall(u'<p class="warring">最后更新时间为(\d+)月(\d+)日 (\d+)点(\d+)分。</p>',
+    match = re.findall(r'<p class="warring">最后更新时间为(\d+)月(\d+)日 (\d+)点(\d+)分。</p>',
                        body, re.I | re.M)[0]
     ret = '%s-%s %s:%s' % (match[0].encode('utf-8'), match[1].encode(
         'utf-8'), match[2].encode('utf-8'), match[3].encode('utf-8'))
@@ -1060,7 +1049,7 @@ def markJsonSlice(data):
     return ret
 
 
-#compress trsin_list.js
+# compress trsin_list.js
 def bin_cnt(x):
     ans = 0
     while x:
@@ -1069,18 +1058,18 @@ def bin_cnt(x):
     return ans
 
 
-def all1(x):
+def all1(size):
     ans = 0
-    while x:
-        x -= 1
-        ans |= 1 << x
+    while size:
+        size -= 1
+        ans |= 1 << size
     return ans
 
 
-def all01(x, y, c):
+def all01(size, y, c):
     ans = 0
     ii = 0
-    while ii < x:
+    while ii < size:
         ans |= c << ii
         ii += y
     return ans
@@ -1139,12 +1128,12 @@ def cycle7(c, base_week):
     return ret
 
 
-def get_one_slice(n, x):
+def get_one_slice(n, size):
     ret = []
     a = -1
     b = -1
     status = 0
-    for i in range(x):
+    for i in range(size):
         if n & (1 << i):
             #print('1 %d %d'%(status,i))
             if status == 0:
@@ -1170,12 +1159,12 @@ def get_one_slice(n, x):
     return ans
 
 
-def get_zero_slice(n, x):
+def get_zero_slice(n, size):
     ret = []
     a = -1
     b = -1
     status = 1
-    for i in range(x):
+    for i in range(size):
         if n & (1 << i):
             #print('0 %d %d'%(status,i))
             if status == 0:
@@ -1201,37 +1190,31 @@ def get_zero_slice(n, x):
     return ans
 
 
-def datetostr(date_bin, x):
-    if date_bin == all1(x):
+def compress_bin_vector(date_bin, size):
+    if date_bin == all1(size):
         return "", 1
-    if bin_cnt(date_bin) < x / 7:  # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
-        #print((f + ' 开行{:>3}日 ').format(train['station_train_code'].encode('utf-8'), date_bin, bin_cnt(date_bin)))
-        return ('{:0>'+str(x)+'b} 开行{:>3}日').format(date_bin, bin_cnt(date_bin)), 9
-    if bin_cnt(date_bin) * 7 > x * 6:  # bin_cnt(date_bin) / bin_cnt(mask) > 6/7
-        #print((f + ' 停运{:>3}日 ').format(train['station_train_code'].encode('utf-8'), date_bin, x - bin_cnt(date_bin)))
-        return ('{:0>'+str(x)+'b} 停运{:>3}日').format(date_bin, x - bin_cnt(date_bin)), 10
+    if bin_cnt(date_bin) < size / 7:  # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
+        return ('{:0>'+str(size)+'b} 开行{:>3}日').format(date_bin, bin_cnt(date_bin)), 9
+    if bin_cnt(date_bin) * 7 > size * 6:  # bin_cnt(date_bin) / bin_cnt(mask) > 6/7
+        return ('{:0>'+str(size)+'b} 停运{:>3}日').format(date_bin, size - bin_cnt(date_bin)), 10
     for step in [2, 3, 4, 5, 6, 7]:
-        if ((date_bin & all1(x//step*step)) % all01(x//step*step, step, 1)) == 0:
-            c = (date_bin & all1(x//step*step)
-                 ) // all01(x//step*step, step, 1)  # 取循环节
-            if (all01(x//step*step, step, c) & all01(x//step*step, step, c)) == date_bin:
-                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(train['station_train_code'].encode('utf-8'), date_bin, c))
+        if ((date_bin & all1(size//step*step)) % all01(size//step*step, step, 1)) == 0:
+            c = (date_bin & all1(size//step*step)) // all01(size//step*step, step, 1)  # 取循环节
+            if (all01(size//step*step, step, c) & all01(size//step*step, step, c)) == date_bin:
                 return ('{:0>'+str(step)+'b}').format(c), step
             else:
-                #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(train['station_train_code'].encode('utf-8'), date_bin, c))
                 return ('{:0>'+str(step)+'b} 不完整').format(c), step
-    return ('{:0>'+str(x)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
+    return ('{:0>'+str(size)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
 
 
 def compress_train_list(fn0):
     with open(fn0, 'r') as f:
-        # with open(fn0, 'r', encoding='utf-8') as f:
+    # with open(fn0, 'r', encoding='utf-8') as f: #py3
         _ = f.read(16)
         data = f.read()
     ret = sorted(markJsonSlice(data))
     base = ret[0][0]
     mask = 0
-    cnt = 0
     maxlen = 70000
     arr = [[] for i in range(maxlen)]
     for i in range(len(ret)):
@@ -1240,30 +1223,29 @@ def compress_train_list(fn0):
         d = json.loads(data[ret[i][1]:ret[i][2]])
         print(date)
         mask |= (1 << i)
-        for train_class in d:
-            for ii in range(0, len(d[train_class])):
+        for c in d:
+            for ii in range(0, len(d[c])):
                 match = re.findall(
-                    r'(.*)\((.*)-(.*)\)', d[train_class][ii]['station_train_code'], re.I | re.M)[0]
+                    r'(.*)\((.*)-(.*)\)', d[c][ii]['station_train_code'], re.I | re.M)[0]
                 a = {}
                 a['station_train_code'] = match[0]
                 a['from_station'] = match[1]
                 a['to_station'] = match[2]
-                a['train_no'] = d[train_class][ii]['train_no']
+                a['train_no'] = d[c][ii]['train_no']
                 a['total_num'] = 0
-                a['date'] = 0
+                a['date'] = (1 << i)
                 key = hash_no(match[0]) - 1
                 found = 0
                 for train in arr[key]:
                     if train['train_no'] == a['train_no']:
-                        train['date'] |= (1 << i)
+                        train['date'] |= a['date']
                         found = 1
                         break
                 if found == 0:
-                    a['date'] |= (1 << i)
                     arr[key].append(a)
     #
-    cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    x = bin_cnt(mask)
+    stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    size = bin_cnt(mask)
     buffer = ''
     for i in range(maxlen):
         for train in arr[i]:
@@ -1274,12 +1256,15 @@ def compress_train_list(fn0):
                 train['train_no'].encode('utf-8'),
                 train['total_num']
             )
-            val, status = datetostr(train['date'], x)
-            cnt[status] += 1
+            val, status = compress_bin_vector(train['date'], size)
+            stat[status] += 1
             buffer += val
             buffer += '\n'
     #
-    with open('cycle.txt', 'wb') as f:
+    fn1 = 'train_list_' + re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)', r"\2\3\4", base) + \
+        '_' + re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
+                     r"\2\3\4", ret[-1][0]) + '.txt'
+    with open(fn1, 'wb') as f:
         if f.tell() == 0:
             f.write('\xef\xbb\xbf')
         f.write(buffer)
@@ -1354,6 +1339,7 @@ from view_train_list import *
 
 station = getStation('js/station_name.js')
 
+import datetime
 base = datetime.datetime.now().strftime('%Y-%m-%d');
 for d in range(1,2):
     date = date_diff(base,d)
@@ -1371,7 +1357,6 @@ for d in range(1,2):
 '''
 from view_train_list import *
 
-t = openTrainList('js/train_list.js')
 station = getStation('js/station_name.js')
 #savecsv(t,station)
 m = openMilage('test/京沪高速线里程.txt')
@@ -1522,11 +1507,11 @@ get_zero_slice(0b000000000000000000000000000011111111111111000 ,45)
 get_zero_slice(0b111111111111111111111111111100000000000000000 ,45)
 
 
-datetostr(all1(28), 28)
-datetostr(all1(28)/3, 28)
-datetostr(all1(28)/127, 28)
-datetostr(all1(28) - 1, 28)
-datetostr(1, 28)
+compress_bin_vector(all1(28), 28)
+compress_bin_vector(all1(28)/3, 28)
+compress_bin_vector(all1(28)/127, 28)
+compress_bin_vector(all1(28) - 1, 28)
+compress_bin_vector(1, 28)
 
 
 w=y+y//4+c//4-2*c+(13*(m+1))//5+d-1
