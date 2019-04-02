@@ -68,14 +68,6 @@ def date_diff(date, diff):
     return '%04d-%02d-%02d' % (y, m, d)
 
 
-def bin_cnt(x):
-    ans = 0
-    while x:
-        x &= x - 1
-        ans += 1
-    return ans
-
-
 def print_stat(stat):
     buffer = ''
     for i in range(len(stat)):
@@ -830,7 +822,8 @@ def train_list_day_class_str(d, date):
     ss = ''
     ss += (date.encode('utf-8'))
     for train_class in d:
-        ss += ('\t' + train_class.encode('utf-8') + ' ' + str(len(d[train_class])))
+        ss += ('\t' + train_class.encode('utf-8') +
+               ' ' + str(len(d[train_class])))
     #ss += '\n'
     return ss
 
@@ -1067,6 +1060,233 @@ def markJsonSlice(data):
     return ret
 
 
+#compress trsin_list.js
+def bin_cnt(x):
+    ans = 0
+    while x:
+        x &= x - 1
+        ans += 1
+    return ans
+
+
+def all1(x):
+    ans = 0
+    while x:
+        x -= 1
+        ans |= 1 << x
+    return ans
+
+
+def all01(x, y, c):
+    ans = 0
+    ii = 0
+    while ii < x:
+        ans |= c << ii
+        ii += y
+    return ans
+
+
+def bin_count11(n):
+    ans = 0
+    temp = n
+    while temp:
+        ans += 1
+        # print('{:0>45b}'.format(temp))
+        temp &= n >> ans
+    return ans
+
+
+def bin_count12(n):
+    ans = 0
+    temp = n
+    while temp:
+        ans += 2
+        # print('{:0>45b}'.format(temp))
+        temp &= n >> ans
+    return ans
+
+
+def bin_count17(n):
+    ans = 0
+    temp = n
+    while temp:
+        ans += 7
+        # print('{:0>45b}'.format(temp))
+        temp &= n >> ans
+    return ans
+
+
+def left7(c, base_week):
+    c <<= base_week
+    c |= c >> 7
+    c &= 0x7f
+    return c
+
+
+def cycle7(c, base_week):
+    model = '71234567'
+    ret = ''
+    c <<= base_week
+    c |= c >> 7
+    c &= 0x7f
+    if c == 0b01100011:
+        return '5671'
+    if c == 0b01000001:
+        return '67'
+    for i in range(7):
+        if c & (1 << i):
+            ret += model[i]
+    return ret
+
+
+def get_one_slice(n, x):
+    ret = []
+    a = -1
+    b = -1
+    status = 0
+    for i in range(x):
+        if n & (1 << i):
+            #print('1 %d %d'%(status,i))
+            if status == 0:
+                a = i
+            b = i
+            status = 1
+        else:
+            #print('0 %d %d'%(status,i))
+            if status == 1:
+                ret.append([a, b])
+            status = 0
+    if status == 1:
+        ret.append([a, b])
+    ans = ''
+    for i in range(len(ret)):
+        if i > 0:
+            ans += ","
+        if ret[i][0] == ret[i][1]:
+            ans += str(ret[i][0])
+            continue
+        else:
+            ans += '%d-%d' % (ret[i][0], ret[i][1])
+    return ans
+
+
+def get_zero_slice(n, x):
+    ret = []
+    a = -1
+    b = -1
+    status = 1
+    for i in range(x):
+        if n & (1 << i):
+            #print('0 %d %d'%(status,i))
+            if status == 0:
+                ret.append([a, b])
+            status = 1
+        else:
+            #print('1 %d %d'%(status,i))
+            if status == 1:
+                a = i
+            b = i
+            status = 0
+    if status == 0:
+        ret.append([a, b])
+    ans = ''
+    for i in range(len(ret)):
+        if i > 0:
+            ans += ","
+        if ret[i][0] == ret[i][1]:
+            ans += str(ret[i][0])
+            continue
+        else:
+            ans += '%d-%d' % (ret[i][0], ret[i][1])
+    return ans
+
+
+def datetostr(date_bin, x):
+    if date_bin == all1(x):
+        return "", 1
+    if bin_cnt(date_bin) < x / 7:  # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
+        #print((f + ' 开行{:>3}日 ').format(train['station_train_code'].encode('utf-8'), date_bin, bin_cnt(date_bin)))
+        return ('{:0>'+str(x)+'b} 开行{:>3}日').format(date_bin, bin_cnt(date_bin)), 9
+    if bin_cnt(date_bin) * 7 > x * 6:  # bin_cnt(date_bin) / bin_cnt(mask) > 6/7
+        #print((f + ' 停运{:>3}日 ').format(train['station_train_code'].encode('utf-8'), date_bin, x - bin_cnt(date_bin)))
+        return ('{:0>'+str(x)+'b} 停运{:>3}日').format(date_bin, x - bin_cnt(date_bin)), 10
+    for step in [2, 3, 4, 5, 6, 7]:
+        if ((date_bin & all1(x//step*step)) % all01(x//step*step, step, 1)) == 0:
+            c = (date_bin & all1(x//step*step)
+                 ) // all01(x//step*step, step, 1)  # 取循环节
+            if (all01(x//step*step, step, c) & all01(x//step*step, step, c)) == date_bin:
+                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(train['station_train_code'].encode('utf-8'), date_bin, c))
+                return ('{:0>'+str(step)+'b}').format(c), step
+            else:
+                #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(train['station_train_code'].encode('utf-8'), date_bin, c))
+                return ('{:0>'+str(step)+'b} 不完整').format(c), step
+    return ('{:0>'+str(x)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
+
+
+def compress_train_list(fn0):
+    with open(fn0, 'r') as f:
+        # with open(fn0, 'r', encoding='utf-8') as f:
+        _ = f.read(16)
+        data = f.read()
+    ret = sorted(markJsonSlice(data))
+    base = ret[0][0]
+    mask = 0
+    cnt = 0
+    maxlen = 70000
+    arr = [[] for i in range(maxlen)]
+    for i in range(len(ret)):
+        #date_diff(base, i)
+        date = ret[i][0]
+        d = json.loads(data[ret[i][1]:ret[i][2]])
+        print(date)
+        mask |= (1 << i)
+        for train_class in d:
+            for ii in range(0, len(d[train_class])):
+                match = re.findall(
+                    r'(.*)\((.*)-(.*)\)', d[train_class][ii]['station_train_code'], re.I | re.M)[0]
+                a = {}
+                a['station_train_code'] = match[0]
+                a['from_station'] = match[1]
+                a['to_station'] = match[2]
+                a['train_no'] = d[train_class][ii]['train_no']
+                a['total_num'] = 0
+                a['date'] = 0
+                key = hash_no(match[0]) - 1
+                found = 0
+                for train in arr[key]:
+                    if train['train_no'] == a['train_no']:
+                        train['date'] |= (1 << i)
+                        found = 1
+                        break
+                if found == 0:
+                    a['date'] |= (1 << i)
+                    arr[key].append(a)
+    #
+    cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    x = bin_cnt(mask)
+    buffer = ''
+    for i in range(maxlen):
+        for train in arr[i]:
+            buffer += '%s,%s,%s,%s,%d,' % (
+                train['station_train_code'].encode('utf-8'),
+                train['from_station'].encode('utf-8'),
+                train['to_station'].encode('utf-8'),
+                train['train_no'].encode('utf-8'),
+                train['total_num']
+            )
+            val, status = datetostr(train['date'], x)
+            cnt[status] += 1
+            buffer += val
+            buffer += '\n'
+    #
+    with open('cycle.txt', 'wb') as f:
+        if f.tell() == 0:
+            f.write('\xef\xbb\xbf')
+        f.write(buffer)
+    #
+    return buffer
+
+
 if __name__ == '__main__':
     try:
         fn0 = sys.argv[1]
@@ -1235,8 +1455,6 @@ with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     f.write(buffer)
 
 '''
-#s = processA(t['2018-09-30']['G'][1525], '2018-09-30', station)
-
 
 '''
 fn = "C:\\Users\\Administrator\\ticket1\\2018-09-23_XJA_CBQ.json"
@@ -1278,161 +1496,11 @@ with open('XJA.txt','wb') as f:
             if f.tell() == 0:
                 f.write('\xef\xbb\xbf');
             f.write(buffer)
-'''
 
-
-'''
-from view_train_list import *
-
-fn0 = 'js/train_list.js'
-
-with open(fn0, 'r') as f:
-#with open(fn0, 'r', encoding='utf-8') as f:
-        _ = f.read(16)
-        data = f.read()
-
-ret = sorted(markJsonSlice(data))
-
-#停用
-base = ret[0][0]
-mask = 0
-cnt = 0
-maxlen = 70000
-arr = [None for i in range(maxlen)]
-stat = [0 for i in range(maxlen)]
-for i in range(len(ret)):
-    #date_diff(base, i)
-    date = ret[i][0]
-    d = json.loads(data[ret[i][1]:ret[i][2]])
-    print(date)
-    mask |= (1 << i)
-    for train_class in d:
-        for ii in range(0, len(d[train_class])):
-            match = re.findall(r'(.*)\((.*)-(.*)\)',d[train_class][ii]['station_train_code'], re.I | re.M)[0]
-            a = {}
-            a['station_train_code'] = match[0]
-            a['from_station'] = match[1]
-            a['to_station'] = match[2]
-            a['train_no'] = d[train_class][ii]['train_no']
-            a['total_num'] = 0
-            a['date'] = 0
-            key = hash_no(match[0].encode('utf-8')) - 1
-            if arr[key] == None:
-                arr[key] = a
-            if arr[key]['train_no'] != a['train_no']:
-                print('%s %s %s %s'%(arr[key]['train_no'], a['train_no'], date, arr[key]['station_train_code']))
-                arr[key]['train_no'] = a['train_no']
-                cnt += 1
-            arr[key]['date'] |= (1 << i)
-
-#停用
-cnt = [0,0,0,0,0,0,0,0,0,0,0,0]
-x = bin_cnt(mask)
-f = '{:>5} {:0>'+str(x)+'b}'
-flag = 0
-for i in range(maxlen):
-    for train in arr[i]:
-        if train['date'] == mask:
-            cnt[1]+=1
-            continue
-        if bin_cnt(train['date']) * 7 < x: # bin_cnt(train['date']) / bin_cnt(mask) < 1/7
-            #print((f + ' 开行{:>3}日 ').format(train['station_train_code'].encode('utf-8'), train['date'], bin_cnt(train['date'])))
-            cnt[9] += 1
-            continue
-        if bin_cnt(train['date']) * 7 > x * 6: # bin_cnt(train['date']) / bin_cnt(mask) > 6/7
-            #print((f + ' 停运{:>3}日 ').format(train['station_train_code'].encode('utf-8'), train['date'], x - bin_cnt(train['date'])))
-            cnt[10] += 1
-            continue
-        flag = 0
-        for step in [2,3,4,5,6,7]:
-            if ((train['date'] & all1(x//step*step)) % all01(x//step*step, step, 1)) == 0:
-                c = (train['date'] & all1(x//step*step)) // all01(x//step*step, step, 1) # 取循环节
-                if ( all01(x//step*step, step, c) & all01(x//step*step, step, c) ) == train['date']:
-                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(train['station_train_code'].encode('utf-8'), train['date'], c))
-                    cnt[step]+=1
-                else:
-                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(train['station_train_code'].encode('utf-8'), train['date'], c))
-                    cnt[step]+=1
-                flag = 1
-                break
-        if flag:
-            continue
-        print(f.format(train['station_train_code'].encode('utf-8'), train['date']))
-        print(bin_count11(train['date']))
-        cnt[0] += 1
-
-
-def all1(x):
-    ans = 0
-    while x:
-        x -= 1
-        ans |= 1 << x
-    return ans
-
-def all01(x, y, c):
-    ans = 0
-    ii = 0
-    while ii < x:
-        ans |= c << ii
-        ii += y
-    return ans
-
-def bin_count11(n):
-    ans = 0
-    temp = n
-    while temp:
-        ans += 1
-        #print('{:0>45b}'.format(temp))
-        temp &= n >> ans
-    return ans
 
 bin_count11(0b000000000001111111111111000011111111111111000)
-
-def bin_count12(n):
-    ans = 0
-    temp = n
-    while temp:
-        ans += 2
-        #print('{:0>45b}'.format(temp))
-        temp &= n >> ans
-    return ans
-
 bin_count12(0b0000001010101010101010101010100)
-
-def bin_count17(n):
-    ans = 0
-    temp = n
-    while temp:
-        ans += 7
-        #print('{:0>45b}'.format(temp))
-        temp &= n >> ans
-    return ans
-
 bin_count17(0b0001000000000000110000011000001)
-
-
-def left7(c, base_week):
-    c <<= base_week
-    c |=  c >> 7
-    c &= 0x7f
-    return c
-
-def cycle7(c, base_week):
-    model = '71234567'
-    ret = ''
-    c <<= base_week
-    c |=  c >> 7
-    c &= 0x7f
-    if c == 0b01100011:
-        return '5671'
-    if c == 0b01000001:
-        return '67'
-    for i in range(7):
-        if c & (1 << i):
-            ret += model[i]
-    return ret
-
-
 cycle7(0b1000001, 0)
 cycle7(0b1000001, 1)
 cycle7(0b1000001, 2)
@@ -1442,66 +1510,6 @@ cycle7(0b1000001, 5)
 cycle7(0b1000001, 6)
 cycle7(0b1000001, 7)
 
-
-def get_one_slice(n ,x):
-    ret = []
-    a=-1
-    b=-1
-    status = 0
-    for i in range(x):
-        if n & (1 << i):
-            #print('1 %d %d'%(status,i))
-            if status == 0:
-                a=i
-            b=i
-            status = 1
-        else:
-            #print('0 %d %d'%(status,i))
-            if status == 1:
-                ret.append([a,b])
-            status = 0
-    if status == 1:
-        ret.append([a,b])
-    ans = ''
-    for i in range(len(ret)):
-        if i > 0:
-            ans += ","
-        if ret[i][0] == ret[i][1]:
-            ans += str(ret[i][0])
-            continue
-        else:
-            ans += '%d-%d'%(ret[i][0],ret[i][1])
-    return ans
-
-def get_zero_slice(n ,x):
-    ret = []
-    a=-1
-    b=-1
-    status = 1
-    for i in range(x):
-        if n & (1 << i):
-            #print('0 %d %d'%(status,i))
-            if status == 0:
-                ret.append([a,b])
-            status = 1
-        else:
-            #print('1 %d %d'%(status,i))
-            if status == 1:
-                a=i
-            b=i
-            status = 0
-    if status == 0:
-        ret.append([a,b])
-    ans = ''
-    for i in range(len(ret)):
-        if i > 0:
-            ans += ","
-        if ret[i][0] == ret[i][1]:
-            ans += str(ret[i][0])
-            continue
-        else:
-            ans += '%d-%d'%(ret[i][0],ret[i][1])
-    return ans
 
 get_one_slice(0b000000000001111111111111000011111111111111000 ,45)
 get_one_slice(0b100000000000000000000001000011111111111111000 ,45)
@@ -1514,87 +1522,11 @@ get_zero_slice(0b000000000000000000000000000011111111111111000 ,45)
 get_zero_slice(0b111111111111111111111111111100000000000000000 ,45)
 
 
-def datetostr(date_bin, x):
-        if date_bin == all1(x):
-            return "", 1
-        if bin_cnt(date_bin) < x / 7: # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
-            #print((f + ' 开行{:>3}日 ').format(train['station_train_code'].encode('utf-8'), date_bin, bin_cnt(date_bin)))
-            return ('{:0>'+str(x)+'b} 开行{:>3}日').format(date_bin, bin_cnt(date_bin)), 9
-        if bin_cnt(date_bin) * 7 > x * 6: # bin_cnt(date_bin) / bin_cnt(mask) > 6/7
-            #print((f + ' 停运{:>3}日 ').format(train['station_train_code'].encode('utf-8'), date_bin, x - bin_cnt(date_bin)))
-            return ('{:0>'+str(x)+'b} 停运{:>3}日').format(date_bin, x - bin_cnt(date_bin)), 10
-        for step in [2,3,4,5,6,7]:
-            if ((date_bin & all1(x//step*step)) % all01(x//step*step, step, 1)) == 0:
-                c = (date_bin & all1(x//step*step)) // all01(x//step*step, step, 1) # 取循环节
-                if ( all01(x//step*step, step, c) & all01(x//step*step, step, c) ) == date_bin:
-                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b}').format(train['station_train_code'].encode('utf-8'), date_bin, c))
-                    return ('{:0>'+str(step)+'b}').format(c), step
-                else:
-                    #print((f + ' '+ str(step) +'日 {:0>'+str(step)+'b} 不完整').format(train['station_train_code'].encode('utf-8'), date_bin, c))
-                    return ('{:0>'+str(step)+'b} 不完整').format(c), step
-        return ('{:0>'+str(x)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
-
 datetostr(all1(28), 28)
 datetostr(all1(28)/3, 28)
 datetostr(all1(28)/127, 28)
 datetostr(all1(28) - 1, 28)
 datetostr(1, 28)
-
-
-base = ret[0][0]
-mask = 0
-cnt = 0
-maxlen = 70000
-arr = [[] for i in range(maxlen)]
-stat = [0 for i in range(maxlen)]
-for i in range(len(ret)):
-    #date_diff(base, i)
-    date = ret[i][0]
-    d = json.loads(data[ret[i][1]:ret[i][2]])
-    print(date)
-    mask |= (1 << i)
-    for train_class in d:
-        for ii in range(0, len(d[train_class])):
-            match = re.findall(r'(.*)\((.*)-(.*)\)',d[train_class][ii]['station_train_code'], re.I | re.M)[0]
-            a = {}
-            a['station_train_code'] = match[0]
-            a['from_station'] = match[1]
-            a['to_station'] = match[2]
-            a['train_no'] = d[train_class][ii]['train_no']
-            a['total_num'] = 0
-            a['date'] = 0
-            key = hash_no(match[0]) - 1
-            found = 0
-            for train in arr[key]:
-                if train['train_no'] == a['train_no']:
-                    train['date'] |= (1 << i)
-                    found = 1
-                    break
-            if found == 0:
-                a['date'] |= (1 << i)
-                arr[key].append(a)
-
-
-cnt = [0,0,0,0,0,0,0,0,0,0,0,0,0]
-x = bin_cnt(mask)
-buffer = ''
-for i in range(maxlen):
-    for train in arr[i]:
-        buffer += '%s,%s,%s,%s,%d,'%(train['station_train_code'].encode('utf-8'),
-            train['from_station'].encode('utf-8'),
-            train['to_station'].encode('utf-8'),
-            train['train_no'].encode('utf-8'),
-            train['total_num']
-        )
-        val, status = datetostr(train['date'], x)
-        cnt[status] += 1
-        buffer += val
-        buffer += '\n'
-
-with open('cycle0401-6.txt', 'wb') as f:
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer)
 
 
 w=y+y//4+c//4-2*c+(13*(m+1))//5+d-1
