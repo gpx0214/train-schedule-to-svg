@@ -858,7 +858,8 @@ def train_list_train_no_array(t, maxlen):
                     a['station_train_code'],
                     re.I | re.M
                 )[0]
-                arr[hash_no(match[0].encode('utf-8')) - 1] = a['train_no'].encode('utf-8')
+                arr[hash_no(match[0].encode('utf-8')) -
+                    1] = a['train_no'].encode('utf-8')
     return arr
 
 
@@ -1172,7 +1173,7 @@ def get_zero_slice(n, size):
     return ret
 
 
-def slice_to_str(ret):
+def slice_to_str(ret, base):
     ans = ''
     for i in range(len(ret)):
         if i > 0:
@@ -1181,22 +1182,28 @@ def slice_to_str(ret):
             ans += str(ret[i][0])
             continue
         else:
-            ans += '%d-%d' % (ret[i][0], ret[i][1])
+            ans += '%s-%s' % (
+                date_diff(base, ret[i][0]),
+                date_diff(base, ret[i][1])
+            )
     return ans
 
 
-def compress_bin_vector(date_bin, size):
-    if date_bin == all1(size):
+def compress_bin_vector(date_bin, base, size):
+    if date_bin == all1(size): # 图定
         return "", 1
     if bin_cnt(date_bin) < size / 7:  # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
-        return "开行" + slice_to_str(get_one_slice(date_bin, size)), 9
+        return "开行" + slice_to_str(get_one_slice(date_bin, size), base), 10
     if bin_cnt(date_bin) * 7 > size * 6:  # bin_cnt(date_bin) / bin_cnt(mask) > 6/7
-        return "停运" + slice_to_str(get_zero_slice(date_bin, size)), 10
-    if bin_cnt(date_bin) == bin_count11(date_bin):
-        return slice_to_str(get_one_slice(date_bin, size)), 8
+        return "停运" + slice_to_str(get_zero_slice(date_bin, size), base), 11
+    if len(get_one_slice(date_bin, size)) == 1:
+        return slice_to_str(get_one_slice(date_bin, size), base), 8
+    if len(get_zero_slice(date_bin, size)) == 1:
+        return slice_to_str(get_zero_slice(date_bin, size), base), 9
     for step in [2, 3, 4, 5, 6, 7]:
         if ((date_bin & all1(size//step*step)) % all01(size//step*step, step, 1)) == 0:
-            c = (date_bin & all1(size//step*step)) // all01(size//step*step, step, 1)  # 取循环节
+            c = (date_bin & all1(size//step*step)
+                 ) // all01(size//step*step, step, 1)  # 取循环节
             if (all01(size//step*step, step, c) & all01(size//step*step, step, c)) == date_bin:
                 return ('{:0>'+str(step)+'b}').format(c), step
             else:
@@ -1206,7 +1213,7 @@ def compress_bin_vector(date_bin, size):
 
 def compress_train_list(fn0):
     with open(fn0, 'r') as f:
-    # with open(fn0, 'r', encoding='utf-8') as f: #py3
+        # with open(fn0, 'r', encoding='utf-8') as f: #py3
         _ = f.read(16)
         data = f.read()
     ret = sorted(markJsonSlice(data))
@@ -1253,7 +1260,7 @@ def compress_train_list(fn0):
                 train['train_no'].encode('utf-8'),
                 train['total_num']
             )
-            val, status = compress_bin_vector(train['date'], size)
+            val, status = compress_bin_vector(train['date'], base, size)
             stat[status] += 1
             buffer += val
             buffer += '\n'
