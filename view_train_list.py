@@ -1179,12 +1179,12 @@ def slice_to_str(ret, base):
         if i > 0:
             ans += ","
         if ret[i][0] == ret[i][1]:
-            ans += str(ret[i][0])
+            ans += re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)', r"\2\3\4", date_diff(base, ret[i][0]))
             continue
         else:
             ans += '%s-%s' % (
-                date_diff(base, ret[i][0]),
-                date_diff(base, ret[i][1])
+                re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)', r"\2\3\4", date_diff(base, ret[i][0])),
+                re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)', r"\2\3\4", date_diff(base, ret[i][1]))
             )
     return ans
 
@@ -1216,15 +1216,16 @@ def compress_train_list(fn0):
         # with open(fn0, 'r', encoding='utf-8') as f: #py3
         _ = f.read(16)
         data = f.read()
-    ret = sorted(markJsonSlice(data))
-    base = ret[0][0]
+    #
+    slice_mark = sorted(markJsonSlice(data))
+    base = slice_mark[0][0]
     mask = 0
     maxlen = 70000
-    arr = [[] for i in range(maxlen)]
-    for i in range(len(ret)):
+    train_map = [[] for i in range(maxlen)]
+    for i in range(len(slice_mark)):
         #date_diff(base, i)
-        date = ret[i][0]
-        d = json.loads(data[ret[i][1]:ret[i][2]])
+        date = slice_mark[i][0]
+        d = json.loads(data[slice_mark[i][1]:slice_mark[i][2]])
         print(date)
         mask |= (1 << i)
         for c in d:
@@ -1240,34 +1241,38 @@ def compress_train_list(fn0):
                 a['date'] = (1 << i)
                 key = hash_no(match[0]) - 1
                 found = 0
-                for train in arr[key]:
+                for train in train_map[key]:
                     if train['train_no'] == a['train_no']:
                         train['date'] |= a['date']
                         found = 1
                         break
                 if found == 0:
-                    arr[key].append(a)
+                    train_map[key].append(a)
     #
     stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     size = bin_cnt(mask)
-    buffer = ''
-    for i in range(maxlen):
-        for train in arr[i]:
-            buffer += '%s,%s,%s,%s,%d,' % (
-                train['station_train_code'].encode('utf-8'),
-                train['from_station'].encode('utf-8'),
-                train['to_station'].encode('utf-8'),
-                train['train_no'].encode('utf-8'),
-                train['total_num']
-            )
-            val, status = compress_bin_vector(train['date'], base, size)
-            stat[status] += 1
-            buffer += val
-            buffer += '\n'
+    train_list = []
+    for key in range(maxlen):
+        for train in train_map[key]:
+            train_list.append(train)
     #
-    fn1 = 'train_list_' + re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)', r"\2\3\4", base) + \
-        '_' + re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                     r"\2\3\4", ret[-1][0]) + '.txt'
+    #
+    buffer = ''
+    for train in train_list:
+        buffer += '%s,%s,%s,%s,%d,' % (
+            train['station_train_code'].encode('utf-8'),
+            train['from_station'].encode('utf-8'),
+            train['to_station'].encode('utf-8'),
+            train['train_no'].encode('utf-8'),
+            train['total_num']
+        )
+        val, status = compress_bin_vector(train['date'], base, size)
+        stat[status] += 1
+        buffer += val
+        buffer += '\n'
+    #
+    fn1 = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), 'cycle.txt')
     with open(fn1, 'wb') as f:
         if f.tell() == 0:
             f.write('\xef\xbb\xbf')
@@ -1318,18 +1323,18 @@ if __name__ == '__main__':
         _ = f.read(16)
         data = f.read()
 
-    ret = sorted(markJsonSlice(data))
+    slice_mark = sorted(markJsonSlice(data))
 
-    for i in range(len(ret)):
+    for i in range(len(slice_mark)):
         # print(i)
-        #start = ret[i][1]
-        #end = ret[i][2]
+        #start = slice_mark[i][1]
+        #end = slice_mark[i][2]
         # print(start)
         # print(end)
         #d = json.loads(data[start:end])
         s = ''
-        d = json.loads(data[ret[i][1]:ret[i][2]])
-        date = ret[i][0]
+        d = json.loads(data[slice_mark[i][1]:slice_mark[i][2]])
+        date = slice_mark[i][0]
         s += (train_list_day_class_str(d, date))
         checkDateSch12306(d, station, date)
         n = savedatecsv(d, station, date)
@@ -1337,6 +1342,7 @@ if __name__ == '__main__':
         print(s)
         del d
 
+    compress_train_list(fn0)
 
 '''
 from view_train_list import *
@@ -1490,15 +1496,6 @@ with open('XJA.txt','wb') as f:
 bin_count11(0b000000000001111111111111000011111111111111000)
 bin_count12(0b0000001010101010101010101010100)
 bin_count17(0b0001000000000000110000011000001)
-cycle7(0b1000001, 0)
-cycle7(0b1000001, 1)
-cycle7(0b1000001, 2)
-cycle7(0b1000001, 3)
-cycle7(0b1000001, 4)
-cycle7(0b1000001, 5)
-cycle7(0b1000001, 6)
-cycle7(0b1000001, 7)
-
 
 get_one_slice(0b000000000001111111111111000011111111111111000 ,45)
 get_one_slice(0b100000000000000000000001000011111111111111000 ,45)
@@ -1508,15 +1505,6 @@ get_one_slice(0b111111111111111111111111111100000000000000000 ,45)
 get_zero_slice(0b000000000001111111111111000011111111111111000 ,45)
 get_zero_slice(0b100000000000000000000001000011111111111111000 ,45)
 get_zero_slice(0b000000000000000000000000000011111111111111000 ,45)
-get_zero_slice(0b111111111111111111111111111100000000000000000 ,45)
-
-
-compress_bin_vector(all1(28), 28)
-compress_bin_vector(all1(28)/3, 28)
-compress_bin_vector(all1(28)/127, 28)
-compress_bin_vector(all1(28) - 1, 28)
-compress_bin_vector(1, 28)
-
 
 w=y+y//4+c//4-2*c+(13*(m+1))//5+d-1
 
