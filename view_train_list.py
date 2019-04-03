@@ -1260,10 +1260,10 @@ def compress_train_list(fn0):
     buffer = ''
     for train in train_list:
         buffer += '%s,%s,%s,%s,%d,' % (
-            train['station_train_code'].encode('utf-8'),
+            train['train_no'].encode('utf-8'),
             train['from_station'].encode('utf-8'),
             train['to_station'].encode('utf-8'),
-            train['train_no'].encode('utf-8'),
+            train['station_train_code'].encode('utf-8'),
             train['total_num']
         )
         val, status = compress_bin_vector(train['date'], base, size)
