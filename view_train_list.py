@@ -1231,6 +1231,7 @@ def compress_bin_vector(date_bin, base, size):
 
 
 def compress_train_list(fn0, station=None):
+    print('compress_train_list() %s %s'%(fn0,'station' if station else ''))
     with open(fn0, 'r') as f:
         # with open(fn0, 'r', encoding='utf-8') as f: #py3
         _ = f.read(16)
