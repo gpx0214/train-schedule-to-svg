@@ -1289,7 +1289,7 @@ def compress_train_list(fn0, station=None):
         val, status = compress_bin_vector(train['date'], base, size)
         stat[status] += 1
         #
-        buffer += '%s,%s,%s,%s,%d,%s\n' % (
+        buffer += '%s|%s|%s|%s|%d|%s\n' % (
             train['train_no'].encode('utf-8'),
             t1,
             t2,
