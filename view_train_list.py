@@ -1323,7 +1323,6 @@ if __name__ == '__main__':
         fn1 = os.path.join(os.path.dirname(
             os.path.abspath(__file__)), 'js/station_name.js')
     print('input train_list file:   ' + fn0)
-    print('input station_name file: ' + fn1)
 
     '''
     try:
