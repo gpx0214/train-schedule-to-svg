@@ -363,8 +363,9 @@ def searchAll12306(date, cache=1):
                 res, ret = getsearch12306(kw, date, cache)
         max_index = -1
         for i in range(len(res)):
-            arr[hash_no(res[i]['station_train_code'].encode(
-                'utf-8')) - 1] = res[i]
+            arr[hash_no(
+                res[i]['station_train_code'].encode('utf-8')
+            ) - 1] = res[i]
             if res[i]['station_train_code'].startswith(kw):
                 max_index = i
         max_str = ""
@@ -388,9 +389,11 @@ def checkSearch12306(arr, station, date):
     for i in range(0, len(arr)):
         if arr[i] == None:
             continue
-        sch = processS(arr[i], date, station)
-        if len(sch) == 0:
-            processS(arr[i], date, station)
+        for retry in range(3):
+            sch = processS(arr[i], date, station)
+            if len(sch):
+                break
+            time.sleep(1 << retry)
 
 
 def savedatecsvS(arr, station, date):
@@ -448,9 +451,11 @@ def checkAllSch12306(t, station):
 def checkDateSch12306(d, station, date):
     for train_class in d:
         for i in range(0, len(d[train_class])):
-            sch = processA(d[train_class][i], date, station)
-            if len(sch) == 0:
-                processA(d[train_class][i], date, station)
+            for retry in range(3):
+                sch = processA(d[train_class][i], date, station)
+                if len(sch):
+                    break
+                time.sleep(1 << retry)
 
 
 def savecsv(t, station):
@@ -858,8 +863,9 @@ def train_list_train_no_array(t, maxlen):
                     a['station_train_code'],
                     re.I | re.M
                 )[0]
-                arr[hash_no(match[0].encode('utf-8')) -
-                    1] = a['train_no'].encode('utf-8')
+                arr[hash_no(
+                    match[0].encode('utf-8')
+                ) - 1] = a['train_no'].encode('utf-8')
     return arr
 
 
@@ -925,7 +931,11 @@ def checkLeftTicket(t1, t2, date):
         if len(sp) > 36:
             print(sp[3] + ' ' + sp[2]+' ' + sp[4]+' ' + sp[5])
             if not os.path.exists('sch/'+sp[2].encode('utf-8')+'.json'):
-                s = getSch12306(sp[4], sp[5], sp[2], date)
+                for retry in range(3):
+                    s = getSch12306(sp[4], sp[5], sp[2], date)
+                    if len(s):
+                        break
+                    time.sleep(1 << retry)
                 # with open("20180808.csv","a") as f:
                 # f.write(b);
 
@@ -962,8 +972,12 @@ def gtzwdjsp():
     body = resp.content.decode('utf-8')
     match = re.findall(r'<p class="warring">最后更新时间为(\d+)月(\d+)日 (\d+)点(\d+)分。</p>',
                        body, re.I | re.M)[0]
-    ret = '%s-%s %s:%s' % (match[0].encode('utf-8'), match[1].encode(
-        'utf-8'), match[2].encode('utf-8'), match[3].encode('utf-8'))
+    ret = '%s-%s %s:%s' % (
+        match[0].encode('utf-8'),
+        match[1].encode('utf-8'),
+        match[2].encode('utf-8'),
+        match[3].encode('utf-8')
+    )
     return ret
 
 
@@ -1179,18 +1193,21 @@ def slice_to_str(ret, base):
         if i > 0:
             ans += ","
         if ret[i][0] == ret[i][1]:
-            ans += re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)', r"\2\3\4", date_diff(base, ret[i][0]))
+            ans += re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
+                          r"\2\3\4", date_diff(base, ret[i][0]))
             continue
         else:
             ans += '%s-%s' % (
-                re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)', r"\2\3\4", date_diff(base, ret[i][0])),
-                re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)', r"\2\3\4", date_diff(base, ret[i][1]))
+                re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
+                       r"\2\3\4", date_diff(base, ret[i][0])),
+                re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
+                       r"\2\3\4", date_diff(base, ret[i][1]))
             )
     return ans
 
 
 def compress_bin_vector(date_bin, base, size):
-    if date_bin == all1(size): # 图定
+    if date_bin == all1(size):  # 图定
         return "", 1
     if bin_cnt(date_bin) < size / 7:  # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
         return "开行" + slice_to_str(get_one_slice(date_bin, size), base), 10
@@ -1211,7 +1228,7 @@ def compress_bin_vector(date_bin, base, size):
     return ('{:0>'+str(size)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
 
 
-def compress_train_list(fn0):
+def compress_train_list(fn0, station=None):
     with open(fn0, 'r') as f:
         # with open(fn0, 'r', encoding='utf-8') as f: #py3
         _ = f.read(16)
@@ -1259,20 +1276,30 @@ def compress_train_list(fn0):
     #
     buffer = ''
     for train in train_list:
-        buffer += '%s,%s,%s,%s,%d,' % (
-            train['train_no'].encode('utf-8'),
-            train['from_station'].encode('utf-8'),
-            train['to_station'].encode('utf-8'),
-            train['station_train_code'].encode('utf-8'),
-            train['total_num']
-        )
+        t1 = ''
+        t2 = ''
+        if station != None:
+            t1 = telecode(train['from_station'].encode('utf-8'), station)
+            t2 = telecode(train['to_station'].encode('utf-8'), station)
+        if not t1:
+            t1 = train['from_station'].encode('utf-8')
+        if not t2:
+            t2 = train['to_station'].encode('utf-8')
+        #
         val, status = compress_bin_vector(train['date'], base, size)
         stat[status] += 1
-        buffer += val
-        buffer += '\n'
+        #
+        buffer += '%s,%s,%s,%s,%d,%s\n' % (
+            train['train_no'].encode('utf-8'),
+            t1,
+            t2,
+            train['station_train_code'].encode('utf-8'),
+            train['total_num'],
+            val
+        )
     #
     fn1 = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), 'cycle.txt')
+        os.path.abspath(__file__)), 'cycle.txt')
     with open(fn1, 'wb') as f:
         if f.tell() == 0:
             f.write('\xef\xbb\xbf')
