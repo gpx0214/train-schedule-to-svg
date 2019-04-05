@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-path="/var/ftp/"
+path="/home/ec2-user/"
 
 t0='0'
 if [ -f "${path}js/station_name.js" ];then
