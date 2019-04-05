@@ -142,6 +142,7 @@ def getStation(fn):
     s = a.split('@')
     for i in range(len(s)):
         s[i] = s[i].split('|')
+    print('read %d stations in %s'%(len(s), fn))
     s.append(["tsn", "唐山南", "TNP", "tangshannan", "tsn", "-1"])
     s.append(["gye", "古冶", "GYP", "guye", "gy", "-1"])
     s.append(["", "香港红磡", "JQO", "xiangganghongkan", "xghk", "-1"])
@@ -1236,6 +1237,7 @@ def compress_train_list(fn0, station=None):
         data = f.read()
     #
     slice_mark = sorted(markJsonSlice(data))
+    print(slice_mark)
     base = slice_mark[0][0]
     mask = 0
     maxlen = 70000
