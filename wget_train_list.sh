@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-path="/var/ftp/"
+path="/home/ec2-user/"
 
 t0='0'
 s0='0'
@@ -14,8 +14,8 @@ fi
 #echo ${t0}
 
 #download only new file
-/usr/bin/wget -N --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -P ${path}js/
-#/usr/bin/wget -N --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -P ${path}js/ && ${path}js/view_train_list.py ${path}js/train_list.js
+/usr/bin/wget -N -nv -S --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -P ${path}js/
+#/usr/bin/wget -N -nv -S --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -P ${path}js/ && ${path}js/view_train_list.py ${path}js/train_list.js
 
 #always teain_list_yymmdd.js
 #date=`date -d today +"%y%m%d"`
@@ -44,6 +44,7 @@ ${path}view_train_list.py ${path}js/train_list.js
 yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}js/train_list.js)"`
 cp -p ${path}js/train_list.js ${path}js/train_list_${yymmdd}.js
 gzip -c9 ${path}js/train_list.js > ${path}js/train_list.js.gz
+gzip -c9 ${path}cycle.txt > ${path}cycle.txt.gz
 else
 echo t1 newer but same
 fi
