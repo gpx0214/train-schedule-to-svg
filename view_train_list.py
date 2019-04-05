@@ -1369,7 +1369,7 @@ if __name__ == '__main__':
         print(s)
         del d
 
-    compress_train_list(fn0)
+    buffer = compress_train_list(fn0, station)
 
 '''
 from view_train_list import *
