@@ -142,7 +142,7 @@ def getStation(fn):
     s = a.split('@')
     for i in range(len(s)):
         s[i] = s[i].split('|')
-    print('read %d stations in %s'%(len(s), fn))
+    print('read %d stations in %s' % (len(s), fn))
     s.append(["tsn", "唐山南", "TNP", "tangshannan", "tsn", "-1"])
     s.append(["gye", "古冶", "GYP", "guye", "gy", "-1"])
     s.append(["", "香港红磡", "JQO", "xiangganghongkan", "xghk", "-1"])
@@ -1231,7 +1231,7 @@ def compress_bin_vector(date_bin, base, size):
 
 
 def compress_train_list(fn0, station=None):
-    print('compress_train_list() %s %s'%(fn0,'station' if station else ''))
+    print('compress_train_list() %s %s' % (fn0, 'station' if station else ''))
     with open(fn0, 'r') as f:
         # with open(fn0, 'r', encoding='utf-8') as f: #py3
         _ = f.read(16)
@@ -1399,81 +1399,82 @@ from view_train_list import *
 
 station = getStation('js/station_name.js')
 #savecsv(t,station)
+
 m = openMilage('test/京沪高速线里程.txt')
-c = readcsv('delay/sort2018-09-30.csv')
+c = readcsv('delay/sort2018-04-12.csv')
 buffer,_ = csvToSvg(m, c, "(?!G7[012356]\d{1,3})[G]\d{1,4}")
 
-fn = 'test/180930京沪高速.svg'
+fn = 'test/180412京沪高速.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
     f.write(buffer)
 
 m = openMilage('test/京广高速线里程.txt')
-c = readcsv('delay/sort2019-03-17.csv')
+c = readcsv('delay/sort2019-04-12.csv')
 buffer,_ = csvToSvg(m, c, "[GDC]\d{1,4}")
 
-fn = 'test/190317京广高速.svg'
+fn = 'test/190412京广高速.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
     f.write(buffer)
 
 m = openMilage('test/京沪线里程.txt')
-c = readcsv('delay/sort2019-03-10.csv')
-buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|^\d{1,4}|D7\d{1,3}")
+c = readcsv('delay/sort2019-04-12.csv')
+buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|^\d{1,4}|D7\d{1,3}")
 
-fn = 'test/190310京沪线.svg'
+fn = 'test/190412京沪线.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
     f.write(buffer)
 
 m = openMilage('test/京广线里程.txt')
-c = readcsv('delay/sort2019-03-10.csv')
-buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|C7[01]\d{2}|D75\d{2}|D6[67]\d{2}")
+c = readcsv('delay/sort2019-04-12.csv')
+buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|C7[01]\d{2}|D75\d{2}|D6[67]\d{2}")
 
-fn = 'test/190310京广线.svg'
+fn = 'test/190412京广线.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
     f.write(buffer)
 
 m = openMilage('test/京九线里程.txt')
-c = readcsv('delay/sort2019-03-10.csv')
-buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|^\d{1,4}")
+c = readcsv('delay/sort2019-04-12.csv')
+buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|^\d{1,4}")
 
-fn = 'test/190310京九线.svg'
+fn = 'test/190412京九线.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
     f.write(buffer)
 
 m = openMilage('test/成昆线里程.txt')
-c = readcsv('delay/sort2019-03-10.csv')
-buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|^\d{1,4}")
+c = readcsv('delay/sort2019-04-12.csv')
+buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|^\d{1,4}")
 
-fn = 'test/190310成昆线.svg'
+fn = 'test/190412成昆线.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
     f.write(buffer)
 
 m = openMilage('test/陇海线里程.txt')
-c = readcsv('delay/sort2019-03-10.csv')
-buffer,_ = csvToSvg(m, c, "[ZTK]\d{1,4}|^\d{1,4}")
+c = readcsv('delay/sort2019-04-12.csv')
+buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|^\d{1,4}")
 
-fn = 'test/190310陇海线.svg'
+fn = 'test/190412陇海线.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
     f.write(buffer)
 
 m = openMilage('test/京沪高速线里程.txt')
-c = readcsv('delay/sort2019-03-10.csv')
+c = readcsv('delay/sort2019-04-12.csv')
 buffer,_ = csvToSvg(m, c, "(?!G7[012356]\d{1,3})[G]\d{1,4}")
 
-fn = 'test/190310京沪高速.svg'
+fn = 'test/190412京沪高速.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
     if f.tell() == 0:
         f.write('\xef\xbb\xbf')
