@@ -56,6 +56,7 @@ if ((${t1} > ${t0}));then
 echo t1 newer
 yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}js/qss.js)"`
 cp -p ${path}js/qss.js ${path}js/qss_${yymmdd}.js
+gzip -c9 ${path}js/qss.js > ${path}js/qss.js.gz
 else
 echo t0 newer or same
 fi
