@@ -1402,7 +1402,7 @@ station = getStation('js/station_name.js')
 
 m = openMilage('test/京沪高速线里程.txt')
 c = readcsv('delay/sort2018-04-12.csv')
-buffer,_ = csvToSvg(m, c, "(?!G7[012356]\d{1,3})[G]\d{1,4}")
+buffer,_ = csvToSvg(m, c, "(?!G7[012356]\d{1,3})|[G]\d{1,4}")
 
 fn = 'test/180412京沪高速.svg'
 with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
