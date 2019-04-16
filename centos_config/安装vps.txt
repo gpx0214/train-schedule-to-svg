@@ -589,7 +589,7 @@ WantedBy=multi-user.target
 
 
 chkconfig --add /etc/init.d/nginx
-chmod 755 /etc/init.d/nginx
+chmod 0755 /etc/init.d/nginx
 chkconfig --add nginx
 
 /sbin/chkconfig --level 345 nginx on
