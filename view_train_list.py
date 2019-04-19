@@ -1189,44 +1189,49 @@ def get_zero_slice(n, size):
     return ret
 
 
-def slice_to_str(ret, base):
+def slice_to_str(ret, base_date):
     ans = ''
     for i in range(len(ret)):
         if i > 0:
             ans += ","
         if ret[i][0] == ret[i][1]:
             ans += re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                          r"\2\3\4", date_diff(base, ret[i][0]))
+                          r"\3\4", date_diff(base_date, ret[i][0]))
             continue
         else:
             ans += '%s-%s' % (
                 re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                       r"\2\3\4", date_diff(base, ret[i][0])),
+                       r"\3\4", date_diff(base_date, ret[i][0])),
                 re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                       r"\2\3\4", date_diff(base, ret[i][1]))
+                       r"\3\4", date_diff(base_date, ret[i][1]))
             )
     return ans
 
 
-def compress_bin_vector(date_bin, base, size):
+def compress_bin_vector(date_bin, base_date, size):
     if date_bin == all1(size):  # 图定
         return "", 1
-    if bin_cnt(date_bin) < size / 7:  # bin_cnt(date_bin) / bin_cnt(mask) < 1/7
-        return "开行" + slice_to_str(get_one_slice(date_bin, size), base), 10
-    if bin_cnt(date_bin) * 7 > size * 6:  # bin_cnt(date_bin) / bin_cnt(mask) > 6/7
-        return "停运" + slice_to_str(get_zero_slice(date_bin, size), base), 11
-    if len(get_one_slice(date_bin, size)) == 1:
-        return slice_to_str(get_one_slice(date_bin, size), base), 8
-    if len(get_zero_slice(date_bin, size)) == 1:
-        return slice_to_str(get_zero_slice(date_bin, size), base), 9
+    one_slice = get_one_slice(date_bin, size)
+    zero_slice = get_zero_slice(date_bin, size)
+    bin_weight = bin_cnt(date_bin)
+    if bin_weight < size / 7:  # bin_weight / bin_cnt(mask) < 1/7
+        return slice_to_str(one_slice, base_date), 10
+    if len(one_slice) <= len(zero_slice):
+        if len(one_slice) <= 2:
+            return slice_to_str(one_slice, base_date), 8
+    else:
+        if len(zero_slice) <= 1:
+            return "停" + slice_to_str(zero_slice, base_date), 9
+    if bin_weight > size - size / 7:  # bin_weight / bin_cnt(mask) > 6/7
+        return "停" + slice_to_str(zero_slice, base_date), 11
     for step in [2, 3, 4, 5, 6, 7]:
         if ((date_bin & all1(size//step*step)) % all01(size//step*step, step, 1)) == 0:
-            c = (date_bin & all1(size//step*step)
-                 ) // all01(size//step*step, step, 1)  # 取循环节
-            if (all01(size//step*step, step, c) & all01(size//step*step, step, c)) == date_bin:
+            # 取循环节
+            c = (date_bin & all1(size//step*step)) // all01(size//step*step, step, 1)
+            if (all1(size) & all01(size, step, c)) == date_bin:
                 return ('{:0>'+str(step)+'b}').format(c), step
             else:
-                return ('{:0>'+str(step)+'b} 不完整').format(c), step
+                return ('{:0>'+str(step)+'b} 不完整').format(c) + " " + ('{:0>'+str(size)+'b}').format(date_bin), step
     return ('{:0>'+str(size)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
 
 
@@ -1238,26 +1243,26 @@ def compress_train_list(fn0, station=None):
         data = f.read()
     #
     slice_mark = sorted(markJsonSlice(data))
-    print(slice_mark)
-    base = slice_mark[0][0]
+    #print(slice_mark)
+    base_date = slice_mark[0][0]
     mask = 0
     maxlen = 70000
     train_map = [[] for i in range(maxlen)]
     for i in range(len(slice_mark)):
-        #date_diff(base, i)
+        #date_diff(base_date, i)
         date = slice_mark[i][0]
         d = json.loads(data[slice_mark[i][1]:slice_mark[i][2]])
-        print(date)
-        mask |= (1 << i)
+        #print(date)
+        mask |= (1 << i)  # TODO item in d must > 0
         for c in d:
-            for ii in range(0, len(d[c])):
+            for idx in range(0, len(d[c])):
                 match = re.findall(
-                    r'(.*)\((.*)-(.*)\)', d[c][ii]['station_train_code'], re.I | re.M)[0]
+                    r'(.*)\((.*)-(.*)\)', d[c][idx]['station_train_code'], re.I | re.M)[0]
                 a = {}
                 a['station_train_code'] = match[0]
                 a['from_station'] = match[1]
                 a['to_station'] = match[2]
-                a['train_no'] = d[c][ii]['train_no']
+                a['train_no'] = d[c][idx]['train_no']
                 a['total_num'] = 0
                 a['date'] = (1 << i)
                 key = hash_no(match[0]) - 1
@@ -1290,7 +1295,7 @@ def compress_train_list(fn0, station=None):
         if not t2:
             t2 = train['to_station'].encode('utf-8')
         #
-        val, status = compress_bin_vector(train['date'], base, size)
+        val, status = compress_bin_vector(train['date'], base_date, size)
         stat[status] += 1
         #
         buffer += '%s|%s|%s|%s|%d|%s\n' % (
@@ -1301,6 +1306,8 @@ def compress_train_list(fn0, station=None):
             train['total_num'],
             val
         )
+    #
+    print(stat)
     #
     fn1 = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), 'cycle.txt')
@@ -1380,9 +1387,9 @@ from view_train_list import *
 station = getStation('js/station_name.js')
 
 import datetime
-base = datetime.datetime.now().strftime('%Y-%m-%d');
+base_date = datetime.datetime.now().strftime('%Y-%m-%d');
 for d in range(1,2):
-    date = date_diff(base,d)
+    date = date_diff(base_date,d)
     arr = searchAll12306(date,cache=0)
     checkSearch12306(arr, station, date)
     savedatecsvS(arr, station, date)
