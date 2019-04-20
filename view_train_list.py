@@ -1028,7 +1028,7 @@ gtzwd('2019-03-12', 'y')
 '''
 
 
-def markJsonSlice(data):
+def mark_json_slice(data):
     ret = []
     layer = 0
     index = 0
@@ -1266,7 +1266,7 @@ def compress_train_list(fn0, station=None):
         _ = f.read(16)
         data = f.read()
     #
-    slice_mark = sorted(markJsonSlice(data))
+    slice_mark = sorted(mark_json_slice(data))
     # print(slice_mark)
     base_date = slice_mark[0][0]
     mask = 0
@@ -1398,7 +1398,7 @@ if __name__ == '__main__':
         _ = f.read(16)
         data = f.read()
 
-    slice_mark = sorted(markJsonSlice(data))
+    slice_mark = sorted(mark_json_slice(data))
 
     for i in range(len(slice_mark)):
         # print(i)
