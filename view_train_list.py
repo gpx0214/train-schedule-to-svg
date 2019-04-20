@@ -80,6 +80,14 @@ def weekday(date):
     return w % 7
 
 
+def getmin(s):
+    try:
+        a, b = s.split(':')[0:2]
+        return int(a)*60+int(b)
+    except:
+        return -1
+
+
 def print_stat(stat):
     buffer = ''
     for i in range(len(stat)):
@@ -137,14 +145,6 @@ def cmpby0_i2_i3_m4_i5(a1, a2):
     if int(a1[5]) < int(a2[5]):
         return -1
     return 0
-
-
-def getmin(s):
-    try:
-        a, b = s.split(':')[0:2]
-        return int(a)*60+int(b)
-    except:
-        return -1
 
 
 # station_name.js
@@ -1246,6 +1246,8 @@ def compress_bin_vector(date_bin, base_date, size):
             # 取循环节
             c = (date_bin & all1(size_floor)) // all01(size_floor, step, 1)
             if (all1(size) & all01(size, step, c)) == date_bin:
+                if step == 7:
+                    return 'w' + cycle7(c, weekday(base_date)), step
                 return ('{:0>'+str(step)+'b}').format(c), step
             else:
                 return ('{:0>'+str(step)+'b} 不完整').format(c) + " " + ('{:0>'+str(size)+'b}').format(date_bin), step
