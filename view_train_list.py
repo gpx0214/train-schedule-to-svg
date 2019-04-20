@@ -1151,10 +1151,16 @@ def cycle7(c, base_week):
     c <<= base_week
     c |= c >> 7
     c &= 0x7f
-    if c == 0b01100011:
-        return '5671'
     if c == 0b01000001:
         return '67'
+    if c == 0b01100011:
+        return '5671'
+    if c == 0b01100001:
+        return '567'
+    if c == 0b01000011:
+        return '671'
+    if c == 0b00100001:
+        return '57'
     for i in range(7):
         if c & (1 << i):
             ret += model[i]
@@ -1306,6 +1312,7 @@ def compress_train_list(fn0, station=None):
         ss += '\t%d' % (cnt)
         if cnt:
             mask |= (1 << i)
+        print(ss)
     #
     size = bin_cnt(mask)
     train_list = []
