@@ -1065,8 +1065,7 @@ def markJsonSlice(data):
             if layer == 1:
                 # print("%s %d"%(data[index],index))
                 kv = 0
-                print("%s %d %d %s %s" %
-                      (lastkey, lastcolon+1, index, data[lastcolon+1], data[index-1]))
+                #print("%s %d %d %s %s" % (lastkey, lastcolon+1, index, data[lastcolon+1], data[index-1]))
                 ret.append([lastkey, lastcolon+1, index])
         elif c == '"':
             if layer == 1:
