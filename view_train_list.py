@@ -76,7 +76,8 @@ def weekday(date):
         y -= 1
     c = y // 100
     y = y % 100
-    return y+y//4+c//4-2*c+(13*(m+1))//5+d-1
+    w = y+y//4+c//4-2*c+(13*(m+1))//5+d-1
+    return w % 7
 
 
 def print_stat(stat):
