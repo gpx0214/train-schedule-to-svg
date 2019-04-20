@@ -13,8 +13,8 @@ import re
 import json
 import csv
 import time
-#import math
-#import random
+# import math
+# import random
 
 import requests
 
@@ -274,7 +274,7 @@ def getSch12306(t1, t2, train_no, date):
     url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=" + train_no + \
         "&from_station_telecode=" + t1 + \
         "&to_station_telecode=" + t2 + "&depart_date=" + date
-    #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     try:
@@ -320,7 +320,7 @@ def getsearch12306(kw, date, cache=1):
     #
     url = "https://search.12306.cn/search/v1/train/search?keyword=" + \
         kw + "&date=" + yyyymmdd
-    #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     try:
@@ -415,14 +415,14 @@ def savedatecsvS(arr, station, date):
         for row in s:
             if len(row) >= 6:
                 minute = getmin(row[4])
-                #stat[minute] += 1
+                # stat[minute] += 1
                 ret[minute].append(row)
-            #tele = telecode(row[1]);
+            # tele = telecode(row[1]);
             # if True or tele and tele[2] == 'P':
-            #num = num+1;
-            #stat[minute] = stat[minute]+1;
+            # num = num+1;
+            # stat[minute] = stat[minute]+1;
     # print(num)
-    #sort = sorted(time_list, cmpbyTime)
+    # sort = sorted(time_list, cmpbyTime)
     sort = []
     for key in range(len(ret)):
         stat[key] = len(ret[key])
@@ -484,14 +484,14 @@ def savedatecsv(d, station, date):
             for row in s:
                 if len(row) >= 6:
                     minute = getmin(row[4])
-                    #stat[minute] += 1
+                    # stat[minute] += 1
                     ret[minute].append(row)
-                #tele = telecode(row[1]);
+                # tele = telecode(row[1]);
                 # if True or tele and tele[2] == 'P':
-                #num = num+1;
-                #stat[minute] = stat[minute]+1;
+                # num = num+1;
+                # stat[minute] = stat[minute]+1;
     # print(num)
-    #sort = sorted(time_list, cmpbyTime)
+    # sort = sorted(time_list, cmpbyTime)
     sort = []
     for key in range(len(ret)):
         stat[key] = len(ret[key])
@@ -512,11 +512,11 @@ def savedatecsv(d, station, date):
             writer.writerows(sort)
     return num
 
-#savecsv(t, station)
+# savecsv(t, station)
 
 
 def schToCsv(s):
-    #buffer = ''
+    # buffer = ''
     ret = []
     day = 0
     last = 0
@@ -528,8 +528,8 @@ def schToCsv(s):
                 day += 1
             last = minute
             # TODO
-            #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
-            #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
+            # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
+            # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
             '''buffer += (
                 s[0]['station_train_code'].encode('utf-8')
                 + ',' + s[i]['station_name'].encode('utf-8')
@@ -552,8 +552,8 @@ def schToCsv(s):
             if minute < last:
                 day += 1
             last = minute
-            #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
-            #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
+            # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
+            # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
             '''buffer += (
                 s[0]['station_train_code'].encode('utf-8')
                 + ',' + s[i]['station_name'].encode('utf-8')
@@ -642,7 +642,7 @@ def schToPolyline(s, m):
         if y > -1 and i > 0:
             if x < lastx:
                 day += 1
-                #1440, (lasty-y)*x/((1440+x-lastx))+y
+                # 1440, (lasty-y)*x/((1440+x-lastx))+y
                 buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' % (
                     1440,
                     (int(lasty)-int(y))*int(x) /
@@ -695,7 +695,7 @@ def csvToPolyline(c, m):
         if y > -1:
             if x < lastx:
                 day += 1
-                #1440, (lasty-y)*x/((1440+x-lastx))+y
+                # 1440, (lasty-y)*x/((1440+x-lastx))+y
                 buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' % (
                     1440,
                     (int(lasty)-int(y))*int(x) /
@@ -808,7 +808,7 @@ polyline {
 def train_list_class_str(t):
     s = ''
     for date in sorted(t.keys()):
-        s += train_list_day_class_str(t[date], date)
+        s += train_list_day_class_str(t[date], date) + '\n'
     return s
 
 
@@ -816,9 +816,11 @@ def train_list_day_class_str(d, date):
     ss = ''
     ss += (date.encode('utf-8'))
     for train_class in d:
-        ss += ('\t' + train_class.encode('utf-8') +
-               ' ' + str(len(d[train_class])))
-    #ss += '\n'
+        ss += '\t%s %d' % (
+            train_class.encode('utf-8'),
+            len(d[train_class])
+        )
+    # ss += '\n'
     return ss
 
 
@@ -873,7 +875,7 @@ def train_list_train_no_array(t, maxlen):
 
 def train_list_stat_block(arr, step, maxlen):
     cnt = 0
-    #step = 100;
+    # step = 100;
     stat = [0 for i in range(1+(maxlen-1)//step)]
     for i in range(len(arr)):
         if arr[i]:
@@ -901,7 +903,7 @@ def getLeftTicket(t1, t2, date):
     url = "https://kyfw.12306.cn/otn/" + LeftTicketUrl + "?leftTicketDTO.train_date=" + date + \
         "&leftTicketDTO.from_station=" + t1 + \
         "&leftTicketDTO.to_station=" + t2 + "&purpose_codes=ADULT"
-    #header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
     try:
@@ -1025,14 +1027,14 @@ def markJsonSlice(data):
         c = data[index]
         if c == "{":
             if layer == 1:
-                #print("%s %d"%(data[index],index))
+                # print("%s %d"%(data[index],index))
                 kv = 0
             layer += 1
         elif c == "[":
             layer += 1
         elif c == "}":
             if layer == 1:
-                #print("%s %d"%(data[index],index))
+                # print("%s %d"%(data[index],index))
                 kv = 0
                 print("%s %d %d %s %s" %
                       (lastkey, lastcolon+1, index, data[lastcolon+1], data[index-1]))
@@ -1042,19 +1044,19 @@ def markJsonSlice(data):
             layer -= 1
         elif c == ":":
             if layer == 1:
-                #print("%s %d"%(data[index],index))
+                # print("%s %d"%(data[index],index))
                 kv = 1
                 lastcolon = index
         elif c == ",":
             if layer == 1:
-                #print("%s %d"%(data[index],index))
+                # print("%s %d"%(data[index],index))
                 kv = 0
                 print("%s %d %d %s %s" %
                       (lastkey, lastcolon+1, index, data[lastcolon+1], data[index-1]))
                 ret.append([lastkey, lastcolon+1, index])
         elif c == '"':
             if layer == 1:
-                #print("%s %d %d"%(data[index],index,quot))
+                # print("%s %d %d"%(data[index],index,quot))
                 if quot == 0:
                     lastq = index
                     quot = 1
@@ -1152,13 +1154,13 @@ def get_one_slice(n, size):
     status = 0
     for i in range(size):
         if n & (1 << i):
-            #print('1 %d %d'%(status,i))
+            # print('1 %d %d'%(status,i))
             if status == 0:
                 a = i
             b = i
             status = 1
         else:
-            #print('0 %d %d'%(status,i))
+            # print('0 %d %d'%(status,i))
             if status == 1:
                 ret.append([a, b])
             status = 0
@@ -1174,12 +1176,12 @@ def get_zero_slice(n, size):
     status = 1
     for i in range(size):
         if n & (1 << i):
-            #print('0 %d %d'%(status,i))
+            # print('0 %d %d'%(status,i))
             if status == 0:
                 ret.append([a, b])
             status = 1
         else:
-            #print('1 %d %d'%(status,i))
+            # print('1 %d %d'%(status,i))
             if status == 1:
                 a = i
             b = i
@@ -1225,9 +1227,10 @@ def compress_bin_vector(date_bin, base_date, size):
     if bin_weight > size - size / 7:  # bin_weight / bin_cnt(mask) > 6/7
         return "停" + slice_to_str(zero_slice, base_date), 11
     for step in [2, 3, 4, 5, 6, 7]:
-        if ((date_bin & all1(size//step*step)) % all01(size//step*step, step, 1)) == 0:
+        size_floor = size//step*step
+        if ((date_bin & all1(size_floor)) % all01(size_floor, step, 1)) == 0:
             # 取循环节
-            c = (date_bin & all1(size//step*step)) // all01(size//step*step, step, 1)
+            c = (date_bin & all1(size_floor)) // all01(size_floor, step, 1)
             if (all1(size) & all01(size, step, c)) == date_bin:
                 return ('{:0>'+str(step)+'b}').format(c), step
             else:
@@ -1243,26 +1246,36 @@ def compress_train_list(fn0, station=None):
         data = f.read()
     #
     slice_mark = sorted(markJsonSlice(data))
-    #print(slice_mark)
+    # print(slice_mark)
     base_date = slice_mark[0][0]
     mask = 0
     maxlen = 70000
     train_map = [[] for i in range(maxlen)]
     for i in range(len(slice_mark)):
-        #date_diff(base_date, i)
+        # date_diff(base_date, i)
         date = slice_mark[i][0]
         d = json.loads(data[slice_mark[i][1]:slice_mark[i][2]])
-        #print(date)
-        mask |= (1 << i)  # TODO item in d must > 0
-        for c in d:
-            for idx in range(0, len(d[c])):
+        # print(date)
+        cnt = 0
+        ss = ''
+        ss += (date.encode('utf-8'))
+        for train_class in d:
+            ss += '\t%s %d' % (
+                train_class.encode('utf-8'),
+                len(d[train_class])
+            )
+            for idx in range(0, len(d[train_class])):
+                cnt += 1
                 match = re.findall(
-                    r'(.*)\((.*)-(.*)\)', d[c][idx]['station_train_code'], re.I | re.M)[0]
+                    r'(.*)\((.*)-(.*)\)',
+                    d[train_class][idx]['station_train_code'],
+                    re.I | re.M
+                )[0]
                 a = {}
                 a['station_train_code'] = match[0]
                 a['from_station'] = match[1]
                 a['to_station'] = match[2]
-                a['train_no'] = d[c][idx]['train_no']
+                a['train_no'] = d[train_class][idx]['train_no']
                 a['total_num'] = 0
                 a['date'] = (1 << i)
                 key = hash_no(match[0]) - 1
@@ -1274,8 +1287,10 @@ def compress_train_list(fn0, station=None):
                         break
                 if found == 0:
                     train_map[key].append(a)
+        ss += '\t%d' % (cnt)
+        if cnt:
+            mask |= (1 << i)
     #
-    stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     size = bin_cnt(mask)
     train_list = []
     for key in range(maxlen):
@@ -1283,6 +1298,7 @@ def compress_train_list(fn0, station=None):
             train_list.append(train)
     #
     #
+    stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     buffer = ''
     for train in train_list:
         t1 = ''
@@ -1364,18 +1380,18 @@ if __name__ == '__main__':
 
     for i in range(len(slice_mark)):
         # print(i)
-        #start = slice_mark[i][1]
-        #end = slice_mark[i][2]
+        # start = slice_mark[i][1]
+        # end = slice_mark[i][2]
         # print(start)
         # print(end)
-        #d = json.loads(data[start:end])
+        # d = json.loads(data[start:end])
         s = ''
         d = json.loads(data[slice_mark[i][1]:slice_mark[i][2]])
         date = slice_mark[i][0]
-        s += (train_list_day_class_str(d, date))
+        s += train_list_day_class_str(d, date)
         checkDateSch12306(d, station, date)
         n = savedatecsv(d, station, date)
-        s += "\t" + str(n)
+        s += '\t%d' % (n)
         print(s)
         del d
 
@@ -1405,7 +1421,7 @@ for d in range(1,2):
 from view_train_list import *
 
 station = getStation('js/station_name.js')
-#savecsv(t,station)
+# savecsv(t,station)
 
 m = openMilage('test/京沪高速线里程.txt')
 c = readcsv('delay/sort2018-04-12.csv')
@@ -1499,12 +1515,12 @@ j = json.loads(data)
 
 buffer= '';
 for obj in j:
-    #obj['TRNO'].encode('utf-8')
-    #obj['FST'].encode('utf-8')
-    #obj['EST'].encode('utf-8')
-    #getSch12306(obj['FST'].encode('utf-8'), obj['EST'].encode('utf-8'), obj['TRNO'].encode('utf-8'), date)
+    # obj['TRNO'].encode('utf-8')
+    # obj['FST'].encode('utf-8')
+    # obj['EST'].encode('utf-8')
+    # getSch12306(obj['FST'].encode('utf-8'), obj['EST'].encode('utf-8'), obj['TRNO'].encode('utf-8'), date)
     train_code = obj['STCODE'].encode('utf-8')
-    #getSchT(obj['STCODE'].encode('utf-8'), date)
+    # getSchT(obj['STCODE'].encode('utf-8'), date)
     with open('sch/'+ train_code +'_T.json','r') as f:
         f.read(3);
         data = f.read();
