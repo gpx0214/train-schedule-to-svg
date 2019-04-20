@@ -66,6 +66,19 @@ def date_diff(date, diff):
     return '%04d-%02d-%02d' % (y, m, d)
 
 
+def weekday(date):
+    match = re.findall(r'(\d+)-(\d+)-(\d+)', date, re.I | re.M)[0]
+    y = int(match[0])
+    m = int(match[1])
+    d = int(match[2])
+    if m <= 2:
+        m += 12
+        y -= 1
+    c = y // 100
+    y = y % 100
+    return y+y//4+c//4-2*c+(13*(m+1))//5+d-1
+
+
 def print_stat(stat):
     buffer = ''
     for i in range(len(stat)):
@@ -1559,7 +1572,4 @@ get_one_slice(0b111111111111111111111111111100000000000000000 ,45)
 get_zero_slice(0b000000000001111111111111000011111111111111000 ,45)
 get_zero_slice(0b100000000000000000000001000011111111111111000 ,45)
 get_zero_slice(0b000000000000000000000000000011111111111111000 ,45)
-
-w=y+y//4+c//4-2*c+(13*(m+1))//5+d-1
-
 '''
