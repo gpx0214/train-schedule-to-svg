@@ -1342,7 +1342,7 @@ def compress_train_list(fn0, station=None):
         print(ss)
     #
     size = bin_cnt(mask)
-    train_list = []
+    train_arr = []
     for key in range(maxlen):
         for train in train_map[key]:
             for retry in range(3):
@@ -1351,12 +1351,12 @@ def compress_train_list(fn0, station=None):
                 if len(sch):
                     break
                 time.sleep(1 << retry)
-            train_list.append(train)
+            train_arr.append(train)
     #
     #
     stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     buffer = ''
-    for train in train_list:
+    for train in train_arr:
         t1 = ''
         t2 = ''
         if station != None:
