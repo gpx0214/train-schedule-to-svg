@@ -1346,7 +1346,7 @@ def compress_train_list(fn0, station=None):
     for key in range(maxlen):
         for train in train_map[key]:
             for retry in range(3):
-                one_slice = get_one_slice(n, size)
+                one_slice = get_one_slice(train['date'], size)
                 if len(one_slice):
                     date = date_diff(base_date, one_slice[0][0])
                 else:
