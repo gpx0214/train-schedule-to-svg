@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+# tested in python 2.7.16 on windows server 2016 x64
 # tested in python 2.7.15 on win10 x64
 # tested in python 2.7.14 on centos7 x64
 # tested in python 2.7.5 on centos7 x64
@@ -1244,7 +1245,7 @@ def compress_bin_vector(date_bin, base_date, size):
             return "停" + slice_to_str(zero_slice, base_date), 9
     if bin_weight > size - size / 7:  # bin_weight / bin_cnt(mask) > 6/7
         return "停" + slice_to_str(zero_slice, base_date), 11
-    for step in [2, 3, 4, 5, 6, 7]:
+    for step in [7, 2, 3, 4, 5, 6]:
         size_floor = size//step*step
         if ((date_bin & all1(size_floor)) % all01(size_floor, step, 1)) == 0:
             # 取循环节
@@ -1258,6 +1259,51 @@ def compress_bin_vector(date_bin, base_date, size):
     return ('{:0>'+str(size)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
 
 
+def atos(a):
+    '''
+    transform object a in train_list.js to object s in search_v1
+
+    a['station_train_code'] : u'Z97(北京西-广州)'
+    a['train_no'] : u'2400000Z9701'
+
+    s['station_train_code'] = u'Z97'
+    s['from_station'] = u'北京西'
+    s['to_station'] = u'广州'
+    s['train_no'] = u'2400000Z9701'
+    s['total_num'] = 0
+    '''
+    # a to s obj
+    match = re.findall(
+        r'(.*)\((.*)-(.*)\)',
+        a['station_train_code'],
+        re.I | re.M
+    )[0]
+    s = {}
+    s['station_train_code'] = match[0]
+    s['from_station'] = match[1]
+    s['to_station'] = match[2]
+    s['train_no'] = a['train_no']
+    s['total_num'] = 0
+    s['date'] = 0
+    return s
+
+
+def add_map(train_map, a):
+    '''
+    add s obj to train_map
+    map[key][idx].date |= date
+    '''
+    key = hash_no(a['station_train_code']) - 1
+    found = 0
+    for train in train_map[key]:
+        if train['train_no'] == a['train_no']:
+            train['date'] |= a['date']
+            found = 1
+            break
+    if found == 0:
+        train_map[key].append(a)
+
+
 def compress_train_list(fn0, station=None):
     print('compress_train_list() %s %s' % (fn0, 'station' if station else ''))
     with open(fn0, 'r') as f:
@@ -1266,7 +1312,7 @@ def compress_train_list(fn0, station=None):
         data = f.read()
     #
     slice_mark = sorted(mark_json_slice(data))
-    # print(slice_mark)
+    print(slice_mark)
     base_date = slice_mark[0][0]
     mask = 0
     maxlen = 70000
@@ -1286,27 +1332,10 @@ def compress_train_list(fn0, station=None):
             )
             for idx in range(0, len(d[train_class])):
                 cnt += 1
-                match = re.findall(
-                    r'(.*)\((.*)-(.*)\)',
-                    d[train_class][idx]['station_train_code'],
-                    re.I | re.M
-                )[0]
-                a = {}
-                a['station_train_code'] = match[0]
-                a['from_station'] = match[1]
-                a['to_station'] = match[2]
-                a['train_no'] = d[train_class][idx]['train_no']
-                a['total_num'] = 0
+                a = atos(d[train_class][idx])
                 a['date'] = (1 << i)
-                key = hash_no(match[0]) - 1
-                found = 0
-                for train in train_map[key]:
-                    if train['train_no'] == a['train_no']:
-                        train['date'] |= a['date']
-                        found = 1
-                        break
-                if found == 0:
-                    train_map[key].append(a)
+                add_map(train_map, a)
+                #
         ss += '\t%d' % (cnt)
         if cnt:
             mask |= (1 << i)
@@ -1316,6 +1345,12 @@ def compress_train_list(fn0, station=None):
     train_list = []
     for key in range(maxlen):
         for train in train_map[key]:
+            for retry in range(3):
+                sch = processS(train, date, station)
+                train['total_num'] = len(sch)
+                if len(sch):
+                    break
+                time.sleep(1 << retry)
             train_list.append(train)
     #
     #
@@ -1393,6 +1428,8 @@ if __name__ == '__main__':
 
     station = getStation(fn1)
 
+    buffer = compress_train_list(fn0, station)
+
     with open(fn0, 'r') as f:
         _ = f.read(16)
         data = f.read()
@@ -1400,23 +1437,15 @@ if __name__ == '__main__':
     slice_mark = sorted(mark_json_slice(data))
 
     for i in range(len(slice_mark)):
-        # print(i)
-        # start = slice_mark[i][1]
-        # end = slice_mark[i][2]
-        # print(start)
-        # print(end)
-        # d = json.loads(data[start:end])
         s = ''
         d = json.loads(data[slice_mark[i][1]:slice_mark[i][2]])
         date = slice_mark[i][0]
-        s += train_list_day_class_str(d, date)
-        checkDateSch12306(d, station, date)
+        # s += train_list_day_class_str(d, date)
+        # checkDateSch12306(d, station, date)
         n = savedatecsv(d, station, date)
         s += '\t%d' % (n)
         print(s)
         del d
-
-    buffer = compress_train_list(fn0, station)
 
 '''
 from view_train_list import *
