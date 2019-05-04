@@ -349,6 +349,9 @@ def getsearch12306(kw, date, cache=1):
     except ValueError:
         print('ValueError ' + kw)
         return [], -1
+    if not 'data' in search:
+        print('key data not exist' + kw)
+        return [], -1
     if search['status'] == True and len(search['data']):
         with open(fn, 'wb') as f:
             f.write(resp.content)
@@ -1013,8 +1016,10 @@ def gtzwd(date, s):
     resp = requests.post(url, data=json.dumps(j), headers=header, timeout=20)
     body = resp.content.decode('utf-8')
     #
+    j = json.loads(body)
     with open(fn, 'wb') as f:
         f.write(resp.content)
+    return j
 
 
 '''
@@ -1033,7 +1038,7 @@ def mark_json_slice(data):
     ret = []
     layer = 0
     index = 0
-    kv = 0
+    #kv = 0
     lastq = -1
     lastcolon = -1
     lastkey = ''
@@ -1041,16 +1046,16 @@ def mark_json_slice(data):
     while index < len(data):
         c = data[index]
         if c == "{":
-            if layer == 1:
+            #if layer == 1:
                 # print("%s %d"%(data[index],index))
-                kv = 0
+                #kv = 0
             layer += 1
         elif c == "[":
             layer += 1
         elif c == "}":
             if layer == 1:
                 # print("%s %d"%(data[index],index))
-                kv = 0
+                #kv = 0
                 #print("%s %d %d %s %s" % (lastkey, lastcolon+1, index, data[lastcolon+1], data[index-1]))
                 ret.append([lastkey, lastcolon+1, index])
             layer -= 1
@@ -1059,12 +1064,12 @@ def mark_json_slice(data):
         elif c == ":":
             if layer == 1:
                 # print("%s %d"%(data[index],index))
-                kv = 1
+                #kv = 1
                 lastcolon = index
         elif c == ",":
             if layer == 1:
                 # print("%s %d"%(data[index],index))
-                kv = 0
+                #kv = 0
                 #print("%s %d %d %s %s" % (lastkey, lastcolon+1, index, data[lastcolon+1], data[index-1]))
                 ret.append([lastkey, lastcolon+1, index])
         elif c == '"':
@@ -1386,9 +1391,9 @@ def compress_train_list(fn0, station=None):
     #
     print(stat)
     #
-    fn1 = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), 'cycle.txt')
-    with open(fn1, 'wb') as f:
+    fn = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), fn0 + '.txt')
+    with open(fn, 'wb') as f:
         if f.tell() == 0:
             f.write('\xef\xbb\xbf')
         f.write(buffer)
@@ -1606,4 +1611,59 @@ bin_count11(0b000000000001111111111111000011111111111111000)
 bin_count12(0b0000001010101010101010101010100)
 bin_count17(0b0001000000000000110000011000001)
 bin_count17(0b011000011100001110000111000011)
+bin_count17(0b011000011100001110000111000011)
+56000D210510|QEH|NCG|D2105|13|0100001010000101000011111101010 consecutive6 Thu
+'''
+
+'''
+python
+from view_train_list import *
+station = getStation('js/station_name.js')
+buffer = compress_train_list('js/train_list.js',station)
+exit()
+gzip -c9 ${path}cycle.txt > ${path}cycle.txt.gz
+
+[226, 9418, 47, 0, 3, 0, 0, 717, 1058, 36, 608, 0, 0]
+
+717
+w12345 85
+w567 116  247 - 131 
+w5671 131
+w67 152 181 - 29
+w671 29
+w7126 8
+'''
+
+'''
+import os
+import glob
+from view_train_list import *
+
+for fn0 in glob.glob(r'js\train_list_*.js'):
+    #print('%s %s'%(fn0,time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(os.path.getmtime(fn0)))))
+    t0 = os.path.getmtime(fn0)
+    t = 0
+    fn1 = 'js/station_name_180112.js'
+    for fn in glob.glob(r'js\station_name_*.js'):
+        t1 = os.path.getmtime(fn)
+        if t < t1 and t1 < t0:
+            fn1 = fn
+            t = t1
+    print('%s %s'%(fn0,fn1))
+    station = getStation(fn1)
+    buffer = compress_train_list(fn0,station)
+'''
+
+'''
+train_map = [[] for i in range(maxlen)]
+
+a = {}
+a['station_train_code'] = u"Z1"
+a['from_station'] = u"Z1"
+a['to_station'] = u"Z1"
+a['train_no'] = u"24000000Z101"
+a['total_num'] = 6
+a['date'] = 2
+
+addmap(train_map,a)
 '''
