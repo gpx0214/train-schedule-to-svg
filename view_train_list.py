@@ -1477,7 +1477,7 @@ for d in range(1,2):
 
 '''
 
-'''
+r'''
 from view_train_list import *
 
 station = getStation('js/station_name.js')
@@ -1565,7 +1565,7 @@ with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
 
 '''
 
-'''
+r'''
 fn = "C:\\Users\\Administrator\\ticket1\\2018-09-23_XJA_CBQ.json"
 
 with open(fn,'r') as f: #py2
@@ -1634,7 +1634,7 @@ w671 29
 w7126 8
 '''
 
-'''
+r'''
 import os
 import glob
 from view_train_list import *
