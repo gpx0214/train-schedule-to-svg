@@ -20,7 +20,7 @@ import time
 import requests
 
 
-def date_diff(date, diff):
+def date_add(date, diff):
     match = re.findall(r'(\d+)-(\d+)-(\d+)', date, re.I | re.M)[0]
     y = int(match[0])
     m = int(match[1])
@@ -201,7 +201,7 @@ def processS(a, date, station):
         with open(fn, 'r') as f:
             data = f.read()
         try:
-            sch = json.loads(data)
+            sch = json.loads(data.decode('utf-8').replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911'))
             if sch['status'] == True and sch['httpstatus'] == 200 \
                     and len(sch['data']['data']):
                 return sch['data']['data']
@@ -240,7 +240,7 @@ def processA(a, date, station):
         with open(fn, 'r') as f:
             data = f.read()
         try:
-            sch = json.loads(data)
+            sch = json.loads(data.decode('utf-8').replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911'))
             if sch['status'] == True and sch['httpstatus'] == 200 \
                     and len(sch['data']['data']):
                 return sch['data']['data']
@@ -282,7 +282,7 @@ def getSch12306(t1, t2, train_no, date):
     if os.path.exists(fn):
         with open(fn, 'r') as f:
             data = f.read()
-        sch = json.loads(data)
+        sch = json.loads(data.decode('utf-8').replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911'))
         if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
             return sch['data']['data']
     #
@@ -299,7 +299,7 @@ def getSch12306(t1, t2, train_no, date):
         return []
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     try:
-        sch = json.loads(body)
+        sch = json.loads(body.replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911'))
     except ValueError:
         print('ValueError ' + train_no)
         return []
@@ -1046,7 +1046,7 @@ def mark_json_slice(data):
     while index < len(data):
         c = data[index]
         if c == "{":
-            #if layer == 1:
+            # if layer == 1:
                 # print("%s %d"%(data[index],index))
                 #kv = 0
             layer += 1
@@ -1222,14 +1222,14 @@ def slice_to_str(ret, base_date):
             ans += ","
         if ret[i][0] == ret[i][1]:
             ans += re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                          r"\3\4", date_diff(base_date, ret[i][0]))
+                          r"\3\4", date_add(base_date, ret[i][0]))
             continue
         else:
             ans += '%s-%s' % (
                 re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                       r"\3\4", date_diff(base_date, ret[i][0])),
+                       r"\3\4", date_add(base_date, ret[i][0])),
                 re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                       r"\3\4", date_diff(base_date, ret[i][1]))
+                       r"\3\4", date_add(base_date, ret[i][1]))
             )
     return ans
 
@@ -1240,7 +1240,7 @@ def compress_bin_vector(date_bin, base_date, size):
     one_slice = get_one_slice(date_bin, size)
     zero_slice = get_zero_slice(date_bin, size)
     bin_weight = bin_cnt(date_bin)
-    if bin_weight < size / 7:  # bin_weight / bin_cnt(mask) < 1/7
+    if bin_weight < size / 7:
         return slice_to_str(one_slice, base_date), 10
     if len(one_slice) <= len(zero_slice):
         if len(one_slice) <= 2:
@@ -1248,7 +1248,7 @@ def compress_bin_vector(date_bin, base_date, size):
     else:
         if len(zero_slice) <= 1:
             return "停" + slice_to_str(zero_slice, base_date), 9
-    if bin_weight > size - size / 7:  # bin_weight / bin_cnt(mask) > 6/7
+    if bin_weight > size - size / 7:
         return "停" + slice_to_str(zero_slice, base_date), 11
     for step in [7, 2, 3, 4, 5, 6]:
         size_floor = size//step*step
@@ -1309,6 +1309,66 @@ def add_map(train_map, a):
         train_map[key].append(a)
 
 
+def schDateToCsv(s, date_bin, base_date, size, station=None):
+    # buffer = ''
+    ret = []
+    day = 0
+    last = 0
+    val, _ = compress_bin_vector(
+        date_bin,
+        date_add(base_date, day),
+        size
+    )
+    for i in range(0, len(s)):
+        t1 = ''
+        if station != None:
+            t1 = telecode(s[i]['station_name'].encode('utf-8'), station)
+        if not t1:
+            t1 = s[i]['station_name'].encode('utf-8')
+        #
+        if getmin(s[i]['arrive_time'].encode('utf-8')) > -1 and i > 0:
+            minute = getmin(s[i]['arrive_time'].encode('utf-8'))
+            if minute < last:
+                day += 1
+                val, _ = compress_bin_vector(
+                    date_bin,
+                    date_add(base_date, day),
+                    size
+                )
+            last = minute
+            ret.append([
+                s[0]['station_train_code'].encode('utf-8'),
+                t1,
+                s[i]['station_no'].encode('utf-8'),
+                str(day),
+                s[i]['arrive_time'].encode('utf-8'),
+                '0',
+                val
+            ])
+        #
+        if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
+            minute = getmin(s[i]['start_time'].encode('utf-8'))
+            if minute < last:
+                day += 1
+                val, _ = compress_bin_vector(
+                    date_bin,
+                    date_add(base_date, day),
+                    size
+                )
+            last = minute
+            ret.append([
+                s[0]['station_train_code'].encode('utf-8'),
+                t1,
+                s[i]['station_no'].encode('utf-8'),
+                str(day),
+                s[i]['start_time'].encode('utf-8'),
+                '1',
+                val
+            ])
+    # return buffer
+    return ret
+
+
 def compress_train_list(fn0, station=None):
     print('compress_train_list() %s %s' % (fn0, 'station' if station else ''))
     with open(fn0, 'r') as f:
@@ -1323,10 +1383,8 @@ def compress_train_list(fn0, station=None):
     maxlen = 70000
     train_map = [[] for i in range(maxlen)]
     for i in range(len(slice_mark)):
-        # date_diff(base_date, i)
         date = slice_mark[i][0]
         d = json.loads(data[slice_mark[i][1]:slice_mark[i][2]])
-        # print(date)
         cnt = 0
         ss = ''
         ss += (date.encode('utf-8'))
@@ -1353,7 +1411,7 @@ def compress_train_list(fn0, station=None):
             for retry in range(3):
                 one_slice = get_one_slice(train['date'], size)
                 if len(one_slice):
-                    date = date_diff(base_date, one_slice[0][0])
+                    date = date_add(base_date, one_slice[0][0])
                 else:
                     date = base_date
                 sch = processS(train, date, station)
@@ -1362,6 +1420,29 @@ def compress_train_list(fn0, station=None):
                     break
                 time.sleep(1 << retry)
             train_arr.append(train)
+    #
+    #
+    ret = []
+    for train in train_arr:
+        if (train['station_train_code'] in train['train_no']) == False:
+            continue
+        schdata = processS(train, date, station)
+        s = schDateToCsv(schdata, train['date'], base_date, size, station)
+        for row in s:
+            if len(row) >= 7:
+                ret.append(row)
+    #
+    if len(ret):
+        try:
+            fn = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "delay/time.csv")
+        except:
+            fn = "delay/time.csv"
+        with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+            if f.tell() == 0:
+                f.write('\xef\xbb\xbf')
+            writer = csv.writer(f)
+            writer.writerows(ret)
     #
     #
     stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1465,7 +1546,7 @@ station = getStation('js/station_name.js')
 import datetime
 base_date = datetime.datetime.now().strftime('%Y-%m-%d');
 for d in range(1,2):
-    date = date_diff(base_date,d)
+    date = date_add(base_date,d)
     arr = searchAll12306(date,cache=0)
     checkSearch12306(arr, station, date)
     savedatecsvS(arr, station, date)

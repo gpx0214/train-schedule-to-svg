@@ -279,6 +279,9 @@ polyline {
 <polyline name="8359" class="polyline8" points="487,1243 497,1248 499,1248 606,1368 "/>
 <polyline name="8375" class="polyline8" points="558,1070 577,1093 580,1093 "/>
 <polyline name="8376" class="polyline8" points="1255,1093 1260,1093 1284,1070 "/>
+<polyline name="Z19" class="polylineZ" points="159,559 511,1070 "/>
+<polyline name="Z20" class="polylineZ" points="1161,1070 1440,670 "/>
+<polyline name="Z20+1" class="polylineZ" points="0,670 77,559 "/>
 <polyline name="Z40" class="polylineZ" points="114,210 126,210 293,559 300,559 381,683 384,683 660,1070 670,1070 764,1243 769,1243 864,1398 875,1398 1104,1746 1121,1746 "/>
 <polyline name="Z42" class="polylineZ" points="729,1746 746,1746 981,1398 987,1398 1140,1243 1151,1243 1241,1070 1250,1070 1440,808 "/>
 <polyline name="Z42+1" class="polylineZ" points="0,808 91,683 94,683 177,559 185,559 354,210 362,210 "/>
