@@ -19,7 +19,6 @@ import time
 
 import requests
 
-
 def date_add(date, diff):
     match = re.findall(r'(\d+)-(\d+)-(\d+)', date, re.I | re.M)[0]
     y = int(match[0])
@@ -151,25 +150,25 @@ def cmpby0_i2_i3_m4_i5(a1, a2):
 # station_name.js
 def getStation(fn):
     # f = open(fn, 'r',encoding = 'utf8'); #py3
-    with open(fn, 'r') as f:  # py2
-        s = f.read()
+    with open(fn, 'rb') as f:  # py2
+        s = f.read().decode('utf-8')
     a = re.findall(r'\'\@([^\']+)\'', s, re.I | re.M)[0]
     s = a.split('@')
     for i in range(len(s)):
         s[i] = s[i].split('|')
     print('read %d stations in %s' % (len(s), fn))
-    s.append(["tsn", "唐山南", "TNP", "tangshannan", "tsn", "-1"])
-    s.append(["gye", "古冶", "GYP", "guye", "gy", "-1"])
-    s.append(["", "香港红磡", "JQO", "xiangganghongkan", "xghk", "-1"])
-    s.append(["jlo", "九龙", "JQO", "jiulong", "jl", "-1"])
-    s.append(["xgl", "香港西九龙", "XJA", "hkwestkowloon", "xgxjl", "-1"])
-    s.append(['jsw', '金山卫', 'BGH', 'jinshanwei', 'jsw', '-1'])
-    s.append(['mji', '梅江', 'MKQ', 'meijiang', 'mj', '-1'])
-    s.append(['ylo', '元龙', 'YLY', 'yuanlong', 'yl', '-1'])
-    s.append(['bdl', '八达岭', 'ILP', 'badaling', 'bdl', '-1'])
-    s.append(['nsb', '南山北', 'NBQ', 'nanshanbei', 'nsb', '-1'])
-    s.append(['', '车墩', 'CDH', 'chedun', 'cd', '-1'])
-    s.append(['', '羊木', 'YMJ', 'yangmu', 'ym', '-1'])
+    s.append([u"tsn", u"唐山南", u"TNP", u"tangshannan", u"tsn", u"-1"])
+    s.append([u"gye", u"古冶", u"GYP", u"guye", u"gy", u"-1"])
+    s.append([u"", u"香港红磡", u"JQO", u"xiangganghongkan", u"xghk", u"-1"])
+    s.append([u"jlo", u"九龙", u"JQO", u"jiulong", u"jl", u"-1"])
+    s.append([u"xgl", u"香港西九龙", u"XJA", u"hkwestkowloon", u"xgxjl", u"-1"])
+    s.append([u'jsw', u'金山卫', u'BGH', u'jinshanwei', u'jsw', u'-1'])
+    s.append([u'mji', u'梅江', u'MKQ', u'meijiang', u'mj', u'-1'])
+    s.append([u'ylo', u'元龙', u'YLY', u'yuanlong', u'yl', u'-1'])
+    s.append([u'bdl', u'八达岭', u'ILP', u'badaling', u'bdl', u'-1'])
+    s.append([u'nsb', u'南山北', u'NBQ', u'nanshanbei', u'nsb', u'-1'])
+    s.append([u'', u'车墩', u'CDH', u'chedun', u'cd', u'-1'])
+    s.append([u'', u'羊木', u'YMJ', u'yangmu', u'ym', u'-1'])
     return s
 
 
@@ -178,7 +177,7 @@ def telecode(s, station):
         if s == station[i][1]:
             return station[i][2]
     # print(s)
-    return ''
+    return u''
 
 
 # train_list.js
@@ -201,15 +200,15 @@ def processS(a, date, station):
         with open(fn, 'r') as f:
             data = f.read()
         try:
-            sch = json.loads(data.decode('utf-8').replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911'))
+            sch = json.loads(data)
             if sch['status'] == True and sch['httpstatus'] == 200 \
                     and len(sch['data']['data']):
                 return sch['data']['data']
         except ValueError:
             print('ValueError ' + a['train_no'])
     #
-    t1 = telecode(a['from_station'].encode('utf-8'), station)
-    t2 = telecode(a['to_station'].encode('utf-8'), station)
+    t1 = telecode(a['from_station'], station).encode('utf-8')
+    t2 = telecode(a['to_station'], station).encode('utf-8')
     if not t1:
         if platform.system() == "Windows":
             print(a['from_station'].encode('gbk') +
@@ -240,7 +239,7 @@ def processA(a, date, station):
         with open(fn, 'r') as f:
             data = f.read()
         try:
-            sch = json.loads(data.decode('utf-8').replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911'))
+            sch = json.loads(data)
             if sch['status'] == True and sch['httpstatus'] == 200 \
                     and len(sch['data']['data']):
                 return sch['data']['data']
@@ -249,8 +248,8 @@ def processA(a, date, station):
     #
     match = re.findall(r'(.*)\((.*)-(.*)\)',
                        a['station_train_code'], re.I | re.M)[0]
-    t1 = telecode(match[1].encode('utf-8'), station)
-    t2 = telecode(match[2].encode('utf-8'), station)
+    t1 = telecode(match[1], station).encode('utf-8')
+    t2 = telecode(match[2], station).encode('utf-8')
     if not t1:
         if platform.system() == "Windows":
             print(match[1].encode('gbk') +
@@ -282,7 +281,7 @@ def getSch12306(t1, t2, train_no, date):
     if os.path.exists(fn):
         with open(fn, 'r') as f:
             data = f.read()
-        sch = json.loads(data.decode('utf-8').replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911'))
+        sch = json.loads(data)
         if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
             return sch['data']['data']
     #
@@ -299,7 +298,7 @@ def getSch12306(t1, t2, train_no, date):
         return []
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     try:
-        sch = json.loads(body.replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911'))
+        sch = json.loads(body)
     except ValueError:
         print('ValueError ' + train_no)
         return []
@@ -540,8 +539,8 @@ def schToCsv(s):
     last = 0
     for i in range(0, len(s)):
         # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8')); # 打印时刻
-        if getmin(s[i]['arrive_time'].encode('utf-8')) > -1 and i > 0:
-            minute = getmin(s[i]['arrive_time'].encode('utf-8'))
+        if getmin(s[i]['arrive_time']) > -1 and i > 0:
+            minute = getmin(s[i]['arrive_time'])
             if minute < last:
                 day += 1
             last = minute
@@ -558,15 +557,15 @@ def schToCsv(s):
             )'''
             ret.append([
                 s[0]['station_train_code'].encode('utf-8'),
-                s[i]['station_name'].encode('utf-8'),
+                s[i]['station_name'].replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911').encode('utf-8'),
                 s[i]['station_no'].encode('utf-8'),
                 str(day),
                 s[i]['arrive_time'].encode('utf-8'),
                 '0'
             ])
         #
-        if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
-            minute = getmin(s[i]['start_time'].encode('utf-8'))
+        if getmin(s[i]['start_time']) > -1 and i < len(s)-1:
+            minute = getmin(s[i]['start_time'])
             if minute < last:
                 day += 1
             last = minute
@@ -582,7 +581,7 @@ def schToCsv(s):
             )'''
             ret.append([
                 s[0]['station_train_code'].encode('utf-8'),
-                s[i]['station_name'].encode('utf-8'),
+                s[i]['station_name'].replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911').encode('utf-8'),
                 s[i]['station_no'].encode('utf-8'),
                 str(day),
                 s[i]['start_time'].encode('utf-8'),
@@ -655,7 +654,7 @@ def schToPolyline(s, m):
         s[0]['station_train_code'].encode('utf-8'),
         s[0]['station_train_code'].encode('utf-8')[:1])
     for i in range(0, len(s)):
-        x = getmin(s[i]['arrive_time'].encode('utf-8'))
+        x = getmin(s[i]['arrive_time'])
         y = getkm(s[i]['station_name'].encode('utf-8'), m)
         if y > -1 and i > 0:
             if x < lastx:
@@ -675,7 +674,7 @@ def schToPolyline(s, m):
             lasty = y
             buffer += '%s,%s ' % (x, y)
         #
-        x = getmin(s[i]['start_time'].encode('utf-8'))
+        x = getmin(s[i]['start_time'])
         y = getkm(s[i]['station_name'].encode('utf-8'), m)
         if y > -1 and i < len(s)-1:
             if x < lastx:
@@ -1322,12 +1321,12 @@ def schDateToCsv(s, date_bin, base_date, size, station=None):
     for i in range(0, len(s)):
         t1 = ''
         if station != None:
-            t1 = telecode(s[i]['station_name'].encode('utf-8'), station)
+            t1 = telecode(s[i]['station_name'], station).encode('utf-8')
         if not t1:
-            t1 = s[i]['station_name'].encode('utf-8')
+            t1 = s[i]['station_name'].replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911').encode('utf-8')
         #
-        if getmin(s[i]['arrive_time'].encode('utf-8')) > -1 and i > 0:
-            minute = getmin(s[i]['arrive_time'].encode('utf-8'))
+        if getmin(s[i]['arrive_time']) > -1 and i > 0:
+            minute = getmin(s[i]['arrive_time'])
             if minute < last:
                 day += 1
                 val, _ = compress_bin_vector(
@@ -1346,8 +1345,8 @@ def schDateToCsv(s, date_bin, base_date, size, station=None):
                 val
             ])
         #
-        if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
-            minute = getmin(s[i]['start_time'].encode('utf-8'))
+        if getmin(s[i]['start_time']) > -1 and i < len(s)-1:
+            minute = getmin(s[i]['start_time'])
             if minute < last:
                 day += 1
                 val, _ = compress_bin_vector(
@@ -1432,6 +1431,7 @@ def compress_train_list(fn0, station=None):
             if len(row) >= 7:
                 ret.append(row)
     #
+    print(len(ret))
     if len(ret):
         try:
             fn = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -1451,8 +1451,8 @@ def compress_train_list(fn0, station=None):
         t1 = ''
         t2 = ''
         if station != None:
-            t1 = telecode(train['from_station'].encode('utf-8'), station)
-            t2 = telecode(train['to_station'].encode('utf-8'), station)
+            t1 = telecode(train['from_station'], station).encode('utf-8')
+            t2 = telecode(train['to_station'], station).encode('utf-8')
         if not t1:
             t1 = train['from_station'].encode('utf-8')
         if not t2:
