@@ -44,7 +44,7 @@ ${path}view_train_list.py ${path}js/train_list.js
 yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}js/train_list.js)"`
 cp -p ${path}js/train_list.js ${path}js/train_list_${yymmdd}.js
 gzip -c9 ${path}js/train_list.js > ${path}js/train_list.js.gz
-gzip -c9 ${path}cycle.txt > ${path}cycle.txt.gz
+gzip -c9 ${path}js/train_list.js.txt > ${path}js/train_list.js.txt.gz
 else
 echo t1 newer but same
 fi
