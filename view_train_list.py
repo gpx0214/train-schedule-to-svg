@@ -20,6 +20,16 @@ import time
 import requests
 
 
+def isLeap(y):
+    if y & 0x03:
+        return 0
+    if y % 400 == 0:
+        return 1
+    if y % 100 == 0:
+        return 0
+    return 1
+
+
 def date_add(date, diff):
     match = re.findall(r'(\d+)-(\d+)-(\d+)', date, re.I | re.M)[0]
     y = int(match[0])
@@ -27,11 +37,7 @@ def date_add(date, diff):
     d = int(match[2])
     day_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     day_month[2 - 1] = 28
-    if y % 4 == 0:
-        day_month[2 - 1] = 29
-    if y % 100 == 0:
-        day_month[2 - 1] = 28
-    if y % 400 == 0:
+    if isLeap(y):
         day_month[2 - 1] = 29
     #
     d += diff
@@ -43,11 +49,7 @@ def date_add(date, diff):
             m -= 12
             y += 1
             day_month[2 - 1] = 28
-            if y % 4 == 0:
-                day_month[2 - 1] = 29
-            if y % 100 == 0:
-                day_month[2 - 1] = 28
-            if y % 400 == 0:
+            if isLeap(y):
                 day_month[2 - 1] = 29
     #
     while d < 1:
@@ -55,11 +57,7 @@ def date_add(date, diff):
         while m < 1:
             y -= 1
             day_month[2 - 1] = 28
-            if y % 4 == 0:
-                day_month[2 - 1] = 29
-            if y % 100 == 0:
-                day_month[2 - 1] = 28
-            if y % 400 == 0:
+            if isLeap(y):
                 day_month[2 - 1] = 29
             m += 12
         d += day_month[(m-1) % 12]
