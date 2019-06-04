@@ -19,6 +19,7 @@ import time
 
 import requests
 
+
 def date_add(date, diff):
     match = re.findall(r'(\d+)-(\d+)-(\d+)', date, re.I | re.M)[0]
     y = int(match[0])
@@ -273,6 +274,13 @@ def processA(a, date, station):
 
 # timetable
 def getSch12306(t1, t2, train_no, date):
+    sch = getSch12306Local(train_no)
+    if len(sch):
+        return sch
+    sch = getSch12306Online(t1, t2, train_no, date)
+
+
+def getSch12306Local(train_no):
     name = 'sch/' + train_no + '.json'
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
@@ -284,13 +292,15 @@ def getSch12306(t1, t2, train_no, date):
         sch = json.loads(data)
         if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
             return sch['data']['data']
-    #
+    return []
+
+
+def getSch12306Online(t1, t2, train_no, date):
     url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=" + train_no + \
-        "&from_station_telecode=" + t1 + \
-        "&to_station_telecode=" + t2 + "&depart_date=" + date
-    # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+        "&from_station_telecode=" + t1 + "&to_station_telecode=" + t2 + \
+        "&depart_date=" + date
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
@@ -302,6 +312,11 @@ def getSch12306(t1, t2, train_no, date):
     except ValueError:
         print('ValueError ' + train_no)
         return []
+    name = 'sch/' + train_no + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
     if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
         with open(fn, 'wb') as f:
             f.write(resp.content)
@@ -336,7 +351,7 @@ def getsearch12306(kw, date, cache=1):
         kw + "&date=" + yyyymmdd
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
@@ -557,7 +572,8 @@ def schToCsv(s):
             )'''
             ret.append([
                 s[0]['station_train_code'].encode('utf-8'),
-                s[i]['station_name'].replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911').encode('utf-8'),
+                s[i]['station_name'].replace(u'\ue244', u'\u78cf').replace(
+                    u'\ue24d', u'\u6911').encode('utf-8'),
                 s[i]['station_no'].encode('utf-8'),
                 str(day),
                 s[i]['arrive_time'].encode('utf-8'),
@@ -581,7 +597,8 @@ def schToCsv(s):
             )'''
             ret.append([
                 s[0]['station_train_code'].encode('utf-8'),
-                s[i]['station_name'].replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911').encode('utf-8'),
+                s[i]['station_name'].replace(u'\ue244', u'\u78cf').replace(
+                    u'\ue24d', u'\u6911').encode('utf-8'),
                 s[i]['station_no'].encode('utf-8'),
                 str(day),
                 s[i]['start_time'].encode('utf-8'),
@@ -913,35 +930,60 @@ def print_block(stat):
     return s, cnt
 
 
-LeftTicketUrl = "leftTicket/queryX"
+def getczxx(t1, date):
+    url = "https://kyfw.12306.cn/otn/czxx/query?train_start_date=" + date + \
+        "&train_station_name=" + "" + \
+        "&train_station_code=" + t1 + "&randCode="
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36"}
+    try:
+        resp = requests.get(url, headers=header, timeout=30)
+    except:
+        print('Net Error %s %s' % (t1, date))
+        return []
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    try:
+        j = json.loads(body)
+    except ValueError:
+        print('ValueError %s %s' % (t1, date))
+        return []
+    if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
+        with open('ticket/' + date + '_' + t1 + '.json', 'wb') as f:
+            f.write(resp.content)
+        print('%s %s %d' % (t1, date, len(j['data']['data'])))
+        return j['data']['data']
+    else:
+        print('data error %s %s' % (t1, date))
+        return []
+
+
+LeftTicketUrl = "leftTicket/query"
 
 
 def getLeftTicket(t1, t2, date):
     url = "https://kyfw.12306.cn/otn/" + LeftTicketUrl + "?leftTicketDTO.train_date=" + date + \
         "&leftTicketDTO.from_station=" + t1 + \
         "&leftTicketDTO.to_station=" + t2 + "&purpose_codes=ADULT"
-    # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header, timeout=20)
+        resp = requests.get(url, headers=header, timeout=30)
     except:
-        print('Net Error ' + t1 + ' ' + t2 + ' ' + date)
+        print('Net Error %s %s %s' % (t1, t2, date))
         return []
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     try:
         ticket = json.loads(body)
     except ValueError:
-        print('ValueError ' + t1 + ' ' + t2 + ' ' + date)
+        print('ValueError %s %s %s' % (t1, t2, date))
         return []
     if ticket['status'] == True and ticket['httpstatus'] == 200 and len(ticket['data']['result']):
         with open('ticket/' + date + '_' + t1 + '_' + t2 + '.json', 'wb') as f:
             f.write(resp.content)
-        print(t1 + ' ' + t2 + ' ' + date + ' ' +
-              str(len(ticket['data']['result'])))
+        print('%s %s %s %d' % (t1, t2, date, len(ticket['data']['result'])))
         return ticket['data']['result']
     else:
-        print("data error " + t1 + ' ' + t2 + ' ' + date)
+        print('data error %s %s %s' % (t1, t2, date))
         return []
 
 
@@ -949,8 +991,8 @@ def checkLeftTicket(t1, t2, date):
     ticket = getLeftTicket(t1, t2, date)
     for i in ticket['data']['result']:
         sp = i.split('|')
-        if len(sp) > 36:
-            print(sp[3] + ' ' + sp[2]+' ' + sp[4]+' ' + sp[5])
+        if len(sp) > 38:
+            print('%s %s %s %s' % (sp[3], sp[2], sp[4], sp[5]))
             if not os.path.exists('sch/'+sp[2].encode('utf-8')+'.json'):
                 for retry in range(3):
                     s = getSch12306(sp[4], sp[5], sp[2], date)
@@ -988,7 +1030,7 @@ for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2
 def gtzwdjsp():
     url = 'http://www.gtbyxx.com/wxg/ky/zhengwan.jsp'
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36"}
     resp = requests.get(url, headers=header, timeout=20)
     body = resp.content.decode('utf-8')
     match = re.findall(r'<p class="warring">最后更新时间为(\d+)月(\d+)日 (\d+)点(\d+)分。</p>',
@@ -1011,7 +1053,7 @@ def gtzwd(date, s):
     url = 'http://www.gtbyxx.com/wxg/inter/ky/getTrainZwd'
     j = {"trainNo": s}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36"}
     resp = requests.post(url, data=json.dumps(j), headers=header, timeout=20)
     body = resp.content.decode('utf-8')
     #
@@ -1323,7 +1365,8 @@ def schDateToCsv(s, date_bin, base_date, size, station=None):
         if station != None:
             t1 = telecode(s[i]['station_name'], station).encode('utf-8')
         if not t1:
-            t1 = s[i]['station_name'].replace(u'\ue244',u'\u78cf').replace(u'\ue24d',u'\u6911').encode('utf-8')
+            t1 = s[i]['station_name'].replace(u'\ue244', u'\u78cf').replace(
+                u'\ue24d', u'\u6911').encode('utf-8')
         #
         if getmin(s[i]['arrive_time']) > -1 and i > 0:
             minute = getmin(s[i]['arrive_time'])

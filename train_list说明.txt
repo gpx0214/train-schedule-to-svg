@@ -44,9 +44,8 @@ Cookie: BIGipServerotn=334496266.64545.0000;
 
 查询同城站起售时
 https://www.12306.cn/index/otn/index12306/queryScSname
-POST 
-Cookie: BIGipServerotn=334496266.64545.0000;
-station_telecode=BJP 放URL上也可以
+POST
+station_telecode=BJP
 
 车站地址
 http://www.12306.cn/mormhweb/kyyyz/ky_heb/201001/t20100124_1161.html
@@ -96,6 +95,22 @@ function hash(str) {
 var d = {}
 var st = {}
 var m = new Set();
+var arr = new Array(70000);
+var stat = new Array(2000);
+for(i in cycle) {
+      t = cycle[i];
+      m.add(t.from_station+'-'+t.to_station)
+      d[t.from_station+'-'+t.to_station] = (d[t.from_station+'-'+t.to_station] || 0) + 1;
+      st[t.from_station] = (st[t.from_station] || 0) + 1;
+      st[t.to_station] = (st[t.to_station] || 0) + 1;
+      arr[hash(t.station_train_code)] = t.train_no;
+      stat[Math.floor(hash(t.station_train_code)/100)] = (stat[hash(t.station_train_code)/100] || 0) + 1;
+}
+
+/*
+var d = {}
+var st = {}
+var m = new Set();
 var arr = new Array(200000);
 var stat = new Array(2000);
 for(date in train_list) {
@@ -112,6 +127,7 @@ for(date in train_list) {
     }
   }
 }
+*/
 
 //m.size 3651
 //arr
@@ -209,22 +225,8 @@ a.data.result[45].split("|")
 15
 16
 17
-
-var seatTypeForHB = {
-    SWZ: "9_商务座",
-    TZ: "P_特等座",
-    ZY: "M_一等座",
-    ZE: "O_二等座",
-    GR: "6_高级软卧",
-    RW: "4_软卧",
-    SRRB: "F_动卧",
-    YW: "3_硬卧",
-    RZ: "2_软座",
-    YZ: "1_硬座",
-    WZ: "1_无座",
-    QT: "H_其他"
-};
-
+18 card
+19 ctl
 
 20 gg_num 观光
 21 RW19
@@ -245,6 +247,22 @@ var seatTypeForHB = {
 36  exchange_train_flag 可以积分兑换
 37  houbu_train_flag 候补
 38  houbu_seat_limit 不能候补席别 字母
+
+var seatTypeForHB = {
+    SWZ: "9_商务座",
+    TZ: "P_特等座",
+    ZY: "M_一等座",
+    ZE: "O_二等座",
+    GR: "6_高级软卧",
+    RW: "4_软卧",
+    SRRB: "F_动卧",
+    YW: "3_硬卧",
+    RZ: "2_软座",
+    YZ: "1_硬座",
+    WZ: "1_无座",
+    QT: "H_其他"
+};
+
 
     function cp(cO, cQ) {
         var cN = [];
@@ -301,6 +319,46 @@ var seatTypeForHB = {
         return cN
     }
 
+    function aG(cM) {
+        var cL = "";
+        if (cM == "ZY") {
+            cL = "M"
+        }
+        if (cM == "ZE") {
+            cL = "O"
+        }
+        if (cM == "SWZ") {
+            cL = "9"
+        }
+        if (cM == "TZ") {
+            cL = "P"
+        }
+        if (cM == "YZ") {
+            cL = "1"
+        }
+        if (cM == "RZ") {
+            cL = "2"
+        }
+        if (cM == "YW") {
+            cL = "3"
+        }
+        if (cM == "RW") {
+            cL = "4"
+        }
+        if (cM == "GR") {
+            cL = "6"
+        }
+        if (cM == "WZ") {
+            cL = "WZ"
+        }
+        if (cM == "SRRB") {
+            cL = "F"
+        }
+        if (cM == "YYRW") {
+            cL = "A"
+        }
+        return cL
+    }
 
 map = r.data.map;
 
