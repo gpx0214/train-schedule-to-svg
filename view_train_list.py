@@ -938,21 +938,21 @@ def getczxx(t1, date):
         resp = requests.get(url, headers=header, timeout=30)
     except:
         print('Net Error %s %s' % (t1, date))
-        return []
+        return [], []
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     try:
         j = json.loads(body)
     except ValueError:
         print('ValueError %s %s' % (t1, date))
-        return []
+        return [], []
     if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
         with open('ticket/' + date + '_' + t1 + '.json', 'wb') as f:
             f.write(resp.content)
         print('%s %s %d' % (t1, date, len(j['data']['data'])))
-        return j['data']['data']
+        return j['data']['data'], j['data']['sameStations']
     else:
         print('data error %s %s' % (t1, date))
-        return []
+        return [], []
 
 
 LeftTicketUrl = "leftTicket/query"
@@ -1457,6 +1457,10 @@ def compress_train_list(fn0, station=None):
                 sch = processS(train, date, station)
                 train['total_num'] = len(sch)
                 if len(sch):
+                    train['service_type'] = sch[0]['service_type']
+                else:
+                    train['service_type'] = ""
+                if len(sch):
                     break
                 time.sleep(1 << retry)
             train_arr.append(train)
@@ -1502,12 +1506,13 @@ def compress_train_list(fn0, station=None):
         val, status = compress_bin_vector(train['date'], base_date, size)
         stat[status] += 1
         #
-        buffer += '%s|%s|%s|%s|%d|%s\n' % (
+        buffer += '%s|%s|%s|%s|%d|%s|%s\n' % (
             train['train_no'].encode('utf-8'),
             t1,
             t2,
             train['station_train_code'].encode('utf-8'),
             train['total_num'],
+            '0' if train['service_type'] == '0' else '',
             val
         )
     #
@@ -1789,4 +1794,23 @@ a['total_num'] = 6
 a['date'] = 2
 
 addmap(train_map,a)
+'''
+
+'''
+tc_arr = []
+tc_map = {}
+for s in station:
+    name = s[1]
+    t1 = s[2] #telecode(s[1])
+    if name in tc_map:
+        continue
+    for retry in range(3):
+            c,tc = getczxx(t1, date)
+            if len(c):
+                break
+            time.sleep(1 << retry)
+    if len(tc) > 1:
+      tc_arr.append(tc)
+      for i in tc:
+        tc_map[i] = name
 '''
