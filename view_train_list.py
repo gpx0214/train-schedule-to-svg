@@ -276,6 +276,7 @@ def getSch12306(t1, t2, train_no, date):
     if len(sch):
         return sch
     sch = getSch12306Online(t1, t2, train_no, date)
+    return sch
 
 
 def getSch12306Local(train_no):
