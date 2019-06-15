@@ -229,45 +229,7 @@ def processS(a, date, station):
 
 # timetable train_list.js
 def processA(a, date, station):
-    name = 'sch/' + a['train_no'].encode('utf-8')+'.json'
-    try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
-    except:
-        fn = name
-    if os.path.exists(fn):
-        with open(fn, 'r') as f:
-            data = f.read()
-        try:
-            sch = json.loads(data)
-            if sch['status'] == True and sch['httpstatus'] == 200 \
-                    and len(sch['data']['data']):
-                return sch['data']['data']
-        except ValueError:
-            print('ValueError ' + a['train_no'])
-    #
-    match = re.findall(r'(.*)\((.*)-(.*)\)',
-                       a['station_train_code'], re.I | re.M)[0]
-    t1 = telecode(match[1], station).encode('utf-8')
-    t2 = telecode(match[2], station).encode('utf-8')
-    if not t1:
-        if platform.system() == "Windows":
-            print(match[1].encode('gbk') +
-                  " telecode not found! " + match[0].encode('gbk'))
-        else:
-            print(match[1].encode('utf-8') +
-                  " telecode not found! " + match[0].encode('utf-8'))
-        t1 = "AAA"
-        # return []
-    if not t2:
-        if platform.system() == "Windows":
-            print(match[2].encode('gbk') +
-                  " telecode not found! " + match[0].encode('gbk'))
-        else:
-            print(match[2].encode('utf-8') +
-                  " telecode not found! " + match[0].encode('utf-8'))
-        t2 = "AAA"
-        # return []
-    return getSch12306(t1, t2, a['train_no'], date)
+    return processS(atos(a), date, station)
 
 
 # timetable
@@ -1316,6 +1278,7 @@ def atos(a):
     s['to_station'] = u'广州'
     s['train_no'] = u'2400000Z9701'
     s['total_num'] = 0
+    s['date'] = 0
     '''
     # a to s obj
     match = re.findall(
