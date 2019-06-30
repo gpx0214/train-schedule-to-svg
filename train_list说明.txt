@@ -229,8 +229,8 @@ a.data.result[45].split("|")
 19 ctl
 
 20 gg_num 观光
-21 RW19
-22 一人软包  T31    K3/K23 包厢硬卧
+21 RW19 6
+22 一人软包 H T31    K3/K23 H 包厢硬卧  T6611 E 特等软座
 23 RW/WR
 24 RZ     T5685 Y509
 25 tz ZT 
