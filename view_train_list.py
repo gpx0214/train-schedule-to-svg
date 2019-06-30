@@ -343,7 +343,7 @@ def getsearch12306(kw, date, cache=1):
 
 def searchAll12306(date, cache=1):
     st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
-    maxlen = 70000
+    maxlen = 80000
     arr = [None for i in range(maxlen)]
     while(len(st)):
         kw = st.pop()
@@ -709,7 +709,7 @@ def csvToPolyline(c, m):
 
 def csvToSvg(m, c, rule=''):
     r = re.compile('^' + rule + '$', re.IGNORECASE | re.MULTILINE)
-    maxlen = 70000
+    maxlen = 80000
     arr = [[] for i in range(maxlen)]
 
     for i in range(len(c)):
@@ -821,8 +821,11 @@ def train_list_day_class_str(d, date):
 
 def hash_no(s):
     items = [('Z', 10000), ('T', 20000), ('K', 30000),
+             ('Y', 00000), ('L', 00000), ('A', 00000),
              ('G', 40000), ('D', 50000), ('C', 60000),
-             ('Y', 00000), ('S', 60000), ('P', 00000)]  # ('Y',70000),('S',71000),('P',80000)
+             ('S', 70000),
+             ('P', 10000), ('Q', 20000), ('W', 30000),
+             ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     d = dict(items)
     train_class = d[s[0]] if s[0] in d else 0
     n = int(re.sub(r'\D+', '', s))
@@ -831,18 +834,17 @@ def hash_no(s):
 
 def unhash_no(n):
     items = [('Z', 10000), ('T', 20000), ('K', 30000),
+             ('Y', 00000), ('L', 00000), ('A', 00000),
              ('G', 40000), ('D', 50000), ('C', 60000),
-             ('Y', 00000), ('S', 60000), ('P', 00000)]  # ('Y',70000),('S',71000),('P',80000)
-    head = ["", "Z", "T", "K", "G", "D", "C"]
-    if n > 70000:
+             ('S', 70000),
+             ('P', 10000), ('Q', 20000), ('W', 30000),
+             ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
+    head = ["", "Z", "T", "K", "G", "D", "C", "S"]
+    if n > 80000:
         return ""
     train_class = head[(n-1) // 10000]
     if n <= 1000:
         train_class = "Y"
-    if n <= 100:
-        train_class = "P"
-    if n > 60000 and n <= 61000:
-        train_class = "C"
     for i in range(len(items)):
         if train_class == items[i][0]:
             return train_class + str(n-items[i][1])
@@ -1384,7 +1386,7 @@ def compress_train_list(fn0, station=None):
     print(slice_mark)
     base_date = slice_mark[0][0]
     mask = 0
-    maxlen = 70000
+    maxlen = 80000
     train_map = [[] for i in range(maxlen)]
     for i in range(len(slice_mark)):
         date = slice_mark[i][0]
@@ -1509,8 +1511,8 @@ if __name__ == '__main__':
     try:
         # if True:
         t = openTrainList(fn0)
-        arr = train_list_train_no_array(t, 70000)
-        stat, train_num = train_list_stat_block(arr, 100, 70000)
+        arr = train_list_train_no_array(t, 80000)
+        stat, train_num = train_list_stat_block(arr, 100, 80000)
         s, block = print_block(stat)
         print(str(train_num) + " trains")
         print(str(block) + " blocks")
@@ -1560,7 +1562,7 @@ for d in range(1,2):
     arr = searchAll12306(date,cache=0)
     checkSearch12306(arr, station, date)
     savedatecsvS(arr, station, date)
-    stat, train_num = train_list_stat_block(arr, 100, 70000)
+    stat, train_num = train_list_stat_block(arr, 100, 80000)
     s, block = print_block(stat)
     print(str(train_num) + " trains")
     print(str(block) + " blocks")
