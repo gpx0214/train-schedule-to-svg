@@ -467,7 +467,7 @@ def searchAll12306(train_map, base_date, date, st, cache=1):
                 res, ret = getsearch12306(kw, date, cache)
                 if ret >= 0:
                     break
-                time.sleep(1 << retry)
+                time.sleep(2 << retry)
         if ret == -1:
             dead.append(kw)
             continue
@@ -1623,15 +1623,21 @@ if __name__ == '__main__':
                 for i in tc:
                     tc_map[i] = name
     #
-    '''
-    st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
-    for retry in range(3):
-        st = searchAll12306(train_map, base_date, date, st, cache=1)
-        print(st)
-        if len(st) == 0:
-            break
-        time.sleep(4 << retry)
-    '''
+    #st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+    st = ["D9", "G9", "3", "T3", "Z4", "K5", "K4", "D4", "G4"]
+    for i in range(0, 32):
+        date = date_add(now, i)
+        cache = 1
+        if i == 0:
+            cache = 0
+        if i > 29:
+            cache = 0
+        for retry in range(3):
+            st = searchAll12306(train_map, base_date, date, st, cache=1)
+            print(st)
+            if len(st) == 0:
+                break
+            time.sleep(2 << retry)
     #
     train_arr = mapToArr(train_map)
     #
@@ -1857,9 +1863,9 @@ for train in train_arr:
     sch = processS(train, date, station)
     flag = 0
     for row in sch[0:-1]:
-        if train['from_station'] not in d:
-            d[train['from_station']] = 0
-        d[train['from_station']] += 1
+        if row['station_name'] not in d:
+            d[row['station_name']] = 0
+        d[row['station_name']] += 1
 
 
 #iterate until len(ret) stable
@@ -1988,9 +1994,7 @@ def getsearch(kw, cache=1):
 
 
 def dfsSearchAll(map, st):
-    '''
     #dfs search_v1 in stack
-    '''
     dead = []
     while(len(st)):
         kw = st.pop()
@@ -2042,5 +2046,4 @@ for v in map:
     ])
 
 writecsv("DBM.csv", ret)
-
 '''
