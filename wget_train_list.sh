@@ -40,12 +40,9 @@ fi
 if ((${t1} > ${t0}));then
 echo t1 newer
 if ((${s1} != ${s0}));then
-${path}view_train_list.py ${path}js/train_list.js
 yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}js/train_list.js)"`
 cp -p ${path}js/train_list.js ${path}js/train_list_${yymmdd}.js
 gzip -c9 ${path}js/train_list.js > ${path}js/train_list.js.gz
-gzip -c9 ${path}js/train_list.js.txt > ${path}js/train_list.js.txt.gz
-gzip -c9 ${path}delay/time.csv > ${path}delay/time.csv.gz
 else
 echo t1 newer but same
 fi
@@ -53,3 +50,6 @@ else
 echo t0 newer or same
 fi
 
+${path}view_train_list.py ${path}js/train_list.js
+gzip -c9 ${path}js/train_list.js.txt > ${path}js/train_list.js.txt.gz
+gzip -c9 ${path}delay/time.csv > ${path}delay/time.csv.gz
