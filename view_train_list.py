@@ -1623,20 +1623,20 @@ if __name__ == '__main__':
                 for i in tc:
                     tc_map[i] = name
     #
-    #st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
-    st = ["D9", "G9", "3", "T3", "Z4", "K5", "K4", "D4", "G4"]
     for i in range(0, 32):
+        #st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+        st = ["D9", "G9", "3", "T3", "Z4", "K5", "K4", "D4", "G4"]
         date = date_add(now, i)
         cache = 1
         if i == 0:
             cache = 0
-        if i > 29:
+        if i > 30:
             cache = 0
         for retry in range(3):
-            st = searchAll12306(train_map, base_date, date, st, cache=1)
-            print(st)
+            st = searchAll12306(train_map, base_date, date, st, cache)
             if len(st) == 0:
                 break
+            print(date, st)
             time.sleep(2 << retry)
     #
     train_arr = mapToArr(train_map)
