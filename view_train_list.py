@@ -1144,7 +1144,7 @@ def getczxx(t1, date, cache=1):
             data = f.read()
         j = json.loads(data)
         if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
-            #print('%s %s %4d local' % (t1, date, len(j['data']['data'])))
+            # print('%s %s %4d local' % (t1, date, len(j['data']['data'])))
             return j['data']['data'], j['data']['sameStations'], len(j['data']['data'])
     #
     url = "https://kyfw.12306.cn/otn/czxx/query?train_start_date=" + date + \
@@ -1499,7 +1499,8 @@ def slice_to_str(ret, base_date):
 
 
 def compress_bin_vector(date_bin, base_date, size):
-    if date_bin == all1(size):  # 图定
+    date_bin &= all1(size)
+    if date_bin & all1(size) == all1(size):  # 图定
         return "", 1
     one_slice = get_one_slice(date_bin, size)
     zero_slice = get_zero_slice(date_bin, size)
@@ -1510,9 +1511,9 @@ def compress_bin_vector(date_bin, base_date, size):
         if len(one_slice) <= 2:
             return slice_to_str(one_slice, base_date), 8
     else:
-        if len(zero_slice) <= 1:
+        if len(zero_slice) <= 1 and len(zero_slice) > 0:
             return "停" + slice_to_str(zero_slice, base_date), 9
-    if bin_weight > size - size / 7:
+    if bin_weight > size - size / 7 and len(zero_slice) > 0:
         return "停" + slice_to_str(zero_slice, base_date), 11
     for step in [7, 2, 3, 4, 5, 6]:
         size_floor = size//step*step
@@ -1575,7 +1576,7 @@ if __name__ == '__main__':
     #
     #
     citys = u'南京南,广州南,石家庄,杭州东,沈阳,南京,长沙,成都东,沈阳北,长沙南,深圳北,北京南,南昌,昆明南,汉口,西安北,广州东,南宁东,西安,天津,哈尔滨,福州,长春,郑州,广州,郑州东,重庆北,乌鲁木齐,厦门北,兰州西,重庆西,北京,合肥,深圳,道滘,天津西,三亚,兰州,小金口,犀浦,珠海,青岛北,昆明,包头,柳州,潮汕,济南,香港西九龙,武昌,佳木斯,牡丹江,太原南,吉林,上海,太原,贵阳北,上海南,南昌西,齐齐哈尔,呼和浩特,合肥南,湘潭,金山卫,新会,南通,武汉,青城山,通辽,怀化南,焦作,大连北,北京西,福田,上海虹桥,丹东,宜昌东,肇庆,龙岩,成都西,海口东,九江,株洲南,南充,贵阳,哈尔滨东,宁波,西宁,芜湖,海拉尔,阿克苏,襄阳,新郑机场,菏泽,银川,万州北,南充北,运城北,伊宁,徐州,汉中,乌兰浩特,绥化,雅安,通化,大连,克拉玛依,桂林北,深圳坪山,南宁,常德,济南西,宜宾西,成都南,沙坪坝,石河子,厦门,邵阳,承德,黄冈东,北海,赤峰,温州南,赣州,防城港北,哈密,鹰潭,安康,威海,孝感东,济南东,黄山北,库尔勒,南阳,邛崃,茂名,安庆,扬州,成都,彭州,苏州,新乡,秦皇岛,大同,信宜,东京城,三间房,杭州,蓟州北,延安,汕头,六盘水,德阳,达州,佛山西,东莞东,荆门,玉林,烟台,洛阳,天津北,敦煌,本溪,昌平北,石家庄北,中卫,洛阳龙门,铜仁,阜新,奎屯,山海关,鸡西,临汾,咸宁南,桦南,眉山东,辽源,香坊,天水南,加格达奇,呼和浩特东,白城,拉萨,连云港,丰都,武威,鹤岗,离堆公园,五常,吐鲁番北,富拉尔基,青岛,古冶,日照,唐山南,商丘,韩城,大庆西,宝鸡,襄阳东,大理,重庆,怀化,宁武,诸暨,双鸭山,大方南,合川,辽阳,格尔木,武夷山东,曹妃甸东,蔡家崖,衡水,阜阳,根河,开阳,阜新南,榆树,唐山,宝鸡南,滨海,库伦,弥勒,长寿北,原平西,玉溪,门源,遵义,乌伊岭,吕梁,都江堰,宝坻,海口,攀枝花,福鼎,广元,前进镇,邯郸,凭祥,邯郸东,原平,井冈山,锦州,哈尔滨西,绥芬河,运城,凯里南,大冶北,渭南,白山市,长征,萍乡,抚顺北,霍林郭勒,嘉峪关,靖西,宣威,喀什,汕尾,霍尔果斯,普雄,集安,陇西,永川东,启东,漳州,枣庄西,轩岗,黑河,北京东,麻城,镜铁山,林口,内江,松原,同江,荆州,四平,沧州西,和静,塔尔气,日照西,香港红磡,阎良,陵城,汝箕沟,乌海西,北安,泽普,达坂城,临汾西,中川机场,聊城,日喀则,徐州东,大武口,乌鲁木齐南,平顶山,南阳寨,大明湖,介休,阿尔山,陇南,广安南,保定,安顺西,平凉,德令哈,阳泉,长汀镇,忻州,乌兰察布,沙岭,平泉,衡阳东,二连,长治北,纳雍,满洲里,岢岚,石门县北,车墩,安平,昆山南,恩施,安阳,延吉西,干塘,张家口南,伊春,阳泉曲,上饶,白银西,商南,临沂,九台,黄土店,秀山,泰安,淮北,江油,伊图里河,山河屯,武当山,图们,固始,柴沟堡,扶余北,阿尔山北,古北口,玉屏,营口东,三明北,舒兰,隆昌北,长武,鹰潭北,张家界,瓦房店,燕郊,沁县,罗平,茶卡,通州西,麻尾,信阳,永州,德惠,西丰,娄底,嘉峪关南,一面坡,塔河,讷河,张家川,富宁,柳园,资中北,华山北,潼南,马鞍山东,绿化,榆次,莎车,衡水北,八面通,许昌东,南平南,庄河北,海伦,公主岭,廊坊,淮滨,洪洞西,河边,贺州,遵义西,曲靖,阳平关,綦江东,峨眉山,平度,潞城,岳阳,叶柏寿,阿勒泰,那曲,朔州,齐齐哈尔南,瑞金,昭通,利川,四棵树,泰山,燕岗,大涧,淄博,侯马,小市,塘豹,南丰,宝清,马三家,兴隆县,盐城,东营南,梧州南'.split(',')
-    #base_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    # base_date = datetime.datetime.now().strftime('%Y-%m-%d')
     import datetime
     now = datetime.datetime.now().strftime('%Y-%m-%d')
     for i in range(-datediff(now, base_date), 32):
@@ -1624,13 +1625,14 @@ if __name__ == '__main__':
                     tc_map[i] = name
     #
     for i in range(0, 32):
-        #st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+        # st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
         st = ["D9", "G9", "3", "T3", "Z4", "K5", "K4", "D4", "G4"]
         date = date_add(now, i)
+        '''diff = datediff(date, base_date)
+        if diff >= size:
+            size = diff + 1'''
         cache = 1
         if i == 0:
-            cache = 0
-        if i > 30:
             cache = 0
         for retry in range(3):
             st = searchAll12306(train_map, base_date, date, st, cache)
@@ -1638,6 +1640,8 @@ if __name__ == '__main__':
                 break
             print(date, st)
             time.sleep(2 << retry)
+    #
+    print('base_date %s size %d' % (base_date, size))
     #
     train_arr = mapToArr(train_map)
     #
@@ -1815,7 +1819,7 @@ w7126 8
 '''
 
 r'''
-#all train_list_*.js in file
+# all train_list_*.js in file
 import os
 import glob
 from view_train_list import *
@@ -1836,7 +1840,7 @@ for fn0 in glob.glob(r'js\train_list_*.js'):
 '''
 
 '''
-#同城站
+# 同城站
 tc_arr = []
 tc_map = {}
 for s in station:
@@ -1856,7 +1860,7 @@ for s in station:
 '''
 
 '''
-#first time
+# first time
 d = {}
 cnt = 0
 for train in train_arr:
@@ -1868,7 +1872,7 @@ for train in train_arr:
         d[row['station_name']] += 1
 
 
-#iterate until len(ret) stable
+# iterate until len(ret) stable
 d = {}
 cnt = 0
 for train in train_arr:
@@ -1892,7 +1896,7 @@ print(cnt)
 
 c = []
 for k in d:
-    #print("%s %d"%(k,d[k]))
+    # print("%s %d"%(k,d[k]))
     c.append([k,d[k]])
 
 def sort1(x,y):
@@ -1994,7 +1998,7 @@ def getsearch(kw, cache=1):
 
 
 def dfsSearchAll(map, st):
-    #dfs search_v1 in stack
+    # dfs search_v1 in stack
     dead = []
     while(len(st)):
         kw = st.pop()
