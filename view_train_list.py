@@ -419,7 +419,7 @@ def getsearch12306(kw, date, cache=1):
         kw + "&date=" + yyyymmdd
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
@@ -598,7 +598,7 @@ def getSch12306Online(t1, t2, train_no, date):
         "&from_station_telecode=" + t1 + "&to_station_telecode=" + t2 + \
         "&depart_date=" + date
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
@@ -692,12 +692,11 @@ def checkSchdatebintocsv(train_arr, base_date, size, station=None):
     '''
     rows = []
     for train in train_arr:
-        for retry in range(3):
+        for retry in range(2):
             diff = get_first_one(train['date'], size)
+            date = base_date #TODO
             if diff > -1:
                 date = date_add(base_date, diff)
-            else:
-                date = base_date
             sch = processS(train, date, station)
             if len(sch):
                 break
@@ -717,7 +716,7 @@ def checkSchdatebintocsv(train_arr, base_date, size, station=None):
     return rows
 
 
-def checkSchdatemasktocsv(train_arr, base_date, size, mask, station):
+def checkSchdatemasktocsv(train_arr, base_date, size, mask, station = None):
     '''
     change train_arr[i]['service_type'] ['total_num']
     '''
@@ -1151,7 +1150,7 @@ def getczxx(t1, date, cache=1):
         "&train_station_name=" + "" + \
         "&train_station_code=" + t1 + "&randCode="
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=30)
     except:
@@ -1181,7 +1180,7 @@ def getLeftTicket(t1, t2, date):
         "&leftTicketDTO.from_station=" + t1 + \
         "&leftTicketDTO.to_station=" + t2 + "&purpose_codes=ADULT"
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=30)
     except:
@@ -1246,7 +1245,7 @@ for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2
 def gtzwdjsp():
     url = 'http://www.gtbyxx.com/wxg/ky/zhengwan.jsp'
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
     resp = requests.get(url, headers=header, timeout=20)
     body = resp.content.decode('utf-8')
     match = re.findall(r'<p class="warring">最后更新时间为(\d+)月(\d+)日 (\d+)点(\d+)分。</p>',
@@ -1269,7 +1268,7 @@ def gtzwd(date, s):
     url = 'http://www.gtbyxx.com/wxg/inter/ky/getTrainZwd'
     j = {"trainNo": s}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
     resp = requests.post(url, data=json.dumps(j), headers=header, timeout=20)
     body = resp.content.decode('utf-8')
     #
@@ -1951,7 +1950,6 @@ if __name__ == '__main__':
 柳园,柳园南
 
 门源
-茶卡
 德令哈
 格尔木
 那曲
@@ -2053,7 +2051,7 @@ if __name__ == '__main__':
     for i in range(size):
         mask = 1 << i
         date = date_add(base_date, i)
-        ret = checkSchdatemasktocsv(train_arr, base_date, size, mask, station)
+        ret = checkSchdatemasktocsv(train_arr, base_date, size, mask)
         num = writecsv("delay/sort"+date+".csv", ret)
         print('%s %6d' % (date, num))
 
@@ -2370,7 +2368,7 @@ def getsearch(kw, cache=1):
     url = "http://dynamic.12306.cn/yjcx/doPickJZM?param=" + kw + "&type=1&czlx=0"
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
