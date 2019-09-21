@@ -162,7 +162,7 @@ def cmpbyTime(a1, a2):
     return 0
 
 
-def cmpby0_i2_i3_m4_i5(a1, a2):
+def cmpby0_7_i2_i5_i3_m4(a1, a2):
     if (len(a1) < 5):
         return 0
     if (len(a2) < 5):
@@ -173,11 +173,21 @@ def cmpby0_i2_i3_m4_i5(a1, a2):
         return 1
     if train1 < train2:
         return -1
+    date1 = a1[7] if (len(a1) > 7) else ''
+    date2 = a2[7] if (len(a2) > 7) else ''
+    if date1 > date2:
+        return 1
+    if date1 < date2:
+        return -1
     n1 = int(a1[2])
     n2 = int(a2[2])
     if n1 > n2:
         return 1
     if n1 < n2:
+        return -1
+    if int(a1[5]) > int(a2[5]):
+        return 1
+    if int(a1[5]) < int(a2[5]):
         return -1
     d1 = int(a1[3])
     d2 = int(a2[3])
@@ -190,10 +200,6 @@ def cmpby0_i2_i3_m4_i5(a1, a2):
     if t1 > t2:
         return 1
     if t1 < t2:
-        return -1
-    if int(a1[5]) > int(a2[5]):
-        return 1
-    if int(a1[5]) < int(a2[5]):
         return -1
     return 0
 
@@ -227,6 +233,14 @@ def telecode(s, station):
     for i in range(len(station)):
         if s == station[i][1]:
             return station[i][2]
+    # print(s)
+    return u''
+
+
+def teleToName(s, station):
+    for i in range(len(station)):
+        if s == station[i][2]:
+            return station[i][1]
     # print(s)
     return u''
 
@@ -694,7 +708,7 @@ def checkSchdatebintocsv(train_arr, base_date, size, station=None):
     for train in train_arr:
         for retry in range(2):
             diff = get_first_one(train['date'], size)
-            date = base_date #TODO
+            date = base_date  # TODO
             if diff > -1:
                 date = date_add(base_date, diff)
             sch = processS(train, date, station)
@@ -716,7 +730,7 @@ def checkSchdatebintocsv(train_arr, base_date, size, station=None):
     return rows
 
 
-def checkSchdatemasktocsv(train_arr, base_date, size, mask, station = None):
+def checkSchdatemasktocsv(train_arr, base_date, size, mask, station=None):
     '''
     change train_arr[i]['service_type'] ['total_num']
     '''
@@ -813,13 +827,13 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
 
 
 def readcsv(fn):
-    with open(fn, 'r') as f:  # py2
-        if f.read(3) != '\xef\xbb\xbf':
+    with open(fn, 'rb') as f:  # py2
+        if f.read(3) != b'\xef\xbb\xbf':
             f.seek(0, 0)
-        data = f.read()
+        data = f.read().decode('utf-8')
     c = data.split('\n')
     for i in range(len(c)):
-        c[i] = c[i].split(',')
+        c[i] = c[i].replace('\r', '').split(',')
     return c
 
 
@@ -853,23 +867,28 @@ def writebyte(f1, b):
 
 # line
 def openMilage(fn):
-    with open(fn, 'r') as f:  # py2
-        if f.read(3) != '\xef\xbb\xbf':
+    with open(fn, 'rb') as f:  # py2
+        if f.read(3) != b'\xef\xbb\xbf':
             f.seek(0, 0)
-        data = f.read()
+        data = f.read().decode('utf-8')
     m = data.split('\n')
     ret = []
     for i in range(len(m)):
-        sp = m[i].split(' ')
+        sp = m[i].replace('\r', '').split(' ')
         if len(sp) >= 2:
             ret.append(sp)
     return ret
 
 
-def getkm(s, m):
+def getkm(s, m, station=None):
+    name = u''
+    if station != None:
+        name = teleToName(s, station)
+    if len(name) == 0:
+        name = s
     for i in range(len(m)):
-        if len(m[i]) > 1 and s == m[i][0]:
-            return m[i][1]
+        if len(m[i]) > 1 and name == m[i][0]:
+            return int(m[i][1])
     return -1
 
 
@@ -903,8 +922,8 @@ def schToPolyline(s, m):
         s[0]['station_train_code'].encode('utf-8'),
         s[0]['station_train_code'].encode('utf-8')[:1])
     for i in range(0, len(s)):
+        y = getkm(s[i]['station_name'], m, station)
         x = getmin(s[i]['arrive_time'])
-        y = getkm(s[i]['station_name'].encode('utf-8'), m)
         if y > -1 and i > 0:
             if x < lastx:
                 day += 1
@@ -924,7 +943,6 @@ def schToPolyline(s, m):
             buffer += '%s,%s ' % (x, y)
         #
         x = getmin(s[i]['start_time'])
-        y = getkm(s[i]['station_name'].encode('utf-8'), m)
         if y > -1 and i < len(s)-1:
             if x < lastx:
                 day += 1
@@ -938,14 +956,14 @@ def schToPolyline(s, m):
                     (int(lasty)-int(y))*int(x) /
                     ((1440+int(x)-int(lastx)))+int(y)
                 )
+            buffer += '%s,%s ' % (x, y)
             lastx = x
             lasty = y
-            buffer += '%s,%s ' % (x, y)
     buffer += '"/>\n'
     return buffer
 
 
-def csvToPolyline(c, m):
+def csvToPolyline(c, m, station=None):
     # ['K868,\xe6\xb3\x8a\xe5\xa4\xb4,05,1,00:00,0']
     if (len(c)) <= 0:
         return ''
@@ -953,32 +971,42 @@ def csvToPolyline(c, m):
     day = 0
     lastx = 0
     lasty = 0
+    lastdate = ''
     buffer += '<polyline name="%s" class="polyline%s" points="' \
         % (c[0][0], c[0][0][:1])
     for i in range(0, len(c)):
         x = getmin(c[i][4])  # + (3 if int(c[i][5])>0 else (-2)) #
-        y = getkm(c[i][1], m)
+        y = getkm(c[i][1], m, station)
+        date = c[i][7] if len(c[i]) > 7 else ''
         if y > -1:
-            if x < lastx:
+            if x < lastx and lastx > -1 and lastdate == date:
                 day += 1
                 # 1440, (lasty-y)*x/((1440+x-lastx))+y
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' % (
+                buffer += '%d,%d "/>\n<polyline name="%s_%s+%d" class="polyline%s" points="%d,%d ' % (
                     1440,
                     (int(lasty)-int(y))*int(x) /
                     ((1440+int(x)-int(lastx)))+int(y),
+                    date,
                     c[0][0], day, c[0][0][:1],
                     0,
                     (int(lasty)-int(y))*int(x) /
                     ((1440+int(x)-int(lastx)))+int(y)
                 )
-            lastx = x
-            lasty = y
+            if lastx == -1 or lastdate != date and i > 0:
+                day = 0
+                buffer += '"/>\n<polyline name="%s_%s+%d" class="polyline%s" points="' % (
+                    date,
+                    c[0][0], day, c[0][0][:1]
+                )
             buffer += '%s,%s ' % (x, y)
+        lastx = x
+        lasty = y
+        lastdate = date
     buffer += '"/>\n'
     return buffer
 
 
-def csvToSvg(m, c, rule=''):
+def csvToSvg(m, c, rule='', station=None):
     r = re.compile('^' + rule + '$', re.IGNORECASE | re.MULTILINE)
     maxlen = 80000
     arr = [[] for i in range(maxlen)]
@@ -986,7 +1014,7 @@ def csvToSvg(m, c, rule=''):
     for i in range(len(c)):
         if len(c[i]) < 2:
             continue
-        if getkm(c[i][1], m) > -1:
+        if getkm(c[i][1], m, station) > -1:
             # print(hash_no(c[i][0]))
             arr[hash_no(c[i][0])].append(c[i])
     #
@@ -994,7 +1022,10 @@ def csvToSvg(m, c, rule=''):
     buffer += '<?xml version="1.0" standalone="no"?>\n'
     buffer += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" \n'
     buffer += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
-    buffer += '<svg width="%s" height="%s" version="1.1" \n' % (1440, 2450)
+    buffer += '<svg width="%s" height="%s" version="1.1" \n' % (
+        1440,
+        (int(m[-1][1])+50)//50*50
+    )
     buffer += 'xmlns="http://www.w3.org/2000/svg">\n'
     buffer += '''
 <style>
@@ -1064,8 +1095,8 @@ polyline {
                 flag = 1
         if flag and len(r.findall(arr[i][0][0])) > 0:
             num += 1
-            arr[i] = sorted(arr[i], cmpby0_i2_i3_m4_i5)
-            buffer += csvToPolyline(arr[i], m)
+            arr[i] = sorted(arr[i], cmpby0_7_i2_i5_i3_m4)
+            buffer += csvToPolyline(arr[i], m, station)
     #
     buffer += ('</svg>')
     return buffer, num
@@ -1574,8 +1605,8 @@ if __name__ == '__main__':
     size = bin_cnt(mask)
     #
     #
-    #97-98主要换乘站 北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都 
-    #京哈线及东北地区 京沪线及华东地区 京九线 京广线及中南地区 陇海线及西南、西北地区 宝成线及西南地区 侯月、京原、京包、南北同蒲
+    # 97-98主要换乘站 北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都
+    # 京哈线及东北地区 京沪线及华东地区 京九线 京广线及中南地区 陇海线及西南、西北地区 宝成线及西南地区 侯月、京原、京包、南北同蒲
 
     citys = re.split(r'[\n,*]+', u'''北京,北京南,北京西,北京东,昌平北
 上海,上海南,上海虹桥,上海西
@@ -1710,7 +1741,6 @@ if __name__ == '__main__':
 张家口南
 保定,保定东
 邯郸,邯郸东
-潞城*
 衡水,衡水北
 廊坊,廊坊北
 沧州,沧州西
@@ -1748,6 +1778,7 @@ if __name__ == '__main__':
 
 包头,包头东,昆都仑召,包头西,包头北
 乌海,乌海西,乌海北
+东胜西,鄂尔多斯,东胜东
 
 聊城
 菏泽
@@ -1845,7 +1876,6 @@ if __name__ == '__main__':
 肇庆,肇庆东,鼎湖东,大旺,端州,鼎湖山,四会
 茂名,茂名西,电白,马踏
 信宜
-
 新会
 珠海,明珠,唐家湾,珠海北,前山
 道滘
@@ -1859,7 +1889,6 @@ if __name__ == '__main__':
 三亚,三  亚
 
 桂林,桂林北,桂林西
-靖西*
 凭祥
 防城港北
 北海
@@ -1959,13 +1988,12 @@ if __name__ == '__main__':
 吐鲁番,吐鲁番北
 达坂城
 库尔勒
-阿克苏
 喀什
-莎车
 和田
 石河子
 奎屯
 克拉玛依
+塔城
 阿勒泰
 四棵树
 阿拉山口
@@ -2061,85 +2089,50 @@ from view_train_list import *
 station = getStation()
 # saveallcsv(t,station)
 
-m = openMilage('test/京沪高速线里程.txt')
+lines = [
+[u'京沪高速线', r'(?!G7[012356]\d{1,3})[G]\d{1,4}|(?!D7\d{1,3})[D]\d{1,4}'],
+[u'京广高速线', r'[GDC]\d{1,4}'],
+[u'沪昆高速线', r'[GDC]\d{1,4}'],
+[u'京沪线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}|D7\d{1,3}'],
+[u'京广线', r'[ZTKPQWY]\d{1,4}|C7[01]\d{2}|D75\d{2}|D6[67]\d{2}'],
+[u'京九线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'京哈线', r'[ZTKPQWYD]\d{1,4}|^\d{1,4}'],
+[u'丰沙京包包兰线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'京承线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'京通线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'京原线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'陇海线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'兰新线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'兰青青藏线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'沪昆线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'太新线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'焦柳线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'宝成成渝线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'汉丹襄渝线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'川黔线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'渝怀线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'内六线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'成昆线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'南昆线', r'[GDCZ]\d{1,4}'],
+[u'滨洲线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'滨绥线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
+[u'京津城际线', r'[C]\d{1,4}|G2\d{2}'],  
+[u'沪宁城际线', r'G7[012356]\d{1,3}|(?!D7\d{1,3})[D]\d{1,4}'],
+[u'成灌线', r'[C]\d{1,4}|G2\d{2}']
+]
+
 c = readcsv('delay/time.csv')
-buffer,_ = csvToSvg(m, c, "(?!G7[012356]\d{1,3})|[G]\d{1,4}")
-
-fn = 'test/190710京沪高速.svg'
-with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer)
-
-m = openMilage('test/京广高速线里程.txt')
-c = readcsv('delay/time.csv')
-buffer,_ = csvToSvg(m, c, "[GDC]\d{1,4}")
-
-fn = 'test/190710京广高速.svg'
-with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer)
-
-m = openMilage('test/京沪线里程.txt')
-c = readcsv('delay/time.csv')
-buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|^\d{1,4}|D7\d{1,3}")
-
-fn = 'test/190710京沪线.svg'
-with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer)
-
-m = openMilage('test/京广线里程.txt')
-c = readcsv('delay/time.csv')
-buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|C7[01]\d{2}|D75\d{2}|D6[67]\d{2}")
-
-fn = 'test/190710京广线.svg'
-with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer)
-
-m = openMilage('test/京九线里程.txt')
-c = readcsv('delay/time.csv')
-buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|^\d{1,4}")
-
-fn = 'test/190710京九线.svg'
-with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer)
-
-m = openMilage('test/成昆线里程.txt')
-c = readcsv('delay/time.csv')
-buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|^\d{1,4}")
-
-fn = 'test/190710成昆线.svg'
-with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer)
-
-m = openMilage('test/陇海线里程.txt')
-c = readcsv('delay/time.csv')
-buffer,_ = csvToSvg(m, c, "[ZTKPQWY]\d{1,4}|^\d{1,4}")
-
-fn = 'test/190710陇海线.svg'
-with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer)
-
-m = openMilage('test/京沪高速线里程.txt')
-c = readcsv('delay/time.csv')
-buffer,_ = csvToSvg(m, c, "(?!G7[012356]\d{1,3})[G]\d{1,4}")
-
-fn = 'test/190710京沪高速.svg'
-with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer)
+for line in lines:
+    fni = u'test/%s里程.txt' % (line[0])
+    fn = u'test/190710%s.svg' % (line[0])
+    restr = line[1]
+    m = openMilage(fni)
+    buffer,_ = csvToSvg(m, c, restr, station)
+    print('%10d %s' % (len(buffer), fn))
+    with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+        if f.tell() == 0:
+            f.write('\xef\xbb\xbf')
+        f.write(buffer.encode('utf-8'))
 
 '''
 
