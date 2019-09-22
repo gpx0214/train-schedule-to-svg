@@ -1538,7 +1538,7 @@ def compress_bin_vector(date_bin, base_date, size):
     if bin_weight < size / 7:
         return slice_to_str(one_slice, base_date), 10
     if len(one_slice) <= len(zero_slice):
-        if len(one_slice) <= 2:
+        if len(one_slice) <= size / 7:
             return slice_to_str(one_slice, base_date), 8
     else:
         if len(zero_slice) <= 1 and len(zero_slice) > 0:
