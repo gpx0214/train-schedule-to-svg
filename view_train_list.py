@@ -214,11 +214,12 @@ def getStation(fn='js/station_name.js'):
     for i in range(len(s)):
         s[i] = s[i].split('|')
     print('read %d stations in %s' % (len(s), fn))
+    s.append([u"dxc", u"大兴机场", u"IWP", u"daxingjichang", u"dxjc", u"-1"])
     s.append([u"tsn", u"唐山南", u"TNP", u"tangshannan", u"tsn", u"-1"])
     s.append([u"gye", u"古冶", u"GYP", u"guye", u"gy", u"-1"])
     s.append([u"", u"香港红磡", u"JQO", u"xiangganghongkan", u"xghk", u"-1"])
     s.append([u"jlo", u"九龙", u"JQO", u"jiulong", u"jl", u"-1"])
-    s.append([u"xgl", u"香港西九龙", u"XJA", u"hkwestkowloon", u"xgxjl", u"-1"])
+    #s.append([u"xgl", u"香港西九龙", u"XJA", u"hkwestkowloon", u"xgxjl", u"-1"])
     s.append([u'jsw', u'金山卫', u'BGH', u'jinshanwei', u'jsw', u'-1'])
     s.append([u'mji', u'梅江', u'MKQ', u'meijiang', u'mj', u'-1'])
     s.append([u'ylo', u'元龙', u'YLY', u'yuanlong', u'yl', u'-1'])
@@ -313,7 +314,7 @@ def mapToArr(train_map):
 
 
 def trainlistStr(train_arr, base_date, size, station=None):
-    stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     buffer = ''
     for train in train_arr:
         t1 = ''
@@ -420,14 +421,17 @@ def getsearch12306(kw, date, cache=1):
     if cache and os.path.exists(fn):
         with open(fn, 'r') as f:
             data = f.read()
-        search = json.loads(data)
-        if search['status'] == True and len(search['data']):
-            print('read  %-3s %3d %5s-%5s' % (
-                kw, len(search['data']),
-                search['data'][0]['station_train_code'],
-                search['data'][-1]['station_train_code'])
-            )
-            return search['data'], len(search['data'])
+        try:
+            search = json.loads(data)
+            if search['status'] == True and len(search['data']):
+                print('read  %-3s %3d %5s-%5s' % (
+                    kw, len(search['data']),
+                    search['data'][0]['station_train_code'],
+                    search['data'][-1]['station_train_code'])
+                )
+                return search['data'], len(search['data'])
+        except ValueError:
+            print('ValueError ' + kw)
     #
     url = "https://search.12306.cn/search/v1/train/search?keyword=" + \
         kw + "&date=" + yyyymmdd
@@ -756,7 +760,7 @@ def checkSchdatemasktocsv(train_arr, base_date, size, mask, station=None):
         if (train['station_train_code'] in train['train_no']) == False:
             continue
         s = schDateToCsv(sch, train['src'],
-                         train['date'], base_date, size, station)
+                         train['date'], base_date, size, None)
         for row in s:
             if len(row) >= 7:
                 rows.append(row)
@@ -1172,7 +1176,11 @@ def getczxx(t1, date, cache=1):
     if os.path.exists(fn) and cache == 1:
         with open(fn, 'r') as f:
             data = f.read()
-        j = json.loads(data)
+        try:
+            j = json.loads(data)
+        except ValueError:
+            j = {'status':False}
+            print('ValueError %s %s' % (t1, date))
         if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
             # print('%s %s %4d local' % (t1, date, len(j['data']['data'])))
             return j['data']['data'], j['data']['sameStations'], len(j['data']['data'])
@@ -1458,12 +1466,12 @@ def cycle7(c, base_week):
     return ret
 
 
-def get_one_slice(n, size):
+def get_one_slice(n, size, offset=0, step=1):
     ret = []
     a = -1
     b = -1
     status = 0
-    for i in range(size):
+    for i in range(offset, size, step):
         if n & (1 << i):
             # print('1 %d %d'%(status,i))
             if status == 0:
@@ -1487,12 +1495,12 @@ def get_first_one(n, size):
     return -1
 
 
-def get_zero_slice(n, size):
+def get_zero_slice(n, size, offset=0, step=1):
     ret = []
     a = -1
     b = -1
     status = 1
-    for i in range(size):
+    for i in range(offset, size, step):
         if n & (1 << i):
             # print('0 %d %d'%(status,i))
             if status == 0:
@@ -1530,21 +1538,48 @@ def slice_to_str(ret, base_date):
 
 def compress_bin_vector(date_bin, base_date, size):
     date_bin &= all1(size)
-    if date_bin & all1(size) == all1(size):  # 图定
+    if date_bin & all1(size) == all1(size):
         return "", 1
+    #
+    min_cnt = size
+    ans_c = 0
+    ans_step = -1
+    ans_offset = -1
+    for step in [1,2]:
+        cnt = 0
+        c = 0
+        for offset in range(step):
+            one_slice = get_one_slice(date_bin, size, offset, step)
+            #print('try %d %d'%(offset, step), one_slice)
+            cnt += len(one_slice)
+            if len(one_slice):
+                c &= 1 << offset
+            #TODO only for step=2
+            if cnt == 1 and offset == 0:
+                return "双&" + slice_to_str(one_slice, base_date), step + 7
+            if cnt == 1 and offset == 1:
+                return "单&" + slice_to_str(one_slice, base_date), step + 7
+        if cnt < min_cnt:
+            min_cnt = cnt
+            ans_c = c
+            ans_step = step
+            ans_offset = offset
+        #print('step=%d cnt=%d'%(step, cnt))
+    #
     one_slice = get_one_slice(date_bin, size)
     zero_slice = get_zero_slice(date_bin, size)
     bin_weight = bin_cnt(date_bin)
     if bin_weight < size / 7:
-        return slice_to_str(one_slice, base_date), 10
+        return slice_to_str(one_slice, base_date), 17
     if len(one_slice) <= len(zero_slice):
         if len(one_slice) <= size / 7:
-            return slice_to_str(one_slice, base_date), 8
+            return slice_to_str(one_slice, base_date), 15
     else:
         if len(zero_slice) <= 1 and len(zero_slice) > 0:
-            return "停" + slice_to_str(zero_slice, base_date), 9
+            return "停" + slice_to_str(zero_slice, base_date), 16
     if bin_weight > size - size / 7 and len(zero_slice) > 0:
-        return "停" + slice_to_str(zero_slice, base_date), 11
+        return "停" + slice_to_str(zero_slice, base_date), 18
+    #
     for step in [7, 2, 3, 4, 5, 6]:
         size_floor = size//step*step
         if ((date_bin & all1(size_floor)) % all01(size_floor, step, 1)) == 0:
@@ -1555,7 +1590,7 @@ def compress_bin_vector(date_bin, base_date, size):
                     return 'w' + cycle7(c, weekday(base_date)), step
                 return ('{:0>'+str(step)+'b}').format(c), step
             else:
-                return ('{:0>'+str(step)+'b} 不完整').format(c) + " " + ('{:0>'+str(size)+'b}').format(date_bin), step
+                return ('{:0>'+str(step)+'b} *').format(c) + " " + ('{:0>'+str(size)+'b}').format(date_bin), step
     return ('{:0>'+str(size)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
 
 
@@ -1613,8 +1648,8 @@ if __name__ == '__main__':
 广州,广州南,广州东,广州北
 石家庄,石家庄北,石家庄东,高邑,藁城南,藁城
 郑州,郑州东,郑州西,南阳寨
-汉口,武昌,武汉
-长沙,长沙南,尖山,长沙西,八方山,观沙岭,开福寺,谷山,麓谷
+武昌,汉口,武汉
+长沙,长沙南,长沙西
 深圳,深圳北,福田,深圳东,深圳西
 香港西九龙
 香港红磡
@@ -1736,7 +1771,7 @@ if __name__ == '__main__':
 山海关
 秦皇岛
 北戴河
-唐山,唐山南,古冶,曹妃甸东,唐海南,唐山北,南堡北
+唐山,唐山北,唐山南,古冶,曹妃甸东,唐海南,南堡北
 承德,上板城,承德南,承德县北,平泉北,平泉,承德东,上板城南
 张家口南
 保定,保定东
@@ -2010,6 +2045,9 @@ if __name__ == '__main__':
             cache = 0
         if i > 29:
             cache = 0
+        freq = re.split(r'[\s\n,*]+', u'''北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都''')
+        if i >= -1 and name in freq:
+            cache = 0
         tc_arr = []
         tc_map = {}
         for name in citys:
@@ -2080,7 +2118,7 @@ if __name__ == '__main__':
     for i in range(size):
         mask = 1 << i
         date = date_add(base_date, i)
-        ret = checkSchdatemasktocsv(train_arr, base_date, size, mask)
+        ret = checkSchdatemasktocsv(train_arr, base_date, size, mask, station)
         num = writecsv("delay/sort"+date+".csv", ret)
         print('%s %6d' % (date, num))
 
