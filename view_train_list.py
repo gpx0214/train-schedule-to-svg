@@ -605,9 +605,13 @@ def getSch12306Local(train_no):
     if os.path.exists(fn):
         with open(fn, 'r') as f:
             data = f.read()
-        sch = json.loads(data)
-        if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
-            return sch['data']['data']
+        try:
+            sch = json.loads(data)
+            if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
+                return sch['data']['data']
+        except ValueError:
+            print('ValueError ' + train_no)
+            return []
     return []
 
 
@@ -1168,6 +1172,7 @@ def print_block(stat):
 
 
 def getczxx(t1, date, cache=1):
+    # TODO local online
     name = 'ticket/' + date + '_' + t1 + '.json'
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
@@ -1178,12 +1183,11 @@ def getczxx(t1, date, cache=1):
             data = f.read()
         try:
             j = json.loads(data)
+            if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
+                # print('%s %s %4d local' % (t1, date, len(j['data']['data'])))
+                return j['data']['data'], j['data']['sameStations'], len(j['data']['data'])
         except ValueError:
-            j = {'status':False}
             print('ValueError %s %s' % (t1, date))
-        if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
-            # print('%s %s %4d local' % (t1, date, len(j['data']['data'])))
-            return j['data']['data'], j['data']['sameStations'], len(j['data']['data'])
     #
     url = "https://kyfw.12306.cn/otn/czxx/query?train_start_date=" + date + \
         "&train_station_name=" + "" + \
@@ -1407,34 +1411,26 @@ def all01(size, y, c):
     return ans
 
 
-def bin_count11(n):
+def bin_count1n(n, step=1):
     ans = 0
     temp = n
     while temp:
         ans += 1
         # print('{:0>45b}'.format(temp))
-        temp &= n >> ans
+        temp &= temp >> step
     return ans
 
 
-def bin_count12(n):
-    ans = 0
-    temp = n
-    while temp:
-        ans += 2
-        # print('{:0>45b}'.format(temp))
-        temp &= n >> ans
-    return ans
-
-
-def bin_count17(n):
-    ans = 0
-    temp = n
-    while temp:
-        ans += 7
-        # print('{:0>45b}'.format(temp))
-        temp &= n >> ans
-    return ans
+def try_step(bin):
+    max_consecutive = 0
+    max_step = 1
+    for step in [1, 2, 7, 3, 4, 5, 6]:
+        consecutive = bin_count1n(bin, step)
+        #print('try %d %d' % (step, consecutive))
+        if consecutive > max_consecutive:
+            max_consecutive = consecutive
+            max_step = step
+    return max_step, max_consecutive
 
 
 def left7(c, base_week):
@@ -1541,30 +1537,31 @@ def compress_bin_vector(date_bin, base_date, size):
     if date_bin & all1(size) == all1(size):
         return "", 1
     #
-    min_cnt = size
-    ans_c = 0
-    ans_step = -1
-    ans_offset = -1
-    for step in [1,2]:
-        cnt = 0
-        c = 0
-        for offset in range(step):
-            one_slice = get_one_slice(date_bin, size, offset, step)
-            #print('try %d %d'%(offset, step), one_slice)
-            cnt += len(one_slice)
-            if len(one_slice):
-                c &= 1 << offset
-            #TODO only for step=2
-            if cnt == 1 and offset == 0:
-                return "双&" + slice_to_str(one_slice, base_date), step + 7
-            if cnt == 1 and offset == 1:
-                return "单&" + slice_to_str(one_slice, base_date), step + 7
-        if cnt < min_cnt:
-            min_cnt = cnt
-            ans_c = c
-            ans_step = step
-            ans_offset = offset
-        #print('step=%d cnt=%d'%(step, cnt))
+    step, max = try_step(date_bin)
+    #
+    size_floor = size//step*step
+    if ((date_bin & all1(size_floor)) % all01(size_floor, step, 1)) == 0:
+        # 取循环节
+        c = (date_bin & all1(size_floor)) // all01(size_floor, step, 1)
+        if (all1(size) & all01(size, step, c)) == date_bin:
+            if step == 7:
+                return 'w' + cycle7(c, weekday(base_date)), step
+            return ('{:0>'+str(step)+'b}').format(c), step
+        else:
+            return ('{:0>'+str(step)+'b} *').format(c) + " " + ('{:0>'+str(size)+'b}').format(date_bin), step
+    #
+    for offset in range(step):
+        one_slice = get_one_slice(date_bin, size, offset, step)
+        if len(one_slice) == 0:
+           continue
+        if step == 1:
+            return slice_to_str(one_slice, base_date), step + 7
+        if offset == 0 and step == 2:
+            return "双&" + slice_to_str(one_slice, base_date), step + 7
+        if offset == 1 and step == 2:
+            return "单&" + slice_to_str(one_slice, base_date), step + 7
+    #
+    print('step,max=%d %d %s'%(step, max, ('{:0>'+str(size)+'b}').format(date_bin)))
     #
     one_slice = get_one_slice(date_bin, size)
     zero_slice = get_zero_slice(date_bin, size)
@@ -1572,7 +1569,7 @@ def compress_bin_vector(date_bin, base_date, size):
     if bin_weight < size / 7:
         return slice_to_str(one_slice, base_date), 17
     if len(one_slice) <= len(zero_slice):
-        if len(one_slice) <= size / 7:
+        if len(one_slice) <= 4:
             return slice_to_str(one_slice, base_date), 15
     else:
         if len(zero_slice) <= 1 and len(zero_slice) > 0:
@@ -1580,18 +1577,7 @@ def compress_bin_vector(date_bin, base_date, size):
     if bin_weight > size - size / 7 and len(zero_slice) > 0:
         return "停" + slice_to_str(zero_slice, base_date), 18
     #
-    for step in [7, 2, 3, 4, 5, 6]:
-        size_floor = size//step*step
-        if ((date_bin & all1(size_floor)) % all01(size_floor, step, 1)) == 0:
-            # 取循环节
-            c = (date_bin & all1(size_floor)) // all01(size_floor, step, 1)
-            if (all1(size) & all01(size, step, c)) == date_bin:
-                if step == 7:
-                    return 'w' + cycle7(c, weekday(base_date)), step
-                return ('{:0>'+str(step)+'b}').format(c), step
-            else:
-                return ('{:0>'+str(step)+'b} *').format(c) + " " + ('{:0>'+str(size)+'b}').format(date_bin), step
-    return ('{:0>'+str(size)+'b}').format(date_bin) + ' consecutive' + str(bin_count11(date_bin)), 0
+    return ('{:0>'+str(size)+'b}').format(date_bin) + ' consecutive' + str(bin_count1n(date_bin)), 0
 
 
 if __name__ == '__main__':
@@ -1636,8 +1622,9 @@ if __name__ == '__main__':
     maxlen = 80000
     train_map = [[] for i in range(maxlen)]
     #
-    base_date, mask, msg = add_train_list(train_map, fn0, '2019-07-10')
-    size = bin_cnt(mask)
+    #base_date, mask, msg = add_train_list(train_map, fn0, '2019-07-10')
+    base_date = '2019-07-10'
+    size = 0  # bin_cnt(mask)
     #
     #
     # 97-98主要换乘站 北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都
@@ -2045,7 +2032,8 @@ if __name__ == '__main__':
             cache = 0
         if i > 29:
             cache = 0
-        freq = re.split(r'[\s\n,*]+', u'''北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都''')
+        freq = re.split(
+            r'[\s\n,*]+', u'''北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都''')
         if i >= -1 and name in freq:
             cache = 0
         tc_arr = []
