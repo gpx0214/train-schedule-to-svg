@@ -1622,8 +1622,8 @@ if __name__ == '__main__':
     #
     import datetime
     now = datetime.datetime.now().strftime('%Y-%m-%d')
-    base_date = '2019-07-10'
-    #end_date = '2019-10-10'
+    base_date = '2019-10-11'
+    #end_date = ''
     #
     #base_date, mask, msg = add_train_list(train_map, fn0, '2019-07-10')
     size = 0  # bin_cnt(mask)
@@ -1905,6 +1905,7 @@ if __name__ == '__main__':
 道滘
 东莞,常平,东莞东,常平东,常平南,樟木头东,银瓶
 惠州,惠州南,小金口,云山,仲恺,惠环,沥林北,西湖东,龙丰,惠东
+梅州,梅州西
 潮州
 潮汕,饶平
 汕头
