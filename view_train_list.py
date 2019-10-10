@@ -1537,7 +1537,7 @@ def compress_bin_vector(date_bin, base_date, size):
     if date_bin & all1(size) == all1(size):
         return "", 1
     #
-    step, max = try_step(date_bin)
+    step, _ = try_step(date_bin)
     #
     size_floor = size//step*step
     if ((date_bin & all1(size_floor)) % all01(size_floor, step, 1)) == 0:
@@ -1553,15 +1553,13 @@ def compress_bin_vector(date_bin, base_date, size):
     for offset in range(step):
         one_slice = get_one_slice(date_bin, size, offset, step)
         if len(one_slice) == 0:
-           continue
+            continue
         if step == 1:
             return slice_to_str(one_slice, base_date), step + 7
         if offset == 0 and step == 2:
             return "双&" + slice_to_str(one_slice, base_date), step + 7
         if offset == 1 and step == 2:
             return "单&" + slice_to_str(one_slice, base_date), step + 7
-    #
-    print('step,max=%d %d %s'%(step, max, ('{:0>'+str(size)+'b}').format(date_bin)))
     #
     one_slice = get_one_slice(date_bin, size)
     zero_slice = get_zero_slice(date_bin, size)
@@ -1622,8 +1620,12 @@ if __name__ == '__main__':
     maxlen = 80000
     train_map = [[] for i in range(maxlen)]
     #
-    #base_date, mask, msg = add_train_list(train_map, fn0, '2019-07-10')
+    import datetime
+    now = datetime.datetime.now().strftime('%Y-%m-%d')
     base_date = '2019-07-10'
+    #end_date = '2019-10-10'
+    #
+    #base_date, mask, msg = add_train_list(train_map, fn0, '2019-07-10')
     size = 0  # bin_cnt(mask)
     #
     #
@@ -2022,9 +2024,6 @@ if __name__ == '__main__':
 阿拉山口
 伊宁
 霍尔果斯''')
-    # base_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    import datetime
-    now = datetime.datetime.now().strftime('%Y-%m-%d')
     for i in range(-datediff(now, base_date), 32):
         date = date_add(now, i)
         cache = 1
