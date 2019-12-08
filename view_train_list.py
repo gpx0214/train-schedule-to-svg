@@ -437,7 +437,7 @@ def getsearch12306(kw, date, cache=1):
         kw + "&date=" + yyyymmdd
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
@@ -448,6 +448,9 @@ def getsearch12306(kw, date, cache=1):
         search = json.loads(body)
     except ValueError:
         print('ValueError ' + kw)
+        return [], -1
+    if not isinstance(search, dict):
+        print('search is %s %s' % (type(search), kw))
         return [], -1
     if not 'data' in search:
         print('key data not exist ' + kw)
@@ -610,7 +613,7 @@ def getSch12306Local(train_no):
             if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
                 return sch['data']['data']
         except ValueError:
-            print('ValueError ' + train_no)
+            print('ValueError %s local' % (train_no))
             return []
     return []
 
@@ -620,7 +623,7 @@ def getSch12306Online(t1, t2, train_no, date):
         "&from_station_telecode=" + t1 + "&to_station_telecode=" + t2 + \
         "&depart_date=" + date
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
@@ -630,7 +633,7 @@ def getSch12306Online(t1, t2, train_no, date):
     try:
         sch = json.loads(body)
     except ValueError:
-        print('ValueError ' + train_no)
+        print('ValueError %s %s' % (train_no, date))
         return []
     name = 'sch/' + train_no + '.json'
     try:
@@ -715,7 +718,7 @@ def checkSchdatebintocsv(train_arr, base_date, size, station=None):
     rows = []
     for train in train_arr:
         for retry in range(2):
-            diff = get_first_one(train['date'], size)
+            diff = get_last_one(train['date'], size)
             date = base_date  # TODO
             if diff > -1:
                 date = date_add(base_date, diff)
@@ -747,7 +750,7 @@ def checkSchdatemasktocsv(train_arr, base_date, size, mask, station=None):
         if train['date'] & mask == 0:
             continue
         for retry in range(3):
-            diff = get_first_one(train['date'], size)
+            diff = get_last_one(train['date'], size)
             if diff > -1:
                 date = date_add(base_date, diff)
             else:
@@ -1178,7 +1181,11 @@ def getczxx(t1, date, cache=1):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    if os.path.exists(fn) and cache == 1:
+    exist = os.path.exists(fn)
+    if cache == 2 and exist == False:
+        print('No File %s %s' % (t1, date))
+        return [], [], 0
+    if exist and cache > 1:
         with open(fn, 'r') as f:
             data = f.read()
         try:
@@ -1193,9 +1200,9 @@ def getczxx(t1, date, cache=1):
         "&train_station_name=" + "" + \
         "&train_station_code=" + t1 + "&randCode="
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header, timeout=30)
+        resp = requests.get(url, headers=header, timeout=20)
     except:
         print('Net Error %s %s' % (t1, date))
         return [], [], -1
@@ -1223,7 +1230,7 @@ def getLeftTicket(t1, t2, date):
         "&leftTicketDTO.from_station=" + t1 + \
         "&leftTicketDTO.to_station=" + t2 + "&purpose_codes=ADULT"
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=30)
     except:
@@ -1288,7 +1295,7 @@ for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2
 def gtzwdjsp():
     url = 'http://www.gtbyxx.com/wxg/ky/zhengwan.jsp'
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     resp = requests.get(url, headers=header, timeout=20)
     body = resp.content.decode('utf-8')
     match = re.findall(r'<p class="warring">最后更新时间为(\d+)月(\d+)日 (\d+)点(\d+)分。</p>',
@@ -1311,7 +1318,7 @@ def gtzwd(date, s):
     url = 'http://www.gtbyxx.com/wxg/inter/ky/getTrainZwd'
     j = {"trainNo": s}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     resp = requests.post(url, data=json.dumps(j), headers=header, timeout=20)
     body = resp.content.decode('utf-8')
     #
@@ -1489,6 +1496,14 @@ def get_first_one(n, size):
         if n & (1 << i):
             return i
     return -1
+
+
+def get_last_one(n, size):
+    ret = -1
+    for i in range(size):
+        if n & (1 << i):
+            ret = i
+    return ret
 
 
 def get_zero_slice(n, size, offset=0, step=1):
@@ -1752,7 +1767,7 @@ if __name__ == '__main__':
 锦州,锦州南
 阜新,阜新南
 叶柏寿
-赤峰,平庄,赤峰东
+赤峰南,平庄,赤峰东
 通辽
 库伦
 霍林郭勒
@@ -1871,7 +1886,7 @@ if __name__ == '__main__':
 潢川
 商丘,商丘南
 洛阳,洛阳龙门,洛阳东,关林
-平顶山,平顶山西,宝丰
+宝丰,平顶山,平顶山西
 南阳
 
 孝感,孝感东,孝感北
@@ -2027,25 +2042,27 @@ if __name__ == '__main__':
 霍尔果斯''')
     for i in range(-datediff(now, base_date), 32):
         date = date_add(now, i)
-        cache = 1
-        if i == 0:
-            cache = 0
-        if i > 29:
-            cache = 0
         freq = re.split(
-            r'[\s\n,*]+', u'''北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都''')
-        if i >= -1 and name in freq:
-            cache = 0
-        tc_arr = []
-        tc_map = {}
+            r'[\s\n,*]+', u'''北京 天津 沈阳 长春 哈尔滨 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都 昆明''')
+        samecity_arr = []
+        samecity_map = {}
         for name in citys:
+            cache = 1
+            if i == 0:
+                cache = 0
+            if i > 29:
+                cache = 0
+            if i < -8:
+                cache = 2
+            if i >= -1 and name in freq:
+                cache = 0
             t1 = telecode(name, station)
             if len(t1) == 0:
                 continue
-            if name in tc_map:
+            if name in samecity_map:
                 continue
             for retry in range(3):
-                c, tc, ret = getczxx(t1, date, cache)
+                c, samecity, ret = getczxx(t1, date, cache)
                 if ret > -1:
                     break
                 time.sleep(1 << retry)
@@ -2069,18 +2086,18 @@ if __name__ == '__main__':
                 s['date'] = 1 << diff
                 s['src'] = 8
                 add_map(train_map, s)
-            if len(tc) > 1:
-                tc_arr.append(tc)
-                for i in tc:
-                    tc_map[i] = name
+            if len(samecity) > 1:
+                samecity_arr.append(samecity)
+                for ii in samecity:
+                    samecity_map[ii] = name
     #
-    for i in range(31, -1, -1):
+    '''for i in range(31, -1, -1):
         # st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
         st = ["D9", "G9", "3", "T", "Z", "K5", "K4", "D4", "G4"]
         date = date_add(now, i)
-        '''diff = datediff(date, base_date)
-        if diff >= size:
-            size = diff + 1'''
+        #diff = datediff(date, base_date)
+        #if diff >= size:
+        #    size = diff + 1
         cache = 1
         if i == 0:
             cache = 0
@@ -2089,7 +2106,7 @@ if __name__ == '__main__':
             if len(st) == 0:
                 break
             time.sleep(2 << retry)
-        print(date, st)
+        print(date, st)'''
     #
     print('base_date %s size %d' % (base_date, size))
     #
@@ -2388,7 +2405,7 @@ def getsearch(kw, cache=1):
     url = "http://dynamic.12306.cn/yjcx/doPickJZM?param=" + kw + "&type=1&czlx=0"
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
