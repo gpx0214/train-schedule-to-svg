@@ -1185,7 +1185,7 @@ def getczxx(t1, date, cache=1):
     if cache == 2 and exist == False:
         print('No File %s %s' % (t1, date))
         return [], [], 0
-    if exist and cache > 1:
+    if exist and cache >= 1:
         with open(fn, 'r') as f:
             data = f.read()
         try:
@@ -2052,9 +2052,9 @@ if __name__ == '__main__':
                 cache = 0
             if i > 29:
                 cache = 0
-            if i < -8:
+            if i < 0: # min -8
                 cache = 2
-            if i >= -1 and name in freq:
+            if (i >= -1) and (name in freq):
                 cache = 0
             t1 = telecode(name, station)
             if len(t1) == 0:
