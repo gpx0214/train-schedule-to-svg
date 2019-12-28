@@ -258,6 +258,7 @@ a.data.result[45].split("|")
 36  exchange_train_flag 可以积分兑换
 37  houbu_train_flag 候补
 38  houbu_seat_limit 不能候补席别 字母
+46  dw_flag 智能动车组标志 .is_zndcz
 
 var seatTypeForHB = {
     SWZ: "9_商务座",
