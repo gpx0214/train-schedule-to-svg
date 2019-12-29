@@ -1637,7 +1637,7 @@ if __name__ == '__main__':
     #
     import datetime
     now = datetime.datetime.now().strftime('%Y-%m-%d')
-    base_date = '2019-10-11'
+    base_date = '2019-12-30'
     #end_date = ''
     #
     #base_date, mask, msg = add_train_list(train_map, fn0, '2019-07-10')
