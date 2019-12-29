@@ -1630,7 +1630,7 @@ if __name__ == '__main__':
 
     station = getStation(fn1)
 
-    # buffer = compress_train_list(fn0, station)
+    # buffer = compress_train_list(fn0, station) #TODO
 
     maxlen = 80000
     train_map = [[] for i in range(maxlen)]
@@ -1709,7 +1709,6 @@ if __name__ == '__main__':
 根河
 塔河
 加格达奇
-讷河*
 富拉尔基
 三间房
 齐齐哈尔,齐齐哈尔南
@@ -1723,25 +1722,14 @@ if __name__ == '__main__':
 鹤岗
 同江
 前进镇
-宝清*
 双鸭山
 佳木斯,佳木斯西
 桦南
-林口*
 鸡西
-八面通*
-一面坡*
-长汀镇*
 牡丹江
 绥芬河
-东京城*
-五常*
-山河屯*
-舒兰*
 扶余,扶余北
 德惠,德惠西
-九台*
-榆树*
 吉林
 辽源
 通化
@@ -1763,7 +1751,6 @@ if __name__ == '__main__':
 营口,营口东
 辽阳
 鞍山,鞍山西
-瓦房店*
 锦州,锦州南
 阜新,阜新南
 叶柏寿
@@ -1823,13 +1810,11 @@ if __name__ == '__main__':
 聊城
 菏泽
 德州,德州东
-陵城*
 泰山,泰安
 枣庄,枣庄西,枣庄东
 东营,东营南
 淄博,淄博北
 潍坊,潍坊北
-平度*
 烟台,烟台南,烟台西
 威海,威海北,文登东,文登
 荣成
@@ -1868,7 +1853,7 @@ if __name__ == '__main__':
 萍乡,萍乡北
 九江
 赣州,赣州西,赣县北
-瑞金*
+瑞金
 井冈山,龙市
 抚州
 
@@ -1906,7 +1891,6 @@ if __name__ == '__main__':
 
 湘潭
 娄底,娄底南
-塘豹*
 常德
 邵阳,邵阳北
 岳阳,岳阳东
@@ -1964,22 +1948,12 @@ if __name__ == '__main__':
 西昌
 攀枝花
 
-潼南*
-合川*
-长寿北*
-丰都*
-綦江东*
-秀山*
-
 毕节
 遵义,遵义西
 铜仁
 铜仁南,玉屏
 凯里,凯里南
-开阳*
-大方南*
 安顺,安顺西
-纳雍*
 麻尾
 
 昭通,昭通南,昭通北
@@ -1997,8 +1971,6 @@ if __name__ == '__main__':
 韩城
 华山,华山北
 渭南,渭南北
-商南*
-长武*
 安康
 汉中
 阳平关,宁强南,燕子砭
@@ -2012,7 +1984,6 @@ if __name__ == '__main__':
 中川机场
 平凉,平凉南
 张家川
-长征*
 天水,天水南,新阳镇,渭南镇
 陇西
 陇南
@@ -2239,7 +2210,7 @@ bin_count17(0b011000011100001110000111000011) Mon
 python
 from view_train_list import *
 station = getStation()
-buffer = compress_train_list('js/train_list.js',station)
+buffer = compress_train_list('js/train_list.js',station) # TODO
 exit()
 gzip -c9 ${path}cycle.txt > ${path}cycle.txt.gz
 
@@ -2272,7 +2243,7 @@ for fn0 in glob.glob(r'js\train_list_*.js'):
             t = t1
     print('%s %s'%(fn0,fn1))
     station = getStation(fn1)
-    buffer = compress_train_list(fn0,station)
+    buffer = compress_train_list(fn0,station) # TODO
 '''
 
 '''
@@ -2397,6 +2368,8 @@ def hash_tele(s):
         return 0
     return (ord(s[2])-65) * 26 *26 + (ord(s[0])-65) * 26 + (ord(s[1])-65)
 
+def unhash_tele(n):
+    return chr(n/26%26+65) + chr(n%26+65) + chr(n/26/26+65)
 
 def getsearch(kw, cache=1):
     fn = ''
