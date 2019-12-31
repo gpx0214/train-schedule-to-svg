@@ -17,13 +17,13 @@ def unhash_tele(n):
 buffer = ""
 lastmap = ["" for i in range(26*26*26)]
 map = ["" for i in range(26*26*26)]
-fns = glob.glob(r'js\station_name_*.js')
+fns = glob.glob(r'js/station_name_*.js')
 for fi in range(len(fns)):
     fn = fns[fi]
     t1 = os.path.getmtime(fn)
     #print('%d %s'%(t1,fn))
     station = getStation(fn)
-    fdate = re.sub(r'js\\station_name_(\d+).js', r'\1', fn)
+    fdate = re.sub(r'js/station_name_(\d+).js', r'\1', fn)
     for row in station:
         map[hash_tele(row[2])] = row[1]
     if fi == 0:
