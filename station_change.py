@@ -17,7 +17,7 @@ def unhash_tele(n):
 buffer = ""
 lastmap = ["" for i in range(26*26*26)]
 map = ["" for i in range(26*26*26)]
-fns = glob.glob(r'js/station_name_*.js')
+fns = sorted(glob.glob(r'js/station_name_*.js'))
 for fi in range(len(fns)):
     fn = fns[fi]
     t1 = os.path.getmtime(fn)
