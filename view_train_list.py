@@ -1640,7 +1640,7 @@ if __name__ == '__main__':
     base_date = '2019-12-30'
     #end_date = ''
     #
-    #base_date, mask, msg = add_train_list(train_map, fn0, '2019-07-10')
+    #base_date, mask, msg = add_train_list(train_map, fn0, '2019-12-30')
     size = 0  # bin_cnt(mask)
     #
     #
@@ -2113,6 +2113,7 @@ lines = [
 [u'京沪高速线', r'(?!G7[012356]\d{1,3})[G]\d{1,4}|(?!D7\d{1,3})[D]\d{1,4}'],
 [u'京广高速线', r'[GDC]\d{1,4}'],
 [u'沪昆高速线', r'[GDC]\d{1,4}'],
+[u'京包高速线', r'[GDC]\d{1,4}'],
 [u'京沪线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}|D7\d{1,3}'],
 [u'京广线', r'[ZTKPQWY]\d{1,4}|C7[01]\d{2}|D75\d{2}|D6[67]\d{2}'],
 [u'京九线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
@@ -2144,7 +2145,7 @@ lines = [
 c = readcsv('delay/time.csv')
 for line in lines:
     fni = u'test/%s里程.txt' % (line[0])
-    fn = u'test/190710%s.svg' % (line[0])
+    fn = u'test/191230%s.svg' % (line[0])
     restr = line[1]
     m = openMilage(fni)
     buffer,_ = csvToSvg(m, c, restr, station)
