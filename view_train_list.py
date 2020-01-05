@@ -1298,15 +1298,15 @@ def gtzwdjsp():
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     resp = requests.get(url, headers=header, timeout=20)
     body = resp.content.decode('utf-8')
-    match = re.findall(r'<p class="warring">最后更新时间为(\d+)月(\d+)日 (\d+)点(\d+)分。</p>',
+    match = re.findall(u'更新时间为(\\d+)月(\\d+)日 (\\d+)点(\\d+)分',
                        body, re.I | re.M)[0]
     ret = '%s-%s %s:%s' % (
-        match[0].encode('utf-8'),
-        match[1].encode('utf-8'),
-        match[2].encode('utf-8'),
-        match[3].encode('utf-8')
+        match[0],
+        match[1],
+        match[2],
+        match[3]
     )
-    return ret
+    return ret.encode('utf-8')
 
 
 def gtzwd(date, s):
@@ -1989,6 +1989,8 @@ if __name__ == '__main__':
 陇西
 陇南
 武威,武威南
+金昌
+张掖,张掖西
 嘉峪关,嘉峪关南
 绿化
 镜铁山
