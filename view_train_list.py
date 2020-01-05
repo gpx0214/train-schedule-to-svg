@@ -991,7 +991,7 @@ def csvToPolyline(c, m, station=None):
     lastdate = ''
     polyline_class = polylineClass(c[0][0])
     buffer += '<polyline name="%s_%s" class="%s" points="' % (
-        c[0][7],
+        c[0][7].replace('&', ''),
         c[0][0],
         polyline_class
     )
@@ -1006,14 +1006,14 @@ def csvToPolyline(c, m, station=None):
                     ((1440+int(x)-int(lastx)))
                 buffer += '%d,%d "/>\n<polyline name="%s_%s+%d" class="%s" points="%d,%d ' % (
                     1440, split_y,
-                    date,
+                    date.replace('&', ''),
                     c[0][0], day, polyline_class,
                     0, split_y
                 )
             if lastx == -1 or lastdate != date and i > 0:
                 day = 0
                 buffer += '"/>\n<polyline name="%s_%s+%d" class="%s" points="' % (
-                    date,
+                    date.replace('&', ''),
                     c[0][0], day, polyline_class
                 )
             buffer += '%s,%s ' % (x, y)
