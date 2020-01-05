@@ -903,6 +903,15 @@ def getkm(s, m, station=None):
     return -1
 
 
+def polylineClass(train_no):
+    ret = 'polyline%s' % (
+        train_no[:1]
+    )
+    if train_no[:2] in re.split(r'[\n,*]+', 'G4,D4,Z4,T3,K4') and len(train_no) == 5:
+        ret += ' temp'
+    return ret
+
+
 def schToPolyline(s, m):
     # (1440-x0)/x1=(y-y0)(y1-y) = k
     # (y-y0)=(y1-y)*(1440-x0)/x1
@@ -929,25 +938,24 @@ def schToPolyline(s, m):
     day = 0
     lastx = 0
     lasty = 0
+    polyline_class = polylineClass(s[0]['station_train_code'].encode('utf-8'))
     buffer += '<polyline name="%s" class="%s" points="' % (
         s[0]['station_train_code'].encode('utf-8'),
-        s[0]['station_train_code'].encode('utf-8')[:1])
+        polyline_class
+    )
     for i in range(0, len(s)):
         y = getkm(s[i]['station_name'], m, station)
         x = getmin(s[i]['arrive_time'])
         if y > -1 and i > 0:
             if x < lastx:
                 day += 1
-                # 1440, (lasty-y)*x/((1440+x-lastx))+y
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' % (
-                    1440,
-                    (int(lasty)-int(y))*int(x) /
-                    ((1440+int(x)-int(lastx)))+int(y),
+                split_y = int(y) + int(x)*(int(lasty)-int(y)) / \
+                    ((1440+int(x)-int(lastx)))
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' % (
+                    1440, split_y,
                     s[0]['station_train_code'].encode('utf-8'), day,
-                    s[0]['station_train_code'].encode('utf-8')[:1],
-                    0,
-                    (int(lasty)-int(y))*int(x) /
-                    ((1440+int(x)-int(lastx)))+int(y)
+                    polyline_class,
+                    0, split_y
                 )
             lastx = x
             lasty = y
@@ -957,15 +965,13 @@ def schToPolyline(s, m):
         if y > -1 and i < len(s)-1:
             if x < lastx:
                 day += 1
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="polyline%s" points="%d,%d ' % (
-                    1440,
-                    (int(lasty)-int(y))*int(x) /
-                    ((1440+int(x)-int(lastx)))+int(y),
+                split_y = int(y) + int(x)*(int(lasty)-int(y)) / \
+                    ((1440+int(x)-int(lastx)))
+                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' % (
+                    1440, split_y,
                     s[0]['station_train_code'].encode('utf-8'), day,
-                    s[0]['station_train_code'].encode('utf-8')[:1],
-                    0,
-                    (int(lasty)-int(y))*int(x) /
-                    ((1440+int(x)-int(lastx)))+int(y)
+                    polyline_class,
+                    0, split_y,
                 )
             buffer += '%s,%s ' % (x, y)
             lastx = x
@@ -983,8 +989,12 @@ def csvToPolyline(c, m, station=None):
     lastx = 0
     lasty = 0
     lastdate = ''
-    buffer += '<polyline name="%s" class="polyline%s" points="' \
-        % (c[0][0], c[0][0][:1])
+    polyline_class = polylineClass(c[0][0])
+    buffer += '<polyline name="%s_%s" class="%s" points="' % (
+        c[0][7],
+        c[0][0],
+        polyline_class
+    )
     for i in range(0, len(c)):
         x = getmin(c[i][4])  # + (3 if int(c[i][5])>0 else (-2)) #
         y = getkm(c[i][1], m, station)
@@ -992,22 +1002,19 @@ def csvToPolyline(c, m, station=None):
         if y > -1:
             if x < lastx and lastx > -1 and lastdate == date:
                 day += 1
-                # 1440, (lasty-y)*x/((1440+x-lastx))+y
-                buffer += '%d,%d "/>\n<polyline name="%s_%s+%d" class="polyline%s" points="%d,%d ' % (
-                    1440,
-                    (int(lasty)-int(y))*int(x) /
-                    ((1440+int(x)-int(lastx)))+int(y),
+                split_y = int(y) + int(x)*(int(lasty)-int(y)) / \
+                    ((1440+int(x)-int(lastx)))
+                buffer += '%d,%d "/>\n<polyline name="%s_%s+%d" class="%s" points="%d,%d ' % (
+                    1440, split_y,
                     date,
-                    c[0][0], day, c[0][0][:1],
-                    0,
-                    (int(lasty)-int(y))*int(x) /
-                    ((1440+int(x)-int(lastx)))+int(y)
+                    c[0][0], day, polyline_class,
+                    0, split_y
                 )
             if lastx == -1 or lastdate != date and i > 0:
                 day = 0
-                buffer += '"/>\n<polyline name="%s_%s+%d" class="polyline%s" points="' % (
+                buffer += '"/>\n<polyline name="%s_%s+%d" class="%s" points="' % (
                     date,
-                    c[0][0], day, c[0][0][:1]
+                    c[0][0], day, polyline_class
                 )
             buffer += '%s,%s ' % (x, y)
         lastx = x
@@ -1080,6 +1087,9 @@ polyline {
 .polyline8,
 .polyline9 {
   stroke: #305030
+}
+.temp{
+  stroke-dasharray:10 2
 }
 </style>
 
@@ -2030,7 +2040,7 @@ if __name__ == '__main__':
                 cache = 0
             if i > 29:
                 cache = 0
-            if i < 0: # min -8
+            if i < 0:  # min -8
                 cache = 2
             if (i >= -1) and (name in freq):
                 cache = 0
