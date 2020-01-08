@@ -2054,8 +2054,6 @@ if __name__ == '__main__':
                 cache = 2
             if (i >= -1) and (name in freq):
                 cache = 0
-            if date in ['2020-02-05']:
-                cache = 0
             t1 = telecode(name, station)
             if len(t1) == 0:
                 continue
@@ -2487,4 +2485,38 @@ for v in map:
     ])
 
 writecsv("DBM.csv", ret)
+'''
+
+'''
+#重新获取比中位数的80%少的
+from view_train_list import *
+
+import datetime
+now = datetime.datetime.now().strftime('%Y-%m-%d')
+base_date = '2019-12-30'
+station = getStation()
+
+samecity_arr = []
+samecity_map = {}
+
+for name in citys:
+    t1 = telecode(name, station)
+    if len(t1) == 0:
+        continue
+    if name in samecity_map:
+        continue
+    rets = []
+    for i in range(0, 30): #32
+        date = date_add(now, i)
+        c, samecity, ret = getczxx(t1, date, cache = 2)
+        rets.append(ret)
+        if len(samecity) > 1:
+            samecity_arr.append(samecity)
+            for ii in samecity:
+                samecity_map[ii] = name
+    level = sorted(rets)[len(rets)/2]*8/10
+    for i in range(0, 30): #32
+        if rets[i] < level:
+            print(t1, date_add(now, i), rets[i], level)
+            c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 '''
