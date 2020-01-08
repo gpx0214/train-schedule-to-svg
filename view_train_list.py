@@ -625,7 +625,7 @@ def getSch12306Online(t1, t2, train_no, date):
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header, timeout=20)
+        resp = requests.get(url, headers=header, timeout=30)
     except:
         print('Net Error ' + train_no)
         return []
@@ -909,6 +909,8 @@ def polylineClass(train_no):
     )
     if train_no[:2] in re.split(r'[\n,*]+', 'G4,D4,Z4,T3,K4') and len(train_no) == 5:
         ret += ' temp'
+    if train_no[:2] in re.split(r'[\n,*]+', 'G8,G9,K5') and len(train_no) == 5:
+        ret += ' peak'
     return ret
 
 
@@ -1091,6 +1093,9 @@ polyline {
 .temp{
   stroke-dasharray:10 2
 }
+.peak{
+  stroke-dasharray:9 1 1 1
+}
 </style>
 
 '''
@@ -1192,9 +1197,11 @@ def getczxx(t1, date, cache=1):
     except:
         fn = name
     exist = os.path.exists(fn)
-    if cache == 2 and exist == False:
-        print('No File %s %s' % (t1, date))
-        return [], [], 0
+    if exist and cache == 1 and datediff(time.strftime(
+            '%Y-%m-%d',
+            time.localtime(os.path.getmtime(fn))),
+            date) < -29:
+        cache == 0
     if exist and cache >= 1:
         with open(fn, 'r') as f:
             data = f.read()
@@ -1205,6 +1212,9 @@ def getczxx(t1, date, cache=1):
                 return j['data']['data'], j['data']['sameStations'], len(j['data']['data'])
         except ValueError:
             print('ValueError %s %s' % (t1, date))
+    if cache == 2:
+        print('No File %s %s' % (t1, date))
+        return [], [], 0
     #
     url = "https://kyfw.12306.cn/otn/czxx/query?train_start_date=" + date + \
         "&train_station_name=" + "" + \
@@ -1212,7 +1222,7 @@ def getczxx(t1, date, cache=1):
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header, timeout=20)
+        resp = requests.get(url, headers=header, timeout=55)
     except:
         print('Net Error %s %s' % (t1, date))
         return [], [], -1
@@ -1242,7 +1252,7 @@ def getLeftTicket(t1, t2, date):
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header, timeout=30)
+        resp = requests.get(url, headers=header, timeout=50)
     except:
         print('Net Error %s %s %s' % (t1, t2, date))
         return []
@@ -1965,7 +1975,7 @@ if __name__ == '__main__':
 安顺,安顺西
 麻尾
 
-元谋,元谋西
+元谋西
 广通北
 昭通,昭通南,昭通北
 宣威
@@ -2049,7 +2059,7 @@ if __name__ == '__main__':
                 continue
             if name in samecity_map:
                 continue
-            for retry in range(3):
+            for retry in range(5):
                 c, samecity, ret = getczxx(t1, date, cache)
                 if ret > -1:
                     break
