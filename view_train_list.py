@@ -2054,6 +2054,8 @@ if __name__ == '__main__':
                 cache = 2
             if (i >= -1) and (name in freq):
                 cache = 0
+            if date in ['2020-02-05']:
+                cache = 0
             t1 = telecode(name, station)
             if len(t1) == 0:
                 continue
@@ -2064,6 +2066,8 @@ if __name__ == '__main__':
                 if ret > -1:
                     break
                 time.sleep(1 << retry)
+            if ret == -1:
+                c, samecity, ret = getczxx(t1, date, cache=2)
             for t in c:
                 diff = datediff(re.sub(
                     r'(\d\d\d\d)(\d\d)(\d\d)',
