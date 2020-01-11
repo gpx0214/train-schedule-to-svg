@@ -49,6 +49,9 @@ polyline {
 .temp{
   stroke-dasharray:10 2
 }
+.peak{
+  stroke-dasharray:9 1 1 1
+}
 </style>
 
 <line class="hour" x1="0" y1="0" x2="0" y2="3000" />
