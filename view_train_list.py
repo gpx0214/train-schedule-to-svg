@@ -1451,7 +1451,7 @@ def bin_count1n(n, step=1):
 def try_step(bin):
     max_consecutive = 0
     max_step = 1
-    for step in [1, 2, 7, 3, 4, 5, 6]:
+    for step in [7, 2, 3, 4, 5, 6, 1]:
         consecutive = bin_count1n(bin, step)
         #print('try %d %d' % (step, consecutive))
         if consecutive > max_consecutive:
@@ -1503,6 +1503,31 @@ def get_one_slice(n, size, offset=0, step=1):
             status = 1
         else:
             # print('0 %d %d'%(status,i))
+            if status == 1:
+                ret.append([a, b])
+            status = 0
+    if status == 1:
+        ret.append([a, b])
+    return ret
+
+
+def get_mask_one_slice(n, size, c=1, step=1):
+    ret = []
+    a = -1
+    b = -1
+    status = 0
+    for i in range(0, size, 1):
+        if c & (1 << (i % step)) == 0:
+            #print('--- %d'%(i))
+            continue
+        if n & (1 << i):
+            #print('1 %d %d'%(status,i))
+            if status == 0:
+                a = i
+            b = i
+            status = 1
+        else:
+            #print('0 %d %d'%(status,i))
             if status == 1:
                 ret.append([a, b])
             status = 0
@@ -1574,33 +1599,45 @@ def compress_bin_vector(date_bin, base_date, size):
     #
     step, _ = try_step(date_bin)
     #
-    size_floor = size//step*step
-    if ((date_bin & all1(size_floor)) % all01(size_floor, step, 1)) == 0:
-        # 取循环节
-        c = (date_bin & all1(size_floor)) // all01(size_floor, step, 1)
-        if (all1(size) & all01(size, step, c)) == date_bin:
-            if step == 7:
-                return 'w' + cycle7(c, weekday(base_date)), step
-            return ('{:0>'+str(step)+'b}').format(c), step
-        else:
-            return ('{:0>'+str(step)+'b} *').format(c) + " " + ('{:0>'+str(size)+'b}').format(date_bin), step
-    #
-    for offset in range(step):
-        one_slice = get_one_slice(date_bin, size, offset, step)
-        if len(one_slice) == 0:
+    min = size
+    c = 0b1111111
+    step = 1
+    ret_mask_one_slice = [[0, size-1]]
+    for cur_step in [1, 2, 3, 4, 5, 6, 7]:
+        cur_c = 0
+        for offset in range(cur_step):
+            if date_bin & all01(size, cur_step, 1 << offset) == 0:
+                continue
+            cur_c |= 1 << offset
+        if date_bin == (all1(size) & all01(size, cur_step, cur_c)):
+            if cur_step == 7:
+                return 'w' + cycle7(cur_c, weekday(base_date)), cur_step
+            return ('{:0>%db}' % (cur_step)).format(cur_c), cur_step
+        if cur_step > 1 and cur_c == (1 << cur_step) - 1:
             continue
-        if step == 1:
-            return slice_to_str(one_slice, base_date), step + 7
-        if offset == 0 and step == 2:
-            return "双&" + slice_to_str(one_slice, base_date), step + 7
-        if offset == 1 and step == 2:
-            return "单&" + slice_to_str(one_slice, base_date), step + 7
+        mask_one_slice = get_mask_one_slice(date_bin, size, cur_c, cur_step)
+        if len(mask_one_slice) < min:
+            min = len(mask_one_slice)
+            step = cur_step
+            c = cur_c
+            ret_mask_one_slice = mask_one_slice
+    #
+    # print(('{:0>%db}'%(ret_step)).format(ret_c))
+    # print(ret_mask_one_slice)
+    if c == 0b01 and step == 2:
+        return "双&" + slice_to_str(ret_mask_one_slice, base_date), step + 7
+    if c == 0b10 and step == 2:
+        return "单&" + slice_to_str(ret_mask_one_slice, base_date), step + 7
+    bin_weight = bin_cnt(date_bin)
+    if bin_weight < size / 7:
+        return slice_to_str(get_one_slice(date_bin, size), base_date), 17
+    if step >= 2:
+        if step == 7:
+            return 'w%s&' % (cycle7(c, weekday(base_date))) + slice_to_str(ret_mask_one_slice, base_date), step + 7
+        return ('b{:0>%db}&' % (step)).format(c) + slice_to_str(ret_mask_one_slice, base_date), step + 7
     #
     one_slice = get_one_slice(date_bin, size)
     zero_slice = get_zero_slice(date_bin, size)
-    bin_weight = bin_cnt(date_bin)
-    if bin_weight < size / 7:
-        return slice_to_str(one_slice, base_date), 17
     if len(one_slice) <= len(zero_slice):
         if len(one_slice) <= 4:
             return slice_to_str(one_slice, base_date), 15
@@ -1610,7 +1647,7 @@ def compress_bin_vector(date_bin, base_date, size):
     if bin_weight > size - size / 7 and len(zero_slice) > 0:
         return "停" + slice_to_str(zero_slice, base_date), 18
     #
-    return ('{:0>'+str(size)+'b}').format(date_bin) + ' consecutive' + str(bin_count1n(date_bin)), 0
+    return ('b{:0>%db}' % (size)).format(date_bin) + ' consecutive' + str(bin_count1n(date_bin)), 0
 
 
 if __name__ == '__main__':
@@ -1931,6 +1968,7 @@ if __name__ == '__main__':
 潮汕,饶平
 汕头
 陆丰,汕尾,鲘门
+湛江
 
 三亚,三  亚
 
