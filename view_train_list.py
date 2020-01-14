@@ -347,10 +347,9 @@ def trainlistStr(train_arr, base_date, size, station=None):
 
 # train_list.js
 def openTrainList(fn='js/train_list.js'):
-    # f = open(fn, 'r',encoding= 'utf8') #py3
-    with open(fn, 'r') as f:  # py2
+    with open(fn, 'rb') as f:
         _ = f.read(16)
-        data = f.read()
+        data = f.read().decode('utf-8')
     return json.loads(data)
 
 
@@ -419,8 +418,8 @@ def getsearch12306(kw, date, cache=1):
     except:
         fn = name
     if cache and os.path.exists(fn):
-        with open(fn, 'r') as f:
-            data = f.read()
+        with open(fn, 'rb') as f:
+            data = f.read().decode('utf-8')
         try:
             search = json.loads(data)
             if search['status'] == True and len(search['data']):
@@ -559,8 +558,8 @@ def processS(a, date, station):
     except:
         fn = name
     if os.path.exists(fn):
-        with open(fn, 'r') as f:
-            data = f.read()
+        with open(fn, 'rb') as f:
+            data = f.read().decode('utf-8')
         try:
             sch = json.loads(data)
             if sch['status'] == True and sch['httpstatus'] == 200 \
@@ -606,8 +605,8 @@ def getSch12306Local(train_no):
     except:
         fn = name
     if os.path.exists(fn):
-        with open(fn, 'r') as f:
-            data = f.read()
+        with open(fn, 'rb') as f:
+            data = f.read().decode('utf-8')
         try:
             sch = json.loads(data)
             if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
@@ -1203,8 +1202,8 @@ def getczxx(t1, date, cache=1):
             date) < -29:
         cache == 0
     if exist and cache >= 1:
-        with open(fn, 'r') as f:
-            data = f.read()
+        with open(fn, 'rb') as f:
+            data = f.read().decode('utf-8')
         try:
             j = json.loads(data)
             if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
@@ -1597,7 +1596,7 @@ def compress_bin_vector(date_bin, base_date, size):
     if date_bin & all1(size) == all1(size):
         return "", 1
     #
-    step, _ = try_step(date_bin)
+    #step, _ = try_step(date_bin)
     #
     min = size
     c = 0b1111111
@@ -1628,14 +1627,14 @@ def compress_bin_vector(date_bin, base_date, size):
         return "双&" + slice_to_str(ret_mask_one_slice, base_date), step + 7
     if c == 0b10 and step == 2:
         return "单&" + slice_to_str(ret_mask_one_slice, base_date), step + 7
-    bin_weight = bin_cnt(date_bin)
-    if bin_weight < size / 7:
-        return slice_to_str(get_one_slice(date_bin, size), base_date), 17
-    if step >= 2:
+    if step >= 2 and bin_count1n(date_bin, step) >= 2:
         if step == 7:
             return 'w%s&' % (cycle7(c, weekday(base_date))) + slice_to_str(ret_mask_one_slice, base_date), step + 7
         return ('b{:0>%db}&' % (step)).format(c) + slice_to_str(ret_mask_one_slice, base_date), step + 7
     #
+    bin_weight = bin_cnt(date_bin)
+    if bin_weight <= 3: #<size / 7
+        return slice_to_str(get_one_slice(date_bin, size), base_date), 17
     one_slice = get_one_slice(date_bin, size)
     zero_slice = get_zero_slice(date_bin, size)
     if len(one_slice) <= len(zero_slice):
@@ -2222,8 +2221,8 @@ for line in lines:
 r'''
 fn = "C:\\Users\\Administrator\\ticket1\\2018-09-23_XJA_CBQ.json"
 
-with open(fn,'r') as f: #py2
-    data=f.read();
+with open(fn,'rb') as f: #py2
+    data=f.read().decode('utf-8');
 
 j = json.loads(data)
 
@@ -2235,9 +2234,9 @@ for obj in j:
     # getSch12306(obj['FST'].encode('utf-8'), obj['EST'].encode('utf-8'), obj['TRNO'].encode('utf-8'), date)
     train_code = obj['STCODE'].encode('utf-8')
     # getSchT(obj['STCODE'].encode('utf-8'), date)
-    with open('sch/'+ train_code +'_T.json','r') as f:
+    with open('sch/'+ train_code +'_T.json','rb') as f:
         f.read(3);
-        data = f.read();
+        data = f.read().decode('utf-8');
     s = json.loads(data)
     day = 0;
     last = 0;
@@ -2438,8 +2437,8 @@ def unhash_tele(n):
 def getsearch(kw, cache=1):
     fn = ''
     if cache and os.path.exists(fn):
-        with open(fn, 'r') as f:
-            data = f.read()
+        with open(fn, 'rb') as f:
+            data = f.read().decode('utf-8')
         search = json.loads(data)
         return search, len(search)
     #
