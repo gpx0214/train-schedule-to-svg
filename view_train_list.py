@@ -12,7 +12,6 @@ import sys
 import platform
 import re
 import json
-import csv
 import time
 # import math
 # import random
@@ -857,9 +856,9 @@ def writecsv(f1, ret):
         fn = f1
     with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
         if f.tell() == 0:
-            f.write('\xef\xbb\xbf')
-        writer = csv.writer(f)
-        writer.writerows(ret)
+            f.write(b'\xef\xbb\xbf')
+        for row in ret:
+            f.write(",".join(row).encode('utf-8'))
     return len(ret)
 
 
