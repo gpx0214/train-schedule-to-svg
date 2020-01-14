@@ -204,6 +204,22 @@ console.log(cnt);
 
 http://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=24000T56850P&from_station_telecode=BJP&to_station_telecode=QTP&depart_date=2018-04-04
 
+快速 0
+直特 1
+特快 2
+普快 3
+普客 4
+
+高速 8
+快慢 9
+动车 D
+
+2 直通
+3 管内
+4 直通 临客
+5 管内 临客
+
+
 票价
 https://kyfw.12306.cn/otn/leftTicketPrice/queryAllPublicPrice?leftTicketDTO.train_date=2018-05-01&leftTicketDTO.from_station=HZH&leftTicketDTO.to_station=BJP&purpose_codes=ADULT&randCode=bmxa
 
