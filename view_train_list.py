@@ -2551,7 +2551,11 @@ for name in citys:
             samecity_arr.append(samecity)
             for ii in samecity:
                 samecity_map[ii] = name
-    level = sorted(rets)[len(rets)/2]*8/10
+    n = len(rets)
+    ex = sum(rets) #/n
+    ex2 = sum([x*x for x in rets]) #/n
+    sd = round(math.sqrt((ex2*n - ex * ex)) /n)
+    level = round(ex/n) - 2*sd # sorted(rets)[len(rets)//2]*8//10
     for i in range(0, 30): #32
         if rets[i] < level:
             print(t1, date_add(now, i), rets[i], level)
