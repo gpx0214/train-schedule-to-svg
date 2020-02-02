@@ -807,7 +807,7 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
                 str(day),
                 s[i]['arrive_time'].encode('utf-8'),
                 '0',
-                src,
+                str(src),
                 val
             ])
         #
@@ -828,7 +828,7 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
                 str(day),
                 s[i]['start_time'].encode('utf-8'),
                 '1',
-                src,
+                str(src),
                 val
             ])
     # return buffer
@@ -857,8 +857,8 @@ def writecsv(f1, ret):
     with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
         if f.tell() == 0:
             f.write(b'\xef\xbb\xbf')
-        for row in ret:
-            f.write(",".join(row).encode('utf-8'))
+        for i in range(len(ret)):
+            f.write(",".join(ret[i]) + '\n')
     return len(ret)
 
 
@@ -2527,6 +2527,7 @@ writecsv("DBM.csv", ret)
 #重新获取比中位数的80%少的
 from view_train_list import *
 
+import math
 import datetime
 now = datetime.datetime.now().strftime('%Y-%m-%d')
 base_date = '2019-12-30'
