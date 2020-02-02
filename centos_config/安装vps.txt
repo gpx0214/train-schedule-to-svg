@@ -8,6 +8,8 @@ wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_l
 7za a -t7z -r script.7z *.py
 7za a -t7z -r script.7z *.sh
 7za a -t7z -r script.7z *.htm
+7za a -t7z -r script.7z *.cpp
+7za a -t7z -r script.7z MakeFile
 
 7za a -t7z -r delay.7z delay/
 
@@ -93,16 +95,16 @@ chmod +x /etc/rc.d/rc.local
 
 yum -y install gcc gcc-c++ autoconf automake make
 
-yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel GeoIP GeoIP-devel GeoIP-data gd gd-devel libvpx libvpx-devel libwebp libwebp-devel libXpm libxslt libxslt-devel perl-ExtUtils-Embed
+yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel GeoIP GeoIP-devel GeoIP-data gd gd-devel libvpx libvpx-devel libwebp libwebp-devel libwebp-tools libXpm libxslt libxslt-devel perl-ExtUtils-Embed
 
 git clone https://github.com/arut/nginx-rtmp-module.git
 
-wget http://nginx.org/download/nginx-1.14.2.tar.gz
-tar -zxvf nginx-1.14.2.tar.gz
-cd nginx-1.14.2
+wget http://nginx.org/download/nginx-1.16.1.tar.gz
+tar -zxvf nginx-1.16.1.tar.gz
+cd nginx-1.16.1
 
 #nginx1.14.0编译选项
-[root@vultr nginx-1.14.0]# ./configure --help
+./configure --help
 
   --help                             print this message
 
@@ -184,6 +186,8 @@ cd nginx-1.14.2
                                      disable ngx_http_upstream_ip_hash_module
   --without-http_upstream_least_conn_module
                                      disable ngx_http_upstream_least_conn_module
+  --without-http_upstream_random_module
+                                     disable ngx_http_upstream_random_module
   --without-http_upstream_keepalive_module
                                      disable ngx_http_upstream_keepalive_module
   --without-http_upstream_zone_module
@@ -234,6 +238,8 @@ cd nginx-1.14.2
                                      disable ngx_stream_upstream_hash_module
   --without-stream_upstream_least_conn_module
                                      disable ngx_stream_upstream_least_conn_module
+  --without-stream_upstream_random_module
+                                     disable ngx_stream_upstream_random_module
   --without-stream_upstream_zone_module
                                      disable ngx_stream_upstream_zone_module
 
@@ -275,15 +281,15 @@ cd nginx-1.14.2
 
 
 
-./configure --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_addition_module --with-http_dav_module --with-http_geoip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_v2_module --with-http_sub_module --with-http_xslt_module --with-mail --with-mail_ssl_module --add-module=../nginx-rtmp-module --with-http_ssl_module
+./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_addition_module --with-http_dav_module --with-http_geoip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_v2_module --with-http_sub_module --with-http_xslt_module --with-mail --with-mail_ssl_module --add-module=../nginx-rtmp-module --with-http_ssl_module
 
 ./configure: warning: the "--with-ipv6" option is deprecated
 
 checking for OS
- + Linux 4.17.11-1.el7.elrepo.x86_64 x86_64
+ + Linux 4.19.8-1.el7.elrepo.x86_64 x86_64
 checking for C compiler ... found
  + using GNU C compiler
- + gcc version: 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC) 
+ + gcc version: 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC)
 checking for gcc -pipe switch ... found
 checking for --with-ld-opt="-Wl,-z,relro" ... found
 checking for -Wl,-E switch ... found
@@ -398,9 +404,6 @@ checking for libxslt ... found
 checking for libexslt ... found
 checking for GD library ... found
 checking for GD WebP support ... not found
-checking for perl
- + perl version: This is perl 5, version 16, subversion 3 (v5.16.3) built for x86_64-linux-thread-multi
- + perl interpreter multiplicity found
 checking for GeoIP library ... found
 checking for GeoIP IPv6 support ... found
 creating objs/Makefile
