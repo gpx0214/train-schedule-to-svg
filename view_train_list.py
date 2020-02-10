@@ -139,12 +139,12 @@ def getmin(s):
 
 
 def print_stat(stat):
-    buffer = ''
+    buf = ''
     for i in range(len(stat)):
-        buffer += (("    " + str(stat[i]))[-4:]
+        buf += (("    " + str(stat[i]))[-4:]
                    + ('' if (i+1) % 20 else '\n')
                    + ('' if (i+1) % 60 else '\n'))
-    return buffer
+    return buf
 
 
 def cmpbyTime(a1, a2):
@@ -314,7 +314,7 @@ def mapToArr(train_map):
 
 def trainlistStr(train_arr, base_date, size, station=None):
     stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    buffer = ''
+    buf = ''
     for train in train_arr:
         t1 = ''
         t2 = ''
@@ -329,7 +329,7 @@ def trainlistStr(train_arr, base_date, size, station=None):
         val, status = compress_bin_vector(train['date'], base_date, size)
         stat[status] += 1
         #
-        buffer += '%s,%s,%s,%s,%d,%s,%d,%s\n' % (
+        buf += '%s,%s,%s,%s,%d,%s,%d,%s\n' % (
             train['train_no'].encode('utf-8'),
             t1,
             t2,
@@ -341,7 +341,7 @@ def trainlistStr(train_arr, base_date, size, station=None):
         )
     #
     print(stat)
-    return buffer
+    return buf
 
 
 # train_list.js
@@ -649,7 +649,7 @@ def getSch12306Online(t1, t2, train_no, date):
 
 
 def schToCsv(s):
-    # buffer = ''
+    # buf = ''
     ret = []
     day = 0
     last = 0
@@ -663,7 +663,7 @@ def schToCsv(s):
             # TODO
             # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
             # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
-            '''buffer += (
+            '''buf += (
                 s[0]['station_train_code'].encode('utf-8')
                 + ',' + s[i]['station_name'].encode('utf-8')
                 + ',' + s[i]['station_no'].encode('utf-8')
@@ -688,7 +688,7 @@ def schToCsv(s):
             last = minute
             # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
             # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
-            '''buffer += (
+            '''buf += (
                 s[0]['station_train_code'].encode('utf-8')
                 + ',' + s[i]['station_name'].encode('utf-8')
                 + ',' + s[i]['station_no'].encode('utf-8')
@@ -705,7 +705,7 @@ def schToCsv(s):
                 s[i]['start_time'].encode('utf-8'),
                 '1'
             ])
-    # return buffer
+    # return buf
     return ret
 
 
@@ -773,7 +773,7 @@ def checkSchdatemasktocsv(train_arr, base_date, size, mask, station=None):
 
 
 def schDateToCsv(s, src, date_bin, base_date, size, station=None):
-    # buffer = ''
+    # buf = ''
     ret = []
     day = 0
     last = 0
@@ -831,7 +831,7 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
                 str(src),
                 val
             ])
-    # return buffer
+    # return buf
     return ret
 
 
@@ -934,12 +934,12 @@ def schToPolyline(s, m):
     # lasty+(lasty-y)/(1+x/(1440-lastx))
     if (len(s)) <= 0:
         return ''
-    buffer = ''
+    buf = ''
     day = 0
     lastx = 0
     lasty = 0
     polyline_class = polylineClass(s[0]['station_train_code'].encode('utf-8'))
-    buffer += '<polyline name="%s" class="%s" points="' % (
+    buf += '<polyline name="%s" class="%s" points="' % (
         s[0]['station_train_code'].encode('utf-8'),
         polyline_class
     )
@@ -951,7 +951,7 @@ def schToPolyline(s, m):
                 day += 1
                 split_y = int(y) + int(x)*(int(lasty)-int(y)) / \
                     ((1440+int(x)-int(lastx)))
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' % (
+                buf += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' % (
                     1440, split_y,
                     s[0]['station_train_code'].encode('utf-8'), day,
                     polyline_class,
@@ -959,7 +959,7 @@ def schToPolyline(s, m):
                 )
             lastx = x
             lasty = y
-            buffer += '%s,%s ' % (x, y)
+            buf += '%s,%s ' % (x, y)
         #
         x = getmin(s[i]['start_time'])
         if y > -1 and i < len(s)-1:
@@ -967,30 +967,30 @@ def schToPolyline(s, m):
                 day += 1
                 split_y = int(y) + int(x)*(int(lasty)-int(y)) / \
                     ((1440+int(x)-int(lastx)))
-                buffer += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' % (
+                buf += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' % (
                     1440, split_y,
                     s[0]['station_train_code'].encode('utf-8'), day,
                     polyline_class,
                     0, split_y,
                 )
-            buffer += '%s,%s ' % (x, y)
+            buf += '%s,%s ' % (x, y)
             lastx = x
             lasty = y
-    buffer += '"/>\n'
-    return buffer
+    buf += '"/>\n'
+    return buf
 
 
 def csvToPolyline(c, m, station=None):
     # ['K868,\xe6\xb3\x8a\xe5\xa4\xb4,05,1,00:00,0']
     if (len(c)) <= 0:
         return ''
-    buffer = ''
+    buf = ''
     day = 0
     lastx = 0
     lasty = 0
     lastdate = ''
     polyline_class = polylineClass(c[0][0])
-    buffer += '<polyline name="%s_%s" class="%s" points="' % (
+    buf += '<polyline name="%s_%s" class="%s" points="' % (
         c[0][7].replace('&', ''),
         c[0][0],
         polyline_class
@@ -1004,7 +1004,7 @@ def csvToPolyline(c, m, station=None):
                 day += 1
                 split_y = int(y) + int(x)*(int(lasty)-int(y)) / \
                     ((1440+int(x)-int(lastx)))
-                buffer += '%d,%d "/>\n<polyline name="%s_%s+%d" class="%s" points="%d,%d ' % (
+                buf += '%d,%d "/>\n<polyline name="%s_%s+%d" class="%s" points="%d,%d ' % (
                     1440, split_y,
                     date.replace('&', ''),
                     c[0][0], day, polyline_class,
@@ -1012,16 +1012,16 @@ def csvToPolyline(c, m, station=None):
                 )
             if lastx == -1 or lastdate != date and i > 0:
                 day = 0
-                buffer += '"/>\n<polyline name="%s_%s+%d" class="%s" points="' % (
+                buf += '"/>\n<polyline name="%s_%s+%d" class="%s" points="' % (
                     date.replace('&', ''),
                     c[0][0], day, polyline_class
                 )
-            buffer += '%s,%s ' % (x, y)
+            buf += '%s,%s ' % (x, y)
         lastx = x
         lasty = y
         lastdate = date
-    buffer += '"/>\n'
-    return buffer
+    buf += '"/>\n'
+    return buf
 
 
 def csvToSvg(m, c, rule='', station=None):
@@ -1036,16 +1036,16 @@ def csvToSvg(m, c, rule='', station=None):
             # print(hash_no(c[i][0]))
             arr[hash_no(c[i][0])].append(c[i])
     #
-    buffer = ''
-    buffer += '<?xml version="1.0" standalone="no"?>\n'
-    buffer += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" \n'
-    buffer += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
-    buffer += '<svg width="%s" height="%s" version="1.1" \n' % (
+    buf = ''
+    buf += '<?xml version="1.0" standalone="no"?>\n'
+    buf += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" \n'
+    buf += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
+    buf += '<svg width="%s" height="%s" version="1.1" \n' % (
         1440,
         (int(m[-1][1])+50)//50*50
     )
-    buffer += 'xmlns="http://www.w3.org/2000/svg">\n'
-    buffer += '''
+    buf += 'xmlns="http://www.w3.org/2000/svg">\n'
+    buf += '''
 <style>
 line,polyline {
   stroke-width:1
@@ -1098,15 +1098,15 @@ polyline {
 
 '''
     for i in range(24):
-        buffer += ('<line class="hour" x1="%d" y1="0" x2="%d" y2="3000" />\n' %
+        buf += ('<line class="hour" x1="%d" y1="0" x2="%d" y2="3000" />\n' %
                    (i*60, i*60))
-        buffer += ('<line class="halfhour" x1="%d" y1="0" x2="%d" y2="3000" />\n' %
+        buf += ('<line class="halfhour" x1="%d" y1="0" x2="%d" y2="3000" />\n' %
                    (i*60+30, i*60+30))
 
     for i in range(len(m)):
-        buffer += ('<text x="0" y="%d">%s %s</text>\n' %
+        buf += ('<text x="0" y="%d">%s %s</text>\n' %
                    (int(m[i][1]) if int(m[i][1]) > 16 else (int(m[i][1]) + 16), m[i][0], m[i][1]))
-        buffer += ('<line class="station" x1="0" y1="%s" x2="1440" y2="%s" />\n' %
+        buf += ('<line class="station" x1="0" y1="%s" x2="1440" y2="%s" />\n' %
                    (m[i][1], m[i][1]))
     #
     num = 0
@@ -1120,10 +1120,10 @@ polyline {
         if flag and len(r.findall(arr[i][0][0])) > 0:
             num += 1
             arr[i] = sorted(arr[i], cmpby0_7_i2_i5_i3_m4)
-            buffer += csvToPolyline(arr[i], m, station)
+            buf += csvToPolyline(arr[i], m, station)
     #
-    buffer += ('</svg>')
-    return buffer, num
+    buf += ('</svg>')
+    return buf, num
 
 
 def train_list_class_str(t):
@@ -1685,7 +1685,7 @@ if __name__ == '__main__':
 
     station = getStation(fn1)
 
-    # buffer = compress_train_list(fn0, station) #TODO
+    # buf = compress_train_list(fn0, station) #TODO
 
     maxlen = 80000
     train_map = [[] for i in range(maxlen)]
@@ -2152,8 +2152,8 @@ if __name__ == '__main__':
     num = writecsv("delay/time.csv", ret)
     print(num)
     #
-    buffer = trainlistStr(train_arr, base_date, size, station)
-    writebyte(fn0 + '.txt', buffer)
+    buf = trainlistStr(train_arr, base_date, size, station)
+    writebyte(fn0 + '.txt', buf)
     #
     #
     for i in range(size):
@@ -2208,12 +2208,12 @@ for line in lines:
     fn = u'test/191230%s.svg' % (line[0])
     restr = line[1]
     m = openMilage(fni)
-    buffer,_ = csvToSvg(m, c, restr, station)
-    print('%10d %s' % (len(buffer), fn))
+    buf,_ = csvToSvg(m, c, restr, station)
+    print('%10d %s' % (len(buf), fn))
     with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
         if f.tell() == 0:
             f.write('\xef\xbb\xbf')
-        f.write(buffer.encode('utf-8'))
+        f.write(buf.encode('utf-8'))
 
 '''
 
@@ -2225,7 +2225,7 @@ with open(fn,'rb') as f: #py2
 
 j = json.loads(data)
 
-buffer= '';
+buf= '';
 for obj in j:
     # obj['TRNO'].encode('utf-8')
     # obj['FST'].encode('utf-8')
@@ -2241,22 +2241,22 @@ for obj in j:
     last = 0;
     time_list = [];
     print(s[0]['STCODE'].encode('utf-8') + "\n")
-    buffer += (s[0]['STCODE'].encode('utf-8') + "\n")
+    buf += (s[0]['STCODE'].encode('utf-8') + "\n")
     for i in range(0, len(s)):
                 print (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8')\
                        + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'].encode('utf-8'))\
                        + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME'].encode('utf-8')) + "\n");
-                buffer += (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8')\
+                buf += (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8')\
                        + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'].encode('utf-8'))\
                        + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME'].encode('utf-8')) + "\n");
-    buffer += ("\n");
+    buf += ("\n");
 
-print(buffer.decode('utf-8'));
+print(buf.decode('utf-8'));
 
 with open('XJA.txt','wb') as f:
             if f.tell() == 0:
                 f.write('\xef\xbb\xbf');
-            f.write(buffer)
+            f.write(buf)
 
 
 bin_count11(0b000000000001111111111111000011111111111111000)
@@ -2272,7 +2272,7 @@ bin_count17(0b011000011100001110000111000011) Mon
 python
 from view_train_list import *
 station = getStation()
-buffer = compress_train_list('js/train_list.js',station) # TODO
+buf = compress_train_list('js/train_list.js',station) # TODO
 exit()
 gzip -c9 ${path}cycle.txt > ${path}cycle.txt.gz
 
@@ -2305,7 +2305,7 @@ for fn0 in glob.glob(r'js\train_list_*.js'):
             t = t1
     print('%s %s'%(fn0,fn1))
     station = getStation(fn1)
-    buffer = compress_train_list(fn0,station) # TODO
+    buf = compress_train_list(fn0,station) # TODO
 '''
 
 '''
