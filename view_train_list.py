@@ -334,8 +334,8 @@ def trainlistStr(train_arr, base_date, size, station=None):
             t1,
             t2,
             train['station_train_code'].encode('utf-8'),
-            train['total_num'],
-            '0' if train['service_type'] == '0' else '',
+            train['total_num'] if 'total_num' in train else 0,
+            ('0' if train['service_type'] == '0' else '') if 'service_type' in train else '',
             train['src'],
             val
         )
@@ -860,6 +860,17 @@ def writecsv(f1, ret):
         for i in range(len(ret)):
             f.write(",".join(ret[i]) + '\n')
     return len(ret)
+
+
+def readbyte(fn):
+    '''
+    read bytes skip UTF-8 BOM
+    '''
+    with open(fn, 'rb') as f:  # py2
+        if f.read(3) != b'\xef\xbb\xbf':
+            f.seek(0, 0)
+        data = f.read()
+    return data
 
 
 def writebyte(f1, b):
@@ -1578,14 +1589,14 @@ def slice_to_str(ret, base_date):
             ans += "|"
         if ret[i][0] == ret[i][1]:
             ans += re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                          r"\3\4", date_add(base_date, ret[i][0]))
+                          r"\2\3\4", date_add(base_date, ret[i][0]))
             continue
         else:
             ans += '%s-%s' % (
                 re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                       r"\3\4", date_add(base_date, ret[i][0])),
+                       r"\2\3\4", date_add(base_date, ret[i][0])),
                 re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                       r"\3\4", date_add(base_date, ret[i][1]))
+                       r"\2\3\4", date_add(base_date, ret[i][1]))
             )
     return ans
 
@@ -1645,7 +1656,7 @@ def compress_bin_vector(date_bin, base_date, size):
     if bin_weight > size - size / 7 and len(zero_slice) > 0:
         return "停" + slice_to_str(zero_slice, base_date), 18
     #
-    return ('b{:0>%db}' % (size)).format(date_bin) + ' consecutive' + str(bin_count1n(date_bin)), 0
+    return slice_to_str(one_slice, base_date), 0 #('b{:0>%db}' % (size)).format(date_bin) + ' consecutive' + str(bin_count1n(date_bin)), 0
 
 
 if __name__ == '__main__':
