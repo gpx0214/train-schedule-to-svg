@@ -2299,24 +2299,40 @@ w7126 8
 '''
 
 r'''
-# all train_list_*.js in file
 import os
 import glob
 from view_train_list import *
 
+station = getStation()
+
+maxlen = 80000
+train_map = [[] for i in range(maxlen)]
+
+import datetime
+now = datetime.datetime.now().strftime('%Y-%m-%d')
+base_date = '2017-11-20'
+
 for fn0 in glob.glob(r'js\train_list_*.js'):
-    # print('%s %s'%(fn0,time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(os.path.getmtime(fn0)))))
-    t0 = os.path.getmtime(fn0)
-    t = 0
-    fn1 = 'js/station_name_180112.js'
-    for fn in glob.glob(r'js\station_name_*.js'):
-        t1 = os.path.getmtime(fn)
-        if t < t1 and t1 < t0:
-            fn1 = fn
-            t = t1
-    print('%s %s'%(fn0,fn1))
-    station = getStation(fn1)
-    buf = compress_train_list(fn0,station) # TODO
+    _, mask, msg = add_train_list(train_map, fn0, base_date)
+
+#train_map = json.loads(readbyte('train_map_json.txt'))
+
+size = datediff('2019-11-12','2017-11-20') + 1
+print('base_date %s size %d' % (base_date, size))
+train_arr = mapToArr(train_map)
+buf = trainlistStr(train_arr, base_date, size, station)
+writebyte('train_list1.txt', buf)
+
+b = json.dumps(train_arr)
+writebyte('train_arr_json.txt', b)
+
+b = json.dumps(train_map)
+writebyte('train_map_json.txt', b)
+
+[1116, 
+    0,    0,    0,    0,    0,    0,    0,
+    0, 2156, 1755,  836,  705,  944, 5710, 
+57718,    0,11133,  345,    0]
 '''
 
 '''
