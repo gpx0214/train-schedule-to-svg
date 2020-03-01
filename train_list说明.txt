@@ -201,6 +201,20 @@ for (var i=0; i<Math.ceil(80000/step);i++) {
 console.log(str);
 console.log(cnt);
 
+//统计车次开头2位
+smap = {}
+
+for (var i = 0; i < cycle.length; i++) {
+
+    smap[cycle[i].from_station] = cycle[i].train_no.slice(0,2)
+
+}
+
+buffer = []
+for (i in smap) {
+    buffer.push(smap[i] + ',' + i + ',' + name(i) + '\n')
+}
+buffer.sort()
 
 http://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=24000T56850P&from_station_telecode=BJP&to_station_telecode=QTP&depart_date=2018-04-04
 
