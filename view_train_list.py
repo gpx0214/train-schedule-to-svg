@@ -2323,11 +2323,8 @@ train_arr = mapToArr(train_map)
 buf = trainlistStr(train_arr, base_date, size, station)
 writebyte('train_list1.txt', buf)
 
-b = json.dumps(train_arr)
-writebyte('train_arr_json.txt', b)
-
-b = json.dumps(train_map)
-writebyte('train_map_json.txt', b)
+writebyte('train_arr_json.txt', json.dumps(train_arr))
+writebyte('train_map_json.txt', b = json.dumps(train_map))
 
 [1116, 
     0,    0,    0,    0,    0,    0,    0,
