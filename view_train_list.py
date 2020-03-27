@@ -1582,21 +1582,44 @@ def get_zero_slice(n, size, offset=0, step=1):
     return ret
 
 
+#remove prefix 2 4 6 of s1 same for s0
+def gettail(s1, s0):
+    if len(s0) < 8 or len(s1) < 8:
+        return s1
+    for idx in range(6,0,-2):
+        if s1[0:idx] == s0[0:idx]:
+            return s1[idx:]
+    return s1
+
+
 def slice_to_str(ret, base_date):
     ans = ''
+    yyyymmdd = '20000000'
     for i in range(len(ret)):
         if i > 0:
             ans += "|"
         if ret[i][0] == ret[i][1]:
-            ans += re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                          r"\2\3\4", date_add(base_date, ret[i][0]))
+            cur_ymd = re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
+                             r"\1\2\3\4",
+                             date_add(base_date, ret[i][0]))
+            tail = gettail(cur_ymd, yyyymmdd)
+            yyyymmdd = cur_ymd
+            ans += tail
             continue
         else:
+            cur_ymd = re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
+                             r"\1\2\3\4",
+                             date_add(base_date, ret[i][0]))
+            tail0 = gettail(cur_ymd, yyyymmdd)
+            yyyymmdd = cur_ymd
+            cur_ymd = re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
+                             r"\1\2\3\4",
+                             date_add(base_date, ret[i][1]))
+            tail1 = gettail(cur_ymd, yyyymmdd)
+            yyyymmdd = cur_ymd
             ans += '%s-%s' % (
-                re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                       r"\2\3\4", date_add(base_date, ret[i][0])),
-                re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                       r"\2\3\4", date_add(base_date, ret[i][1]))
+                tail0,
+                tail1
             )
     return ans
 
