@@ -245,6 +245,17 @@ def teleToName(s, station):
     return u''
 
 
+#telecode hash
+def hash_tele(s):
+    if len(s) < 3:
+        return 0
+    return (ord(s[2])-65) * 26 * 26 + (ord(s[0])-65) * 26 + (ord(s[1])-65)
+
+
+def unhash_tele(n):
+    return chr(n/26 % 26+65) + chr(n % 26+65) + chr(n/26/26+65)
+
+
 # train_map
 def hash_no(s):
     items = [('Z', 10000), ('T', 20000), ('K', 30000),

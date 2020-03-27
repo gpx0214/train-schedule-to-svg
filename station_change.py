@@ -4,16 +4,6 @@ from view_train_list import *
 import copy
 
 
-def hash_tele(s):
-    if len(s) < 3:
-        return 0
-    return (ord(s[2])-65) * 26 * 26 + (ord(s[0])-65) * 26 + (ord(s[1])-65)
-
-
-def unhash_tele(n):
-    return chr(n/26 % 26+65) + chr(n % 26+65) + chr(n/26/26+65)
-
-
 buffer = ""
 lastmap = ["" for i in range(26*26*26)]
 map = ["" for i in range(26*26*26)]
