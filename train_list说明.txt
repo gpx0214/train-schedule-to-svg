@@ -75,6 +75,19 @@ http://hyfw.12306.cn/hyinfo/action/FwcszsAction_index?type=1
 http://hyfw.12306.cn/hyinfo/action/FwcszsAction_getljcz
 q=&limit=50&timestamp=1545757098789&sheng=%E6%B4%A5&shi=&ljdm=
 
+https://mobile.12306.cn/weixin/wxcore/trainChangeSeat
+https://mobile.12306.cn/weixin/wxcore/queryTrain?ticket_no=Y&depart_date=2020-03-28
+首字母查全车次 ZTKGDCYS12345678 date当天 隔日开行都可查到
+https://mobile.12306.cn/weixin/wxcore/queryQssj?stationName=%E5%8C%97%E4%BA%AC
+起售时 同城站的市区
+https://mobile.12306.cn/weixin/czxx/queryByTrainNo?train_no=760000616114&from_station_telecode=BBB&to_station_telecode=BBB&depart_date=2020-03-28
+时刻表
+https://mobile.12306.cn/weixin/
+https://mobile.12306.cn/weixin/resources/js/framework/station_name.js?version=1.089
+https://mobile.12306.cn/weixin/resources/weixin/js/qxlist.js?version=1.089
+https://search.12306.cn/search/v1/train/search?keyword=T&date=20200328&type=wx_checi
+
+https://baijiahao.baidu.com/s?id=1633290155096354038
 https://www.meipian.cn/u09s9hf
 车次开头
 
