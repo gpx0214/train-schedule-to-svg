@@ -142,8 +142,8 @@ def print_stat(stat):
     buf = ''
     for i in range(len(stat)):
         buf += (("    " + str(stat[i]))[-4:]
-                   + ('' if (i+1) % 20 else '\n')
-                   + ('' if (i+1) % 60 else '\n'))
+                + ('' if (i+1) % 20 else '\n')
+                + ('' if (i+1) % 60 else '\n'))
     return buf
 
 
@@ -245,7 +245,7 @@ def teleToName(s, station):
     return u''
 
 
-#telecode hash
+# telecode hash
 def hash_tele(s):
     if len(s) < 3:
         return 0
@@ -346,7 +346,8 @@ def trainlistStr(train_arr, base_date, size, station=None):
             t2,
             train['station_train_code'].encode('utf-8'),
             train['total_num'] if 'total_num' in train else 0,
-            ('0' if train['service_type'] == '0' else '') if 'service_type' in train else '',
+            ('0' if train['service_type'] ==
+             '0' else '') if 'service_type' in train else '',
             train['src'],
             val
         )
@@ -1121,15 +1122,15 @@ polyline {
 '''
     for i in range(24):
         buf += ('<line class="hour" x1="%d" y1="0" x2="%d" y2="3000" />\n' %
-                   (i*60, i*60))
+                (i*60, i*60))
         buf += ('<line class="halfhour" x1="%d" y1="0" x2="%d" y2="3000" />\n' %
-                   (i*60+30, i*60+30))
+                (i*60+30, i*60+30))
 
     for i in range(len(m)):
         buf += ('<text x="0" y="%d">%s %s</text>\n' %
-                   (int(m[i][1]) if int(m[i][1]) > 16 else (int(m[i][1]) + 16), m[i][0], m[i][1]))
+                (int(m[i][1]) if int(m[i][1]) > 16 else (int(m[i][1]) + 16), m[i][0], m[i][1]))
         buf += ('<line class="station" x1="0" y1="%s" x2="1440" y2="%s" />\n' %
-                   (m[i][1], m[i][1]))
+                (m[i][1], m[i][1]))
     #
     num = 0
     for i in range(maxlen):
@@ -1210,19 +1211,24 @@ def print_block(stat):
 
 
 def getczxx(t1, date, cache=1):
-    # TODO local online
+    data = []
+    samestations = []
+    num = 0
+    if cache >= 1:
+        data, samestations, num = getczxxLocal(t1, date)
+    if num > 0 or cache >= 2:
+        return data, samestations, num
+    if cache <= 1:
+        data, samestations, num = getczxxOnline(t1, date)
+
+
+def getczxxLocal(t1, date):
     name = 'ticket/' + date + '_' + t1 + '.json'
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    exist = os.path.exists(fn)
-    if exist and cache == 1 and datediff(time.strftime(
-            '%Y-%m-%d',
-            time.localtime(os.path.getmtime(fn))),
-            date) < -29:
-        cache == 0
-    if exist and cache >= 1:
+    if os.path.exists(fn):
         with open(fn, 'rb') as f:
             data = f.read().decode('utf-8')
         try:
@@ -1232,10 +1238,11 @@ def getczxx(t1, date, cache=1):
                 return j['data']['data'], j['data']['sameStations'], len(j['data']['data'])
         except ValueError:
             print('ValueError %s %s' % (t1, date))
-    if cache == 2:
-        print('No File %s %s' % (t1, date))
-        return [], [], 0
-    #
+            return [], [], 0
+    return [], [], 0
+
+
+def getczxxOnline(t1, date, cache=1):
     url = "https://kyfw.12306.cn/otn/czxx/query?train_start_date=" + date + \
         "&train_station_name=" + "" + \
         "&train_station_code=" + t1 + "&randCode="
@@ -1252,8 +1259,13 @@ def getczxx(t1, date, cache=1):
     except ValueError:
         print('ValueError %s %s' % (t1, date))
         return [], [], -1
+    name = 'ticket/' + date + '_' + t1 + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
     if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
-        with open('ticket/' + date + '_' + t1 + '.json', 'wb') as f:
+        with open(fn, 'wb') as f:
             f.write(resp.content)
         print('%s %s %4d' % (t1, date, len(j['data']['data'])))
         return j['data']['data'], j['data']['sameStations'], len(j['data']['data'])
@@ -1593,11 +1605,11 @@ def get_zero_slice(n, size, offset=0, step=1):
     return ret
 
 
-#remove prefix 2 4 6 of s1 same for s0
+# remove prefix 2 4 6 of s1 same for s0
 def gettail(s1, s0):
     if len(s0) < 8 or len(s1) < 8:
         return s1
-    for idx in range(6,0,-2):
+    for idx in range(6, 0, -2):
         if s1[0:idx] == s0[0:idx]:
             return s1[idx:]
     return s1
@@ -1677,7 +1689,7 @@ def compress_bin_vector(date_bin, base_date, size):
         return ('b{:0>%db}&' % (step)).format(c) + slice_to_str(ret_mask_one_slice, base_date), step + 7
     #
     bin_weight = bin_cnt(date_bin)
-    if bin_weight <= 3: #<size / 7
+    if bin_weight <= 3:  # <size / 7
         return slice_to_str(get_one_slice(date_bin, size), base_date), 17
     one_slice = get_one_slice(date_bin, size)
     zero_slice = get_zero_slice(date_bin, size)
@@ -1690,7 +1702,8 @@ def compress_bin_vector(date_bin, base_date, size):
     if bin_weight > size - size / 7 and len(zero_slice) > 0:
         return "停" + slice_to_str(zero_slice, base_date), 18
     #
-    return slice_to_str(one_slice, base_date), 0 #('b{:0>%db}' % (size)).format(date_bin) + ' consecutive' + str(bin_count1n(date_bin)), 0
+    # ('b{:0>%db}' % (size)).format(date_bin) + ' consecutive' + str(bin_count1n(date_bin)), 0
+    return slice_to_str(one_slice, base_date), 0
 
 
 if __name__ == '__main__':
