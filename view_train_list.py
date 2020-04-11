@@ -1220,6 +1220,7 @@ def getczxx(t1, date, cache=1):
         return data, samestations, num
     if cache <= 1:
         data, samestations, num = getczxxOnline(t1, date)
+    return data, samestations, num
 
 
 def getczxxLocal(t1, date):
@@ -1242,7 +1243,7 @@ def getczxxLocal(t1, date):
     return [], [], 0
 
 
-def getczxxOnline(t1, date, cache=1):
+def getczxxOnline(t1, date):
     url = "https://kyfw.12306.cn/otn/czxx/query?train_start_date=" + date + \
         "&train_station_name=" + "" + \
         "&train_station_code=" + t1 + "&randCode="
@@ -1273,6 +1274,38 @@ def getczxxOnline(t1, date, cache=1):
         print('data error %s %s' % (t1, date))
         return [], [], 0
 
+
+def findstation(sch,station_name): #TODO
+    for i in range(len(sch)):
+        if sch[i]['station_name'] == station_name:
+            return 1
+    return 0
+
+
+def checkczxx(t1, date, cache=2):
+    c, samecity, ret = getczxx(t1, date, cache)
+    for i in range(len(c)):
+        sch = getSch12306Local(c[i]['train_no'])
+        if findstation(sch,c[i]['station_name']) == 0:
+            print('no station %s in %s'%(
+                c[i]['station_name'].encode('utf-8'),
+                c[i]['train_no'].encode('utf-8')
+            ))
+            getSch12306Online(
+                c[i]['start_station_telecode'],
+                c[i]['end_station_telecode'],
+                c[i]['train_no'],
+                date
+            )
+
+
+'''
+checkczxx('WCN', '2020-04-09')
+station = getStation()
+for i in range(len(station)):
+    if station[i][2][2] == 'N':
+        checkczxx(station[i][2], date)
+'''
 
 LeftTicketUrl = "leftTicket/query"
 
@@ -1750,7 +1783,7 @@ if __name__ == '__main__':
     #
     import datetime
     now = datetime.datetime.now().strftime('%Y-%m-%d')
-    base_date = '2019-12-30'
+    base_date = '2020-04-10'
     #end_date = ''
     #
     #base_date, mask, msg = add_train_list(train_map, fn0, '2019-12-30')
@@ -2601,7 +2634,7 @@ from view_train_list import *
 import math
 import datetime
 now = datetime.datetime.now().strftime('%Y-%m-%d')
-base_date = '2019-12-30'
+base_date = '2020-04-10'
 station = getStation()
 
 samecity_arr = []
@@ -2614,7 +2647,7 @@ for name in citys:
     if name in samecity_map:
         continue
     rets = []
-    for i in range(0, 30): #32
+    for i in range(0, 31): #32
         date = date_add(now, i)
         c, samecity, ret = getczxx(t1, date, cache = 2)
         rets.append(ret)
@@ -2627,7 +2660,7 @@ for name in citys:
     ex2 = sum([x*x for x in rets]) #/n
     sd = round(math.sqrt((ex2*n - ex * ex)) /n)
     level = round(ex/n) - 2*sd # sorted(rets)[len(rets)//2]*8//10
-    for i in range(0, 30): #32
+    for i in range(0, 31): #32
         if rets[i] < level:
             print(t1, date_add(now, i), rets[i], level)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
