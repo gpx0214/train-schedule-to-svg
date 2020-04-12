@@ -13,6 +13,7 @@ import platform
 import re
 import json
 import time
+import datetime
 # import math
 # import random
 
@@ -114,6 +115,10 @@ def datediff(date1, date0):
         if (y1 == y and m1 == m):
             break
     return d1 - d
+
+
+def nowdate():
+    return datetime.datetime.now().strftime('%Y-%m-%d')
 
 
 def weekday(date):
@@ -1275,7 +1280,7 @@ def getczxxOnline(t1, date):
         return [], [], 0
 
 
-def findstation(sch,station_name): #TODO
+def findschstation(sch, station_name):  # TODO
     for i in range(len(sch)):
         if sch[i]['station_name'] == station_name:
             return 1
@@ -1286,8 +1291,8 @@ def checkczxx(t1, date, cache=2):
     c, samecity, ret = getczxx(t1, date, cache)
     for i in range(len(c)):
         sch = getSch12306Local(c[i]['train_no'])
-        if findstation(sch,c[i]['station_name']) == 0:
-            print('no station %s in %s'%(
+        if findschstation(sch, c[i]['station_name']) == 0:
+            print('no station %s in %s' % (
                 c[i]['station_name'].encode('utf-8'),
                 c[i]['train_no'].encode('utf-8')
             ))
@@ -1399,14 +1404,14 @@ def gtzwd(date, s):
     j = {"trainNo": s}
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
-    resp = requests.post(url, data=json.dumps(j), headers=header, timeout=20)
+    resp = requests.post(url, data=json.dumps(j), headers=header, timeout=60)
     body = resp.content.decode('utf-8')
     #
     try:
         j = json.loads(body)
     except:
         print(body)
-    name = 'delay/gt_' + date + '_' + s + '.json'
+    name = 'gtzwd/gt_' + date + '_' + s + '.json'
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -1784,8 +1789,7 @@ if __name__ == '__main__':
     maxlen = 80000
     train_map = [[] for i in range(maxlen)]
     #
-    import datetime
-    now = datetime.datetime.now().strftime('%Y-%m-%d')
+    now = nowdate()
     base_date = '2020-04-10'
     #end_date = ''
     #
@@ -2391,8 +2395,7 @@ station = getStation()
 maxlen = 80000
 train_map = [[] for i in range(maxlen)]
 
-import datetime
-now = datetime.datetime.now().strftime('%Y-%m-%d')
+now = nowdate()
 base_date = '2017-11-20'
 
 for fn0 in glob.glob(r'js\train_list_*.js'):
@@ -2633,10 +2636,9 @@ writecsv("DBM.csv", ret)
 '''
 #重新获取比中位数的80%少的
 from view_train_list import *
-
 import math
-import datetime
-now = datetime.datetime.now().strftime('%Y-%m-%d')
+
+now = nowdate()
 base_date = '2020-04-10'
 station = getStation()
 
