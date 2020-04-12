@@ -2303,7 +2303,7 @@ lines = [
 c = readcsv('delay/time.csv')
 for line in lines:
     fni = u'test/%s里程.txt' % (line[0])
-    fn = u'test/191230%s.svg' % (line[0])
+    fn = u'test/200410%s.svg' % (line[0])
     restr = line[1]
     m = openMilage(fni)
     buf,_ = csvToSvg(m, c, restr, station)
