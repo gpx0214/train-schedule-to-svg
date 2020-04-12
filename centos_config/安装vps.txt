@@ -597,6 +597,7 @@ chkconfig --add nginx
 
 /sbin/chkconfig --level 345 nginx on
 
+#注意 /etc/nginx/sites-enabled/
 
 #vsftpd
 yum -y install vsftpd
