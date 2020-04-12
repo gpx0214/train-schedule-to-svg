@@ -1395,19 +1395,22 @@ def gtzwdjsp():
 
 
 def gtzwd(date, s):
-    name = 'delay/gt_' + date + '_' + s + '.json'
-    try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
-    except:
-        fn = name
-    url = 'http://www.gtbyxx.com/wxg/inter/ky/getTrainZwd'
+    url = 'http://www.gtbyxx.com/wxg/inter/kyData/getTrainZwd'
     j = {"trainNo": s}
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
     resp = requests.post(url, data=json.dumps(j), headers=header, timeout=20)
     body = resp.content.decode('utf-8')
     #
-    j = json.loads(body)
+    try:
+        j = json.loads(body)
+    except:
+        print(body)
+    name = 'delay/gt_' + date + '_' + s + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
     with open(fn, 'wb') as f:
         f.write(resp.content)
     return j
