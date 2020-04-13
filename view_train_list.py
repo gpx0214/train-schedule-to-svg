@@ -1784,8 +1784,6 @@ if __name__ == '__main__':
 
     station = getStation(fn1)
 
-    # buf = compress_train_list(fn0, station) #TODO
-
     maxlen = 80000
     train_map = [[] for i in range(maxlen)]
     #
@@ -2367,13 +2365,6 @@ bin_count17(0b011000011100001110000111000011) Mon
 '''
 
 '''
-python
-from view_train_list import *
-station = getStation()
-buf = compress_train_list('js/train_list.js',station) # TODO
-exit()
-gzip -c9 ${path}cycle.txt > ${path}cycle.txt.gz
-
 [226, 9418, 47, 0, 3, 0, 0, 717, 1058, 36, 608, 0, 0]
 
 717
