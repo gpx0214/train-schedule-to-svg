@@ -51,5 +51,5 @@ echo t0 newer or same
 fi
 
 ${path}view_train_list.py ${path}js/train_list.js
-gzip -c9 ${path}js/train_list.js.txt > ${path}js/train_list.js.txt.gz
+gzip -c9 ${path}js/train.csv > ${path}js/train.csv.gz
 gzip -c9 ${path}delay/time.csv > ${path}delay/time.csv.gz

@@ -2253,7 +2253,7 @@ if __name__ == '__main__':
     print(num)
     #
     buf = trainlistStr(train_arr, base_date, size, station)
-    writebyte(fn0 + '.txt', buf)
+    writebyte('js/train.csv', buf)
     #
     #
     for i in range(size):
