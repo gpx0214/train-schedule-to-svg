@@ -1708,7 +1708,11 @@ def compress_bin_vector(date_bin, base_date, size):
         if date_bin == (all1(size) & all01(size, cur_step, cur_c)):
             if cur_step == 7:
                 return 'w' + cycle7(cur_c, weekday(base_date)), cur_step
-            return ('{:0>%db}' % (cur_step)).format(cur_c), cur_step
+            if cur_c == 0b01 and cur_step == 2:
+                return "双", 2
+            if cur_c == 0b10 and cur_step == 2:
+                return "单", 2
+            return ('b{:0>%db}' % (cur_step)).format(cur_c), cur_step
         if cur_step > 1 and cur_c == (1 << cur_step) - 1:
             continue
         mask_one_slice = get_mask_one_slice(date_bin, size, cur_c, cur_step)
@@ -1724,7 +1728,7 @@ def compress_bin_vector(date_bin, base_date, size):
         return "双&" + slice_to_str(ret_mask_one_slice, base_date), step + 7
     if c == 0b10 and step == 2:
         return "单&" + slice_to_str(ret_mask_one_slice, base_date), step + 7
-    if step >= 2 and bin_count1n(date_bin, step) >= 2:
+    if step >= 2 and bin_count1n(date_bin, step) >= 3:
         if step == 7:
             return 'w%s&' % (cycle7(c, weekday(base_date))) + slice_to_str(ret_mask_one_slice, base_date), step + 7
         return ('b{:0>%db}&' % (step)).format(c) + slice_to_str(ret_mask_one_slice, base_date), step + 7
