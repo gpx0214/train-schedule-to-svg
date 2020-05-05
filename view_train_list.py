@@ -1743,9 +1743,9 @@ def compress_bin_vector(date_bin, base_date, size):
             return slice_to_str(one_slice, base_date), 15
     else:
         if len(zero_slice) <= 1 and len(zero_slice) > 0:
-            return "停" + slice_to_str(zero_slice, base_date), 16
+            return "!" + slice_to_str(zero_slice, base_date), 16
     if bin_weight > size - size / 7 and len(zero_slice) > 0:
-        return "停" + slice_to_str(zero_slice, base_date), 18
+        return "!" + slice_to_str(zero_slice, base_date), 18
     #
     # ('b{:0>%db}' % (size)).format(date_bin) + ' consecutive' + str(bin_count1n(date_bin)), 0
     return slice_to_str(one_slice, base_date), 0
