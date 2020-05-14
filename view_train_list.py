@@ -1332,8 +1332,13 @@ def getLeftTicket(t1, t2, date):
     except ValueError:
         print('ValueError %s %s %s' % (t1, t2, date))
         return []
+    name = 'ticket/' + date + '_' + t1 + '_' + t2 + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
     if ticket['status'] == True and ticket['httpstatus'] == 200 and len(ticket['data']['result']):
-        with open('ticket/' + date + '_' + t1 + '_' + t2 + '.json', 'wb') as f:
+        with open(fn, 'wb') as f:
             f.write(resp.content)
         print('%s %s %s %d' % (t1, t2, date, len(ticket['data']['result'])))
         return ticket['data']['result']
@@ -2291,7 +2296,7 @@ for name in citys:
     ex2 = sum([x*x for x in rets]) #/n
     sd = round(math.sqrt((ex2*n - ex * ex)) /n)
     level = round(ex/n) - 2*sd # sorted(rets)[len(rets)//2]*8//10
-    for i in range(0, 31): #32
+    for i in range(7, 28): #32
         if rets[i] < level:
             print(t1, date_add(now, i), rets[i], level)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
