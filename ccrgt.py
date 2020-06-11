@@ -58,7 +58,7 @@ def seat(s):
 def seatcaps(arr_seat, arr_cap):
     ret = []
     for i in range(len(arr_seat)):
-        ret.append('%s%s(%s)' %('', seat(arr_seat[i]), arr_cap[i]))
+        ret.append('%s%s(%s)' % ('', seat(arr_seat[i]), arr_cap[i]))
     return '+'.join(ret)
 
 
@@ -74,23 +74,29 @@ def getcdinfo(date, s, cache=2):
         try:
             j = json.loads(data)
             ret = [
-                s, '%s(%s)' % (j['data']['trainType'] ,sum([int(re.sub(r'\D', '', x['peopleNum'])) for x in j['data']['cdInfoList']])),
-                re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']),
-                re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']),
-                re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T',
-                       j['data']['trainTeam']),
-                seatcaps(
-                    [(x['seatType1'] if x['seatType1'] else '') + (x['seatType2'] if x['seatType2'] else '') + (x['dinnerCar'] if x['dinnerCar'] else '') for x in j['data']['cdInfoList']],
-                    [re.sub(r'\D', '', x['peopleNum']) for x in j['data']['cdInfoList']]
+                s.encode('utf-8'),
+                '%s(%d)' % (
+                    j['data']['trainType'].encode('utf-8'),
+                    sum([int(re.sub(r'\D', '', x['peopleNum'])) for x in j['data']['cdInfoList']])
                 ),
+                re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']).encode('utf-8'),
+                re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']).encode('utf-8'),
+                re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T', j['data']['trainTeam']).encode('utf-8'),
+                seatcaps(
+                    [(x['seatType1'] if x['seatType1'] else '') +
+                     (x['seatType2'] if x['seatType2'] else '') +
+                     (x['dinnerCar'] if x['dinnerCar'] else '') for x in j['data']['cdInfoList']],
+                    [re.sub(r'\D', '', x['peopleNum']) for x in j['data']['cdInfoList']]
+                ).encode('utf-8'),
             ]
             return ret, 0
         except:
             pass
             #print(s + "-")
-            #print(fn)
+            # print(fn)
     if cache >= 2:
-        return [s, "", "", "", "", ""], -1
+        print('%s no file' % (s))
+        return [s.encode('utf-8'), "", "", "", "", ""], -1
     url = 'https://tripapi.ccrgt.com/crgt/trip-server-app/travel/getCDInfo'
     j = {"params": {"date": "2020-01-13", "trainNumber": s}}
     header = {
@@ -101,35 +107,43 @@ def getcdinfo(date, s, cache=2):
         resp = requests.post(url, data=json.dumps(j),
                              headers=header, timeout=20)
     except:
-        return [s, "", "", "", "", ""], -3
+        print('net error %s' % (s))
+        return [s.encode('utf-8'), "", "", "", "", ""], -3
     body = resp.content.decode('utf-8')
+    time.sleep(0.5)
     #
     try:
         j = json.loads(body)
     except:
         print('json error %s' % (s))
-        return [s, "", "", "", "", ""], -2
-    with open(fn, 'wb') as f:
-        f.write(resp.content)
-    time.sleep(0.5)
-    try:
+        return [s.encode('utf-8'), "", "", "", "", ""], -2
+    if 'data' in j and j['data']:
         ret = [
-            s, '%s(%s)' % (j['data']['trainType'], sum([int(re.sub(r'\D', '', x['peopleNum'])) for x in j['data']['cdInfoList']])),
-            re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']),
-            re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']),
-            re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T', j['data']['trainTeam']),
+            s.encode('utf-8'),
+            '%s(%d)' % (
+                j['data']['trainType'].encode('utf-8'),
+                sum([int(re.sub(r'\D', '', x['peopleNum'])) for x in j['data']['cdInfoList']])
+            ),
+            re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']).encode('utf-8'),
+            re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']).encode('utf-8'),
+            re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T', j['data']['trainTeam']).encode('utf-8'),
             seatcaps(
                 [(x['seatType1'] if x['seatType1'] else '') +
                  (x['seatType2'] if x['seatType2'] else '') +
                  (x['dinnerCar'] if x['dinnerCar'] else '') for x in j['data']['cdInfoList']],
                 [re.sub(r'\D', '', x['peopleNum']) for x in j['data']['cdInfoList']]
-            ),
+            ).encode('utf-8'),
         ]
-        print(','.join(ret))
+        # for r in ret:
+        # print(type(r))
+        # print((','.join(ret)).decode('utf-8'))
+        with open(fn, 'wb') as f:
+            f.write(resp.content)
         return ret, 0
-    except:
-        #print(s, "-")
-        return [s, "", "", "", "", ""], -1
+    # except:
+    else:
+        print('%s -' % (s))
+        return [s.encode('utf-8'), "", "", "", "", ""], -1
     return j, 0
 
 
@@ -154,15 +168,16 @@ for i in range(idx, len(c), 1):
         row = []
         for retry in range(3):
             row, status = getcdinfo(date, c[i][3], cache)
+            # time.sleep(0.5)
             if status >= -1:
                 break
-        ret.append([x.encode('utf-8') for x in row])
-        #print(','.join(row))
+        ret.append([x for x in row])
+        # print(','.join(row))
         idx = i + 1
         map[c[i][3]] = 1
 
 
-name = 'ccrgt%s.csv'%(date)
+name = 'emu/ccrgt%s.csv' % (date)
 try:
     fn1 = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
 except:
@@ -170,4 +185,4 @@ except:
 
 writecsv(fn1, ret)
 
-#awk -F '[,]' '{print $2","$6}' ccrgt.csv|sort|uniq>车型.csv
+# awk -F '[,]' '{print $2","$6}' ccrgt.csv|sort|uniq>车型.csv
