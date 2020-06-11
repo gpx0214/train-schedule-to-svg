@@ -5,11 +5,13 @@
 /ccrgt
 /detail
 /equip
+/emu
 /preseq
 /search
 /ticket
 /*.pyc
 /*.js
+/*.gz
 /*.7z
 /*.zip
 /*.rar
