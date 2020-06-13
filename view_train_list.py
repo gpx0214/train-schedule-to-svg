@@ -2296,8 +2296,28 @@ for name in citys:
     ex2 = sum([x*x for x in rets]) #/n
     sd = round(math.sqrt((ex2*n - ex * ex)) /n)
     level = round(ex/n) - 2*sd # sorted(rets)[len(rets)//2]*8//10
-    for i in range(7, 28): #32
+    for i in range(-8, 7): #-8...32
         if rets[i] < level:
             print(t1, date_add(now, i), rets[i], level)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
+
+
+samecity_arr = []
+samecity_map = {}
+for name in citys:
+    t1 = telecode(name, station)
+    if len(t1) == 0:
+        continue
+    if name in samecity_map:
+        continue
+    for i in range(-7, 1): #32
+        date = date_add(now, i)
+        fn = 'ticket/%s_%s.json'%(date, t1)
+        if not os.path.exists(fn):
+            continue
+        mt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(fn)))
+        if '2020-05' in mt:
+            print(mt, date, t1)
+            c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
+
 '''
