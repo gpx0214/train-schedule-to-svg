@@ -91,144 +91,9 @@ https://baijiahao.baidu.com/s?id=1633290155096354038
 https://www.meipian.cn/u09s9hf
 车次开头
 
-function hash(str) {
-  var c = str.charAt(0);
-  var offset={
-    "Z":10000,
-    "T":20000,
-    "K":30000,
-    "L":00000,
-    "A":00000,
-    "G":40000,
-    "D":50000,
-    "C":60000,
-    "S":70000,
-    "Y":00000,
-    "P":10000,
-    "Q":20000,
-    "W":30000,
-    "V":01000,
-    "B":02000,
-    "U":04000,
-    "X":05000
-  }
-  var num = Number(str.replace(/\D/,'')) % 10000;
-  return (offset[c] || 0) + num -1;
-}
 
-var d = {}
-var st = {}
-var m = new Set();
-var arr = new Array(80000);
-var stat = new Array(2000);
-for(i in train) {
-      t = train[i];
-      m.add(t.from_station+'-'+t.to_station)
-      d[t.from_station+'-'+t.to_station] = (d[t.from_station+'-'+t.to_station] || 0) + 1;
-      st[t.from_station] = (st[t.from_station] || 0) + 1;
-      st[t.to_station] = (st[t.to_station] || 0) + 1;
-      arr[hash(t.station_train_code)] = t.train_no;
-      stat[Math.floor(hash(t.station_train_code)/100)] = (stat[hash(t.station_train_code)/100] || 0) + 1;
-}
 
-/*
-var d = {}
-var st = {}
-var m = new Set();
-var arr = new Array(80000);
-var stat = new Array(2000);
-for(date in train_list) {
-  for (type in train_list[date]) {
-    for (i in train_list[date][type]) {
-      t = train_list[date][type][i];
-      match = t.station_train_code.match(/(.*)\((.*)-(.*)\)/)
-      m.add(match[2]+'-'+match[3])
-      d[match[2]+'-'+match[3]] = (d[match[2]+'-'+match[3]] || 0) + 1;
-      st[match[2]] = (st[match[2]] || 0) + 1;
-      st[match[3]] = (st[match[3]] || 0) + 1;
-      arr[hash(match[1])] = t.train_no;
-      stat[Math.floor(hash(match[1])/100)] = (stat[hash(match[1])/100] || 0) + 1;
-    }
-  }
-}
-*/
-
-//m.size 3651
-//arr
-
-//统计不重复的始发-终到
-var line_num = [];
-for (i in d) {
-  line_num.push({
-    fromto:i,
-    num: d[i]
-  })
-}
-
-line_num.sort(function(a,b){return b.num - a.num})
-
-str = ""
-for (i in line_num) {
-  str+=(("    " + Math.ceil(line_num[i].num / 30)).slice(-4) + " " + line_num[i].fromto + "\n")
-}
-console.log(str)
-
-//统计不重复的始发站
-var st_num = [];
-for (i in st) {
-  st_num.push({
-    station:i,
-    num: st[i]
-  })
-}
-
-st_num.sort(function(a,b){return b.num - a.num})
-
-str = ""
-for (i in st_num) {
-  str+=(("    " + Math.ceil(st_num[i].num / 30)).slice(-4) + " " + st_num[i].station + "\n")
-}
-console.log(str)
-
-//统计车次分布
-var cnt = 0;
-var step = 100;
-var stat = new Array(Math.ceil(80000/step));
-for (i in arr) {
-  if (arr[i]) {
-    stat[Math.floor(i/step)] = (stat[Math.floor(i/step)] || 0) + 1;
-    cnt++;
-  }
-}
-console.log(cnt);
-
-var str = '';
-var cnt = 0;
-for (var i=0; i<Math.ceil(80000/step);i++) {
-  str += ( ('    '+(stat[i]||0)).slice(-3) + ((i+1)%10?'':'\n') + ((i+1)%100?'':'\n'));
-  if(stat[i]||0) {
-    cnt++;
-  }
-}
-
-console.log(str);
-console.log(cnt);
-
-//统计车次开头2位
-smap = {}
-
-for (var i = 0; i < train.length; i++) {
-
-    smap[train[i].from_station] = train[i].train_no.slice(0,2)
-
-}
-
-buffer = []
-for (i in smap) {
-    buffer.push(smap[i] + ',' + i + ',' + name(i) + '\n')
-}
-buffer.sort()
-
+车站车次
 http://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=24000T56850P&from_station_telecode=BJP&to_station_telecode=QTP&depart_date=2018-04-04
 
 快速 0
@@ -502,3 +367,122 @@ result[35]// + "\t|" +
 //result[36]
 );
 }
+
+
+
+function hash(str) {
+  var c = str.charAt(0);
+  var offset={
+    "Z":10000,
+    "T":20000,
+    "K":30000,
+    "L":00000,
+    "A":00000,
+    "G":40000,
+    "D":50000,
+    "C":60000,
+    "S":70000,
+    "Y":00000,
+    "P":10000,
+    "Q":20000,
+    "W":30000,
+    "V":01000,
+    "B":02000,
+    "U":04000,
+    "X":05000
+  }
+  var num = Number(str.replace(/\D/,'')) % 10000;
+  return (offset[c] || 0) + num -1;
+}
+
+var d = {}
+var st = {}
+var m = new Set();
+var arr = new Array(80000);
+var stat = new Array(2000);
+for(i in train) {
+      t = train[i];
+      m.add(t.from_station+'-'+t.to_station)
+      d[t.from_station+'-'+t.to_station] = (d[t.from_station+'-'+t.to_station] || 0) + 1;
+      st[t.from_station] = (st[t.from_station] || 0) + 1;
+      st[t.to_station] = (st[t.to_station] || 0) + 1;
+      arr[hash(t.station_train_code)] = t.train_no;
+      stat[Math.floor(hash(t.station_train_code)/100)] = (stat[hash(t.station_train_code)/100] || 0) + 1;
+}
+
+//m.size 3651
+//arr
+
+//统计不重复的始发-终到
+var line_num = [];
+for (i in d) {
+  line_num.push({
+    fromto:i,
+    num: d[i]
+  })
+}
+
+line_num.sort(function(a,b){return b.num - a.num})
+
+str = ""
+for (i in line_num) {
+  str+=(("    " + Math.ceil(line_num[i].num)).slice(-4) + " " + line_num[i].fromto + "\n")
+}
+console.log(str)
+
+
+//统计不重复的始发站
+var st_num = [];
+for (i in st) {
+  st_num.push({
+    station:i,
+    num: st[i]
+  })
+}
+
+st_num.sort(function(a,b){return b.num - a.num})
+
+str = ""
+for (i in st_num) {
+  str+=(("    " + Math.ceil(st_num[i].num)).slice(-4) + " " + st_num[i].station + "\n")
+}
+console.log(str)
+
+
+//统计车次分布
+var cnt = 0;
+var step = 100;
+var stat = new Array(Math.ceil(80000/step));
+for (i in arr) {
+  if (arr[i]) {
+    stat[Math.floor(i/step)] = (stat[Math.floor(i/step)] || 0) + 1;
+    cnt++;
+  }
+}
+console.log(cnt);
+
+var str = '';
+var cnt = 0;
+for (var i=0; i<Math.ceil(80000/step);i++) {
+  str += ( ('    '+(stat[i]||0)).slice(-3) + ((i+1)%10?'':'\n') + ((i+1)%100?'':'\n'));
+  if(stat[i]||0) {
+    cnt++;
+  }
+}
+
+console.log(str);
+console.log(cnt);
+
+
+//统计车次开头2位
+smap = {}
+for (var i = 0; i < train.length; i++) {
+    smap[train[i].from_station] = train[i].train_no.slice(0,2)
+}
+
+buffer = []
+for (i in smap) {
+    buffer.push(smap[i] + ',' + i + ',' + name(i) + '\n')
+}
+buffer.sort()
+console.log(buffer.join('\n'))
