@@ -121,8 +121,8 @@ var st = {}
 var m = new Set();
 var arr = new Array(80000);
 var stat = new Array(2000);
-for(i in cycle) {
-      t = cycle[i];
+for(i in train) {
+      t = train[i];
       m.add(t.from_station+'-'+t.to_station)
       d[t.from_station+'-'+t.to_station] = (d[t.from_station+'-'+t.to_station] || 0) + 1;
       st[t.from_station] = (st[t.from_station] || 0) + 1;
@@ -135,7 +135,7 @@ for(i in cycle) {
 var d = {}
 var st = {}
 var m = new Set();
-var arr = new Array(200000);
+var arr = new Array(80000);
 var stat = new Array(2000);
 for(date in train_list) {
   for (type in train_list[date]) {
@@ -217,9 +217,9 @@ console.log(cnt);
 //统计车次开头2位
 smap = {}
 
-for (var i = 0; i < cycle.length; i++) {
+for (var i = 0; i < train.length; i++) {
 
-    smap[cycle[i].from_station] = cycle[i].train_no.slice(0,2)
+    smap[train[i].from_station] = train[i].train_no.slice(0,2)
 
 }
 
