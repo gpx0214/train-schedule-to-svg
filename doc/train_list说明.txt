@@ -149,7 +149,7 @@ a.data.result[45].split("|")
 
 20 gg_num 观光
 21 RW19 6
-22 一人软包 H T31    K3/K23 H 包厢硬卧  T6611 E 特等软座
+22 一人软包 H T31 //K9686 一人软包  K3/K23 5 包厢硬卧  T6611 E 特等软座 //old A D954 高级动卧
 23 RW/WR
 24 RZ     T5685 Y509
 25 tz ZT 
@@ -161,8 +161,8 @@ a.data.result[45].split("|")
 31		ZY
 32	swz_num	SW
 33		WY
-34	seat_feature	席别
-35	yp_ex	席别 
+34	yp_ex	打折席别 
+35	seat_types 席别
 36  exchange_train_flag 可以积分兑换
 37  houbu_train_flag 候补
 38  houbu_seat_limit 不能候补席别 字母
@@ -184,100 +184,101 @@ var seatTypeForHB = {
 };
 
 
-    function cp(cO, cQ) {
-        var cN = [];
-        for (var cM = 0; cM < cO.length; cM++) {
+    function cr(cQ, cS) {
+        var cP = [];
+        for (var cO = 0; cO < cQ.length; cO++) {
+            var cT = [];
+            var cN = cQ[cO].split("|");
+            cT.secretStr = cN[0];
+            cT.buttonTextInfo = cN[1];
             var cR = [];
-            var cL = cO[cM].split("|");
-            cR.secretStr = cL[0];
-            cR.buttonTextInfo = cL[1];
-            var cP = [];
-            cP.train_no = cL[2];
-            cP.station_train_code = cL[3];
-            cP.start_station_telecode = cL[4];
-            cP.end_station_telecode = cL[5];
-            cP.from_station_telecode = cL[6];
-            cP.to_station_telecode = cL[7];
-            cP.start_time = cL[8];
-            cP.arrive_time = cL[9];
-            cP.lishi = cL[10];
-            cP.canWebBuy = cL[11];
-            cP.yp_info = cL[12];
-            cP.start_train_date = cL[13];
-            cP.train_seat_feature = cL[14];
-            cP.location_code = cL[15];
-            cP.from_station_no = cL[16];
-            cP.to_station_no = cL[17];
-            cP.is_support_card = cL[18];
-            cP.controlled_train_flag = cL[19];
-            cP.gg_num = cL[20] ? cL[20] : "--";
-            cP.gr_num = cL[21] ? cL[21] : "--";
-            cP.qt_num = cL[22] ? cL[22] : "--";
-            cP.rw_num = cL[23] ? cL[23] : "--";
-            cP.rz_num = cL[24] ? cL[24] : "--";
-            cP.tz_num = cL[25] ? cL[25] : "--";
-            cP.wz_num = cL[26] ? cL[26] : "--";
-            cP.yb_num = cL[27] ? cL[27] : "--";
-            cP.yw_num = cL[28] ? cL[28] : "--";
-            cP.yz_num = cL[29] ? cL[29] : "--";
-            cP.ze_num = cL[30] ? cL[30] : "--";
-            cP.zy_num = cL[31] ? cL[31] : "--";
-            cP.swz_num = cL[32] ? cL[32] : "--";
-            cP.srrb_num = cL[33] ? cL[33] : "--";
-            cP.yp_ex = cL[34];
-            cP.seat_types = cL[35];
-            cP.exchange_train_flag = cL[36];
-            cP.houbu_train_flag = cL[37];
-            if (cL.length > 38) {
-                cP.houbu_seat_limit = cL[38]
+            cR.train_no = cN[2];
+            cR.station_train_code = cN[3];
+            cR.start_station_telecode = cN[4];
+            cR.end_station_telecode = cN[5];
+            cR.from_station_telecode = cN[6];
+            cR.to_station_telecode = cN[7];
+            cR.start_time = cN[8];
+            cR.arrive_time = cN[9];
+            cR.lishi = cN[10];
+            cR.canWebBuy = cN[11];
+            cR.yp_info = cN[12];
+            cR.start_train_date = cN[13];
+            cR.train_seat_feature = cN[14];
+            cR.location_code = cN[15];
+            cR.from_station_no = cN[16];
+            cR.to_station_no = cN[17];
+            cR.is_support_card = cN[18];
+            cR.controlled_train_flag = cN[19];
+            cR.gg_num = cN[20] ? cN[20] : "--";
+            cR.gr_num = cN[21] ? cN[21] : "--";
+            cR.qt_num = cN[22] ? cN[22] : "--";
+            cR.rw_num = cN[23] ? cN[23] : "--";
+            cR.rz_num = cN[24] ? cN[24] : "--";
+            cR.tz_num = cN[25] ? cN[25] : "--";
+            cR.wz_num = cN[26] ? cN[26] : "--";
+            cR.yb_num = cN[27] ? cN[27] : "--";
+            cR.yw_num = cN[28] ? cN[28] : "--";
+            cR.yz_num = cN[29] ? cN[29] : "--";
+            cR.ze_num = cN[30] ? cN[30] : "--";
+            cR.zy_num = cN[31] ? cN[31] : "--";
+            cR.swz_num = cN[32] ? cN[32] : "--";
+            cR.srrb_num = cN[33] ? cN[33] : "--";
+            cR.yp_ex = cN[34];
+            cR.seat_types = cN[35];
+            cR.exchange_train_flag = cN[36];
+            cR.houbu_train_flag = cN[37];
+            cR.houbu_seat_limit = cN[38];
+            if (cN.length > 46) {
+                cR.dw_flag = cN[46]
             }
-            cP.from_station_name = cQ[cL[6]];
-            cP.to_station_name = cQ[cL[7]];
-            cR.queryLeftNewDTO = cP;
-            cN.push(cR)
+            cR.from_station_name = cS[cN[6]];
+            cR.to_station_name = cS[cN[7]];
+            cT.queryLeftNewDTO = cR;
+            cP.push(cT)
         }
-        return cN
+        return cP
     }
 
-    function aG(cM) {
-        var cL = "";
-        if (cM == "ZY") {
-            cL = "M"
+    function aG(cO) {
+        var cN = "";
+        if (cO == "ZY") {
+            cN = "M"
         }
-        if (cM == "ZE") {
-            cL = "O"
+        if (cO == "ZE") {
+            cN = "O"
         }
-        if (cM == "SWZ") {
-            cL = "9"
+        if (cO == "SWZ") {
+            cN = "9"
         }
-        if (cM == "TZ") {
-            cL = "P"
+        if (cO == "TZ") {
+            cN = "P"
         }
-        if (cM == "YZ") {
-            cL = "1"
+        if (cO == "YZ") {
+            cN = "1"
         }
-        if (cM == "RZ") {
-            cL = "2"
+        if (cO == "RZ") {
+            cN = "2"
         }
-        if (cM == "YW") {
-            cL = "3"
+        if (cO == "YW") {
+            cN = "3"
         }
-        if (cM == "RW") {
-            cL = "4"
+        if (cO == "RW") {
+            cN = "4"
         }
-        if (cM == "GR") {
-            cL = "6"
+        if (cO == "GR") {
+            cN = "6"
         }
-        if (cM == "WZ") {
-            cL = "WZ"
+        if (cO == "WZ") {
+            cN = "WZ"
         }
-        if (cM == "SRRB") {
-            cL = "F"
+        if (cO == "SRRB") {
+            cN = "F"
         }
-        if (cM == "YYRW") {
-            cL = "A"
+        if (cO == "YYRW") {
+            cN = "A"
         }
-        return cL
+        return cN
     }
 
 map = r.data.map;
@@ -373,23 +374,13 @@ result[35]// + "\t|" +
 function hash(str) {
   var c = str.charAt(0);
   var offset={
-    "Z":10000,
-    "T":20000,
-    "K":30000,
-    "L":00000,
-    "A":00000,
-    "G":40000,
-    "D":50000,
-    "C":60000,
-    "S":70000,
+    "Z":10000, "T":20000, "K":30000,
     "Y":00000,
-    "P":10000,
-    "Q":20000,
-    "W":30000,
-    "V":01000,
-    "B":02000,
-    "U":04000,
-    "X":05000
+    "G":40000, "D":50000, "C":60000,
+    "S":70000,
+    "L":70000, "A":70000, "N":70000,
+    "P":10000, "Q":20000, "W":30000,
+    "V":01000, "B":02000, "U":04000, "X":05000
   }
   var num = Number(str.replace(/\D/,'')) % 10000;
   return (offset[c] || 0) + num -1;

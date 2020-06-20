@@ -264,9 +264,10 @@ def unhash_tele(n):
 # train_map
 def hash_no(s):
     items = [('Z', 10000), ('T', 20000), ('K', 30000),
-             ('Y', 00000), ('L', 00000), ('A', 00000),
+             ('Y', 00000),
              ('G', 40000), ('D', 50000), ('C', 60000),
              ('S', 70000),
+             ('L', 70000), ('A', 70000), ('N', 70000),
              ('P', 10000), ('Q', 20000), ('W', 30000),
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     d = dict(items)
@@ -2310,7 +2311,7 @@ for name in citys:
         continue
     if name in samecity_map:
         continue
-    for i in range(-7, 1): #32
+    for i in range(-7, -1): #32
         date = date_add(now, i)
         fn = 'ticket/%s_%s.json'%(date, t1)
         if not os.path.exists(fn):
