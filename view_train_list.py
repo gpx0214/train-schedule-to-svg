@@ -278,7 +278,7 @@ def hash_no(s):
 
 def unhash_no(n):
     items = [('Z', 10000), ('T', 20000), ('K', 30000),
-             ('Y', 00000), 
+             ('Y', 00000),
              ('G', 40000), ('D', 50000), ('C', 60000),
              ('S', 70000),
              ('L', 80000), ('A', 80000), ('N', 80000),
@@ -896,8 +896,7 @@ def writebyte(f1, b):
     '''
     write bytes with UTF-8 BOM
     '''
-    fn = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), f1)
+    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
     with open(fn, 'wb') as f:
         if f.tell() == 0:
             f.write('\xef\xbb\xbf')
@@ -1957,10 +1956,7 @@ for line in lines:
 r'''
 fn = "C:\\Users\\Administrator\\ticket1\\2018-09-23_XJA_CBQ.json"
 
-with open(fn,'rb') as f: #py2
-    data=f.read().decode('utf-8');
-
-j = json.loads(data)
+j = json.loads(readbyte(fn))
 
 buf= '';
 for obj in j:
@@ -1990,19 +1986,7 @@ for obj in j:
 
 print(buf.decode('utf-8'));
 
-with open('XJA.txt','wb') as f:
-            if f.tell() == 0:
-                f.write('\xef\xbb\xbf');
-            f.write(buf)
-
-
-bin_count11(0b000000000001111111111111000011111111111111000)
-bin_count12(0b0000001010101010101010101010100)
-bin_count17(0b0001000000000000110000011000001)
-bin_count17(0b011000011100001110000111000011)
-bin_count17(0b011000011100001110000111000011)
-bin_count17(0b011000011100001110000111000011) Mon
-56000D210510|QEH|NCG|D2105|13|0100001010000101000011111101010 consecutive6 Thu
+writebyte('XJA.txt', buf)
 '''
 
 '''
@@ -2166,14 +2150,6 @@ import json
 import re
 import time
 import requests
-
-def hash_tele(s):
-    if len(s) < 3:
-        return 0
-    return (ord(s[2])-65) * 26 *26 + (ord(s[0])-65) * 26 + (ord(s[1])-65)
-
-def unhash_tele(n):
-    return chr(n/26%26+65) + chr(n%26+65) + chr(n/26/26+65)
 
 def getsearch(kw, cache=1):
     fn = ''
