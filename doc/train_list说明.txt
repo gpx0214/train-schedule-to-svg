@@ -389,13 +389,14 @@ maxlen = 90000
 
 var d = {}
 var st = {}
-var m = new Set();
+var fromto = new Set();
 var arr = new Array(maxlen);
 var stat = new Array(2000);
 for(i in train) {
       t = train[i];
+      // if (!is_a_day(t.date, date.replace(/(\d\d\d\d)-(\d\d)-(\d\d)/, "$1$2$3"))) continue
       key = hash(t.station_train_code)-1
-      m.add(t.from_station+'-'+t.to_station)
+      fromto.add(t.from_station+'-'+t.to_station)
       d[t.from_station+'-'+t.to_station] = (d[t.from_station+'-'+t.to_station] || 0) + 1;
       st[t.from_station] = (st[t.from_station] || 0) + 1;
       st[t.to_station] = (st[t.to_station] || 0) + 1;
@@ -403,8 +404,9 @@ for(i in train) {
       stat[Math.floor(key/100)] = (stat[key/100] || 0) + 1;
 }
 
-//m.size 3651
+//fromto.size 3651
 //arr
+
 
 //统计不重复的始发-终到
 var line_num = [];
