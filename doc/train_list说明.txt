@@ -378,27 +378,29 @@ function hash(str) {
     "Y":00000,
     "G":40000, "D":50000, "C":60000,
     "S":70000,
-    "L":70000, "A":70000, "N":70000,
+    "L":80000, "A":80000, "N":80000,
     "P":10000, "Q":20000, "W":30000,
     "V":01000, "B":02000, "U":04000, "X":05000
   }
   var num = Number(str.replace(/\D/,'')) % 10000;
   return (offset[c] || 0) + num -1;
 }
+maxlen = 90000
 
 var d = {}
 var st = {}
 var m = new Set();
-var arr = new Array(80000);
+var arr = new Array(maxlen);
 var stat = new Array(2000);
 for(i in train) {
       t = train[i];
+      key = hash(t.station_train_code)-1
       m.add(t.from_station+'-'+t.to_station)
       d[t.from_station+'-'+t.to_station] = (d[t.from_station+'-'+t.to_station] || 0) + 1;
       st[t.from_station] = (st[t.from_station] || 0) + 1;
       st[t.to_station] = (st[t.to_station] || 0) + 1;
-      arr[hash(t.station_train_code)] = t.train_no;
-      stat[Math.floor(hash(t.station_train_code)/100)] = (stat[hash(t.station_train_code)/100] || 0) + 1;
+      arr[key] = t.train_no;
+      stat[Math.floor(key/100)] = (stat[key/100] || 0) + 1;
 }
 
 //m.size 3651
@@ -443,7 +445,7 @@ console.log(str)
 //统计车次分布
 var cnt = 0;
 var step = 100;
-var stat = new Array(Math.ceil(80000/step));
+var stat = new Array(Math.ceil(maxlen/step));
 for (i in arr) {
   if (arr[i]) {
     stat[Math.floor(i/step)] = (stat[Math.floor(i/step)] || 0) + 1;
@@ -454,7 +456,7 @@ console.log(cnt);
 
 var str = '';
 var cnt = 0;
-for (var i=0; i<Math.ceil(80000/step);i++) {
+for (var i=0; i<Math.ceil(maxlen/step);i++) {
   str += ( ('    '+(stat[i]||0)).slice(-3) + ((i+1)%10?'':'\n') + ((i+1)%100?'':'\n'));
   if(stat[i]||0) {
     cnt++;

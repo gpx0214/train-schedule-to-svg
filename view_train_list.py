@@ -267,7 +267,7 @@ def hash_no(s):
              ('Y', 00000),
              ('G', 40000), ('D', 50000), ('C', 60000),
              ('S', 70000),
-             ('L', 70000), ('A', 70000), ('N', 70000),
+             ('L', 80000), ('A', 80000), ('N', 80000),
              ('P', 10000), ('Q', 20000), ('W', 30000),
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     d = dict(items)
@@ -278,13 +278,14 @@ def hash_no(s):
 
 def unhash_no(n):
     items = [('Z', 10000), ('T', 20000), ('K', 30000),
-             ('Y', 00000), ('L', 00000), ('A', 00000),
+             ('Y', 00000), 
              ('G', 40000), ('D', 50000), ('C', 60000),
              ('S', 70000),
+             ('L', 80000), ('A', 80000), ('N', 80000),
              ('P', 10000), ('Q', 20000), ('W', 30000),
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     head = ["", "Z", "T", "K", "G", "D", "C", "S"]
-    if n > 80000:
+    if n > 90000:
         return ""
     train_class = head[(n-1) // 10000]
     if n <= 1000:
@@ -1055,7 +1056,7 @@ def csvToPolyline(c, m, station=None):
 
 def csvToSvg(m, c, rule='', station=None):
     r = re.compile('^' + rule + '$', re.IGNORECASE | re.MULTILINE)
-    maxlen = 80000
+    maxlen = 90000
     arr = [[] for i in range(maxlen)]
 
     for i in range(len(c)):
@@ -1773,9 +1774,10 @@ if __name__ == '__main__':
     '''
     try:
         # if True:
+        maxlen = 90000
         t = openTrainList(fn0)
-        arr = train_list_train_no_array(t, 80000)
-        stat, train_num = train_list_stat_block(arr, 100, 80000)
+        arr = train_list_train_no_array(t, maxlen)
+        stat, train_num = train_list_stat_block(arr, 100, maxlen)
         s, block = print_block(stat)
         print(str(train_num) + " trains")
         print(str(block) + " blocks")
@@ -1794,7 +1796,7 @@ if __name__ == '__main__':
 
     station = getStation(fn1)
 
-    maxlen = 80000
+    maxlen = 90000
     train_map = [[] for i in range(maxlen)]
     #
     now = nowdate()
@@ -2022,7 +2024,7 @@ from view_train_list import *
 
 station = getStation()
 
-maxlen = 80000
+maxlen = 90000
 train_map = [[] for i in range(maxlen)]
 
 now = nowdate()
