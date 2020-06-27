@@ -2843,9 +2843,12 @@ def getsearch2(kw, cache=1):
     if cache and os.path.exists(fn):
         with open(fn, 'rb') as f:
             data = f.read().decode('utf-8')
-        j = json.loads(data)
-        if 'data' in j and len(j['data']):
-            return j['data'], len(j['data'])
+        try:
+            j = json.loads(data)
+            if 'data' in j and len(j['data']):
+                return j['data'], len(j['data'])
+        except:
+            pass
     #
     url = "http://hyfw.95306.cn/Hywsyyt/ajax/getSzjfZdZmHwkyLjm.json?q=" + kw
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
@@ -3007,8 +3010,8 @@ for v in map:
         continue
     ret.append([
         v["LJM"].encode('utf-8'),
-        v["LJDM"].encode('utf-8'),
-        v["LJQC"].encode('utf-8'),
+        v["LJDM"][0].encode('utf-8'),
+        #v["LJQC"].encode('utf-8'),
         v["DBM"].encode('utf-8'),
         v["PYM"].encode('utf-8'),
         v["TMISM"].encode('utf-8'),
