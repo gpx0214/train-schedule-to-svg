@@ -20,6 +20,56 @@ import datetime
 import requests
 
 
+def readcsv(fn):
+    with open(fn, 'rb') as f:  # py2
+        if f.read(3) != b'\xef\xbb\xbf':
+            f.seek(0, 0)
+        data = f.read().decode('utf-8')
+    c = data.split('\n')
+    for i in range(len(c)):
+        c[i] = c[i].replace('\r', '').split(',')
+    return c
+
+
+def writecsv(f1, ret):
+    if len(ret) == 0:
+        return 0
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          f1)
+    except:
+        fn = f1
+    with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+        if f.tell() == 0:
+            f.write(b'\xef\xbb\xbf')
+        for i in range(len(ret)):
+            f.write(",".join(ret[i]) + '\n')
+    return len(ret)
+
+
+def readbyte(fn):
+    '''
+    read bytes skip UTF-8 BOM
+    '''
+    with open(fn, 'rb') as f:  # py2
+        if f.read(3) != b'\xef\xbb\xbf':
+            f.seek(0, 0)
+        data = f.read()
+    return data
+
+
+def writebyte(f1, b):
+    '''
+    write bytes with UTF-8 BOM
+    '''
+    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
+    with open(fn, 'wb') as f:
+        if f.tell() == 0:
+            f.write('\xef\xbb\xbf')
+        f.write(b)
+
+
+
 def isLeap(y):
     if y & 0x03:
         return 0
@@ -63,6 +113,11 @@ def date_add(date, diff):
         d += day_month[(m-1) % 12]
     #
     return '%04d-%02d-%02d' % (y, m, d)
+
+
+def date_add_ymd(s, diff):
+    ymd = re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", s)
+    return re.sub(r'(\d\d\d\d)-(\d\d)-(\d\d)', r"\1\2\3", date_add(ymd, diff))
 
 
 def datediff(date1, date0):
@@ -143,6 +198,82 @@ def getmin(s):
         return -1
 
 
+def has_a_day(s):
+    s = re.sub("^(.*)&", "", s)
+    date = "20200601"
+    if s == "":
+        return date
+    if s[0] == u'停':
+        return date
+    if s[0] == u'!':
+        return date
+    if s[0] == u'b':
+        return date
+    if s[0] == u'单':
+        return date_add_ymd(date, 1)
+    if s[0] == u'双':
+        return date
+    if s[0] == u'w':
+        diff = int(s[1]) - weekday(re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", date))
+        if diff < 0:
+            diff += 7
+        return date_add_ymd(date, diff)
+    #
+    if len(s) < 4:
+        return date
+    #
+    sp = s.split("|")
+    #
+    if len(sp) > 0:
+        ssp = sp[0].split("-")
+        return '20'+ssp[0]
+    return date
+
+
+def is_a_day(s,date):
+    #print('is_a_day() %s %s'%(s,date))
+    s = re.sub("^(.*)&", "", s)
+    if s == "":
+        return 1
+    if s[0] == u'停':
+        return 1-is_a_day(re.sub(u'停', '', s),date)
+    if s[0] == '!':
+        return 1-is_a_day(re.sub(u'!', '', s),date)
+    if s[0] == u'b':
+        return 1
+    if s[0] == u'单':
+        return 1
+    if s[0] == u'双':
+        return 1
+    if s[0] == u'w':
+        return 1
+        w = weekday(re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", date))
+        if w < 0:
+            w += 7
+        return 0
+    #
+    if len(s) < 4:
+        return 0
+    #
+    #TODO
+    yyyymmdd = '20000000'
+    sp = s.split("|")
+    for i in range(len(sp)):
+        ssp = sp[i].split("-")
+        if len(ssp):
+            yyyymmdd = yyyymmdd[:-len(ssp[0])]+ssp[0]
+            d0 = yyyymmdd
+            yyyymmdd = yyyymmdd[:-len(ssp[-1])]+ssp[-1]
+            d1 = yyyymmdd
+            #print(d0, d1)
+            if d0 <= date and date <= d1:
+                return 1
+    #
+    return 0
+
+#is_a_day(u'!200425-30|0502-03|17-18', '20200616')
+
+
 def print_stat(stat):
     buf = ''
     for i in range(len(stat)):
@@ -152,6 +283,132 @@ def print_stat(stat):
     return buf
 
 
+def no_add(s, diff):
+    '''
+    no_add(24000000Z10A,-1) -> 24000000Z109
+    '''
+    if len(s) < 12:
+        return s, -1
+    if diff < 0:
+        if s[11] == 'A':
+            return s[0:11] + '9', 1
+        return s[0:11] + chr(ord(s[11]) - 1), 1
+    if diff > 0:
+        if s[11] == '9':
+            return s[0:11] + 'A', 1
+        return s[0:11] + chr(ord(s[11]) + 1), 1
+    return s, 0
+
+
+def no2_add(s, diff):
+    '''
+    no_add(5600000G4070,-1) -> 5600000G4060
+    '''
+    if len(s) < 12:
+        return s, -1
+    if diff < 0:
+        if s[10] == 'A':
+            return s[0:10] + '90', 1
+        return s[0:10] + chr(ord(s[10]) - 1) + '0', 1
+    if diff > 0:
+        if s[10] == '9':
+            return s[0:10] + 'A0', 1
+        return s[0:10] + chr(ord(s[10]) + 1) + '0', 1
+    return s, 0
+
+
+# seat
+def seat(s):
+    seat_map = {
+        '餐车': 'CA',
+        '行李车': 'XL',
+        '行邮车': 'XU',
+        '邮政车': 'UZ',
+        '空调发电车': 'KD',
+        '发电车': 'KD',  # FD
+        '硬座': 'YZ',
+        '软座': 'RZ',
+        '硬卧': 'YW',
+        '软卧': 'RW',
+        '双层硬座': 'SYZ',
+        '双层软座': 'SRZ',
+        '双层硬卧': 'SYW',
+        '双层软卧': 'SRW',
+        '包厢式硬卧': 'YW18',  # BY
+        '高级软卧': 'RW19',  # GR
+        '高级卧': 'WG',
+        '一等软座': 'RZ1',
+        '二等软座': 'RZ2',
+        '一等座': 'ZY',
+        '二等座': 'ZE',
+        '二等座一等座': 'ZYE',
+        '商务座': 'ZS',
+        '特等座': 'ZT',
+        '二等/餐车': 'ZEC',
+        '二等座餐车': 'ZEC',
+        '软卧餐车': 'WRC',
+        '一等/商务座': 'ZYS',
+        '一等座商务座': 'ZYS',
+        '商务座一等座': 'ZYS',
+        '二等/商务座': 'ZES',
+        '商务座二等座': 'ZES',
+        '二等座商务座': 'ZES',
+        '一等/特等座': 'ZYT',
+        '一等座特等座': 'ZYT',
+        '二等/特等座': 'ZET',
+        '二等座特等座': 'ZET',
+    }
+    if s.encode('utf-8') in seat_map:
+        return seat_map[s.encode('utf-8')]
+    return s
+
+
+def seats(arr_seat):
+    ret = []
+    num = 0
+    last = ''
+    for i in range(len(arr_seat)):
+        if arr_seat[i] != last and i > 0:
+            ret.append('%s%s' % (num if num > 1 else '', seat(last)))
+            num = 0
+        last = arr_seat[i]
+        num += 1
+    ret.append('%s%s' % (num if num > 1 else '', seat(last)))
+    return '+'.join(ret)
+
+
+def seatcaps(arr_seat, arr_cap):
+    ret = []
+    num = 0
+    last = ''
+    last_cap = ''
+    for i in range(len(arr_seat)):
+        if (arr_seat[i] != last or arr_cap[i] != last_cap) and i > 0:
+            ret.append('%s%s(%s)' % (
+                num if num > 1 else '',
+                seat(last),
+                last_cap
+            ))
+            num = 0
+        last = arr_seat[i]
+        last_cap = arr_cap[i]
+        num += 1
+    ret.append('%s%s(%s)' % (
+        num if num > 1 else '',
+        seat(last),
+        last_cap
+    ))
+    return '+'.join(ret)
+
+
+def seatcapsccrgt(arr_seat, arr_cap):
+    ret = []
+    for i in range(len(arr_seat)):
+        ret.append('%s%s(%s)' % ('', seat(arr_seat[i]), arr_cap[i]))
+    return '+'.join(ret)
+
+
+# compare
 def cmpbyTime(a1, a2):
     if (len(a1) < 5):
         return 0
@@ -284,7 +541,7 @@ def unhash_no(n):
              ('L', 80000), ('A', 80000), ('N', 80000),
              ('P', 10000), ('Q', 20000), ('W', 30000),
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
-    head = ["", "Z", "T", "K", "G", "D", "C", "S"]
+    head = ["", "Z", "T", "K", "G", "D", "C", "S", "L"]
     if n > 90000:
         return ""
     train_class = head[(n-1) // 10000]
@@ -561,11 +818,6 @@ def atos(a):
     s['total_num'] = 0
     s['date'] = 0
     return s
-
-
-# timetable train_list.js
-def processA(a, date, station):
-    return processS(atos(a), date, station)
 
 
 # timetable train_list.js
@@ -852,55 +1104,6 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
             ])
     # return buf
     return ret
-
-
-def readcsv(fn):
-    with open(fn, 'rb') as f:  # py2
-        if f.read(3) != b'\xef\xbb\xbf':
-            f.seek(0, 0)
-        data = f.read().decode('utf-8')
-    c = data.split('\n')
-    for i in range(len(c)):
-        c[i] = c[i].replace('\r', '').split(',')
-    return c
-
-
-def writecsv(f1, ret):
-    if len(ret) == 0:
-        return 0
-    try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                          f1)
-    except:
-        fn = f1
-    with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-        if f.tell() == 0:
-            f.write(b'\xef\xbb\xbf')
-        for i in range(len(ret)):
-            f.write(",".join(ret[i]) + '\n')
-    return len(ret)
-
-
-def readbyte(fn):
-    '''
-    read bytes skip UTF-8 BOM
-    '''
-    with open(fn, 'rb') as f:  # py2
-        if f.read(3) != b'\xef\xbb\xbf':
-            f.seek(0, 0)
-        data = f.read()
-    return data
-
-
-def writebyte(f1, b):
-    '''
-    write bytes with UTF-8 BOM
-    '''
-    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
-    with open(fn, 'wb') as f:
-        if f.tell() == 0:
-            f.write('\xef\xbb\xbf')
-        f.write(b)
 
 
 # line
@@ -1216,6 +1419,7 @@ def print_block(stat):
     return s, cnt
 
 
+#czxx
 def getczxx(t1, date, cache=1):
     data = []
     samestations = []
@@ -1313,6 +1517,7 @@ for i in range(len(station)):
         checkczxx(station[i][2], date)
 '''
 
+#leftTicket
 LeftTicketUrl = "leftTicket/query"
 
 
@@ -1388,6 +1593,452 @@ for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2
 '''
 
 
+#wifi.12306.cn
+def getstation(tele, date):
+    name = 'station/station_%s_%s.json' % (tele, date)
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if os.path.exists(fn):
+        j = json.loads(readbyte(fn))
+        print('read wifi_station %s %s %d' % (tele, date, len(j['data'])))
+        return j['data'], 0
+    url = "https://wifi.12306.cn/wifiapps/ticket/api/stoptime/queryByStationCodeAndDate?stationCode=%s&trainDate=%s" % (
+        tele, date
+    )
+    #print(url)
+    header = {
+        "User-Agent": "MicroMessenger",
+        #"wx":wx,
+    }
+    try:
+        resp = requests.get(url, headers=header, timeout=30)
+    except:
+        print('Net Error %s %s' % (tele, date))
+        return [], -1
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    #print(body)
+    try:
+        j = json.loads(body)
+    except ValueError:
+        print('ValueError %s %s' % (tele, date))
+        return [], -1
+    if 'data' in j:
+        print('wifi_station %s %s %d' % (tele, date, len(j['data'])))
+        with open(fn, 'wb') as f:
+            f.write(resp.content)
+        return j['data'], 0
+    return [], 0
+
+
+def getdetail(tele, no, date):
+    name = 'detail/detail_' + no  + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    code = re.sub(r'^0+', "", no[2:10])
+    if code[0] in 'GDC':
+        code = 'T'
+    url = "https://wifi.12306.cn/wifiapps/appFrontEnd/v2/kpBigScreen/getBigScreenTrainDetail?stationCode=%s&stationTrainCode=%s&trainDate=%s&fullTrainCode=%s" % (
+        tele, code, date, no
+    )
+    #print(url)
+    header = {
+        "User-Agent": "MicroMessenger",
+        #"wx":wx,
+    }
+    try:
+        resp = requests.get(url, headers=header, timeout=30)
+    except:
+        print('Net Error %s %s %s' % (tele, date, no))
+        return date,date, -1
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    #print(body)
+    try:
+        j = json.loads(body)
+    except ValueError:
+        print('ValueError %s %s' % (date, no))
+        return date,date, -1
+    if 'data' in j:
+        with open('detail/detail_' + no  + '.json', 'wb') as f:
+            f.write(resp.content)
+        #print('%s %s %s %d' % (no, len(j['data']['stopTime'])))
+        if 'stopTime' in j['data'] and len(j['data']['stopTime']) > 0:
+            ret = [
+                j['data']['stopTime'][0]['trainNo'],
+                j['data']['stopTime'][0]['stationTelecode'],
+                j['data']['stopTime'][-1]['stationTelecode'],
+                j['data']['stopTime'][0]['startDate'],
+                j['data']['stopTime'][0]['stopDate'],
+            ]
+            if 'trainsetTypeInfo' in j['data']:
+                ret.append(j['data']['trainsetTypeInfo']['trainsetType'])
+                ret.append(re.sub(r'\D', '', j['data']['trainsetTypeInfo']['capacity']))
+                if 'trainsetTypeName' in j['data']['trainsetTypeInfo']:
+                    ret.append(j['data']['trainsetTypeInfo']['trainsetTypeName'])
+            print(' '.join(ret))
+        return j['data']['stopTime'][0]['startDate'], j['data']['stopTime'][0]['stopDate'], len(j['data']['stopTime'])
+    else:
+        if 'error' in j:
+            print('trydetail(\'%s\',\'%s\',\'%s\') data error %s' % (tele,no, date, j['error']))
+            if j['error'] == u'发到站信息不完整':
+                return date,date, -1
+            return date,date, -2
+        print('trydetail(\'%s\',\'%s\',\'%s\') no data' % (tele,no, date))
+        return date,date, -3
+
+
+def trydetail(s,no,date, add = -1):
+    ans = 0
+    #s = 'BJP'
+    #no = '24000014611P'
+    #date = '20171220'
+    dmin = date
+    dmax = date
+    ret = 0
+    correct = 1
+    while correct > 0: #ret >= 0:
+        dmin, dmax, ret = getdetail(s, no, date)
+        if ret <= -2:
+            return dmin, dmax, ret
+        if ret > 0:
+            ans += 1
+            if add < 0:
+                date = date_add_ymd(dmin, add)
+            if add > 0:
+                date = date_add_ymd(dmax, add)
+            correct += 1
+        else:
+            correct >>= 1
+        if add >= 0 and datediff(re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", dmax), '2020-12-31') > 0:
+            return dmin, dmax, ans
+        if add < 0 and no[11] == '0':
+            if no[10] == '0':
+                return dmin, dmax, ans
+            break
+        no, _ = no_add(no, add)
+        time.sleep(0.3)
+    return dmin, dmax, ans
+
+
+def tryzero(s, no, date, l = 6):
+    dmin = date
+    dmax = date
+    ret = 1
+    while ret > 0:
+        for c in '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'[:l]:
+            dmin, dmax, ret = trydetail(s,(no[:-1] + '%s')%(c),date)
+            if ret > 0:
+                #print(dmin, dmax, ret)
+                break
+            if ret <= -2:
+                return dmin, dmax, ret
+        if ret <= 0:
+            return dmin, dmax, ret
+        if no[10] == '0':
+            return dmin, dmax, ret
+        add = -1
+        no, _ = no2_add(no, add)
+        date = date_add_ymd(dmin, add)
+
+
+def getcompilelist(no):
+    if len(no) < 12:
+        return []
+    name = 'list/list_' + no + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if os.path.exists(fn):
+        with open(fn, 'rb') as f:
+            data = f.read()
+        try:
+            j = json.loads(data)
+            if 'data' in j:
+                ret = [
+                    no,
+                ]
+                ret.append(seatcaps(
+                    [re.sub(r'\s', '', x['coachType']) for x in j['data']],
+                    [str(x['limit1'] + x['limit2']) for x in j['data']]
+                ))
+                print(' '.join(ret))
+                return j['data']
+        except:
+            print('json error %s' % (no))
+    url = "https://wifi.12306.cn/wifiapps/ticket/api/trainDetailInfo/queryTrainCompileListByTrainNo?trainNo=%s" % (
+        no
+    )
+    #print(url)
+    header = {
+        "User-Agent": "MicroMessenger",
+        #"wx":wx
+    }
+    try:
+        resp = requests.get(url, headers=header, timeout=30)
+    except:
+        print('Net Error %s' % (no))
+        return [] #,-1
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    #print(body)
+    try:
+        j = json.loads(body)
+    except ValueError:
+        print('ValueError %s' % (no))
+        return [] #,-1
+    if 'data' in j:
+        with open(fn, 'wb') as f:
+            f.write(resp.content)
+        ret = [
+            no,
+        ]
+        ret.append(seatcaps(
+            [re.sub(r'\s', '', x['coachType']) for x in j['data']],
+            [str(x['limit1'] + x['limit2']) for x in j['data']]
+        ))
+        print(' '.join(ret))
+        return ret
+    else:
+        print('compilelist %s no data' % (no))
+        return []
+
+
+'''
+import time
+c = readcsv('detail.csv')
+for i in range(0, len(c), 1):
+    if len(c[i]) < 7:
+        continue
+    ret = getcompilelist(c[i][0])
+    time.sleep(0.1)
+'''
+
+
+def getequip(no, date):
+    if len(no) < 12:
+        return
+    name = 'equip/equip_' + date + '_' + no + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    url = "https://wifi.12306.cn/wifiapps/ticket/api/trainDetailInfo/queryTrainEquipmentByTrainNo?trainNo=%s" % (
+        no
+    )
+    #print(url)
+    ret = [
+        no, 
+        u'', 
+        u'', 
+        u'', 
+        u'', 
+        u'', 
+        u'', 
+        u'', 
+        u'', 
+    ]
+    header = {
+        "User-Agent": "MicroMessenger",
+        #"wx":wx
+    }
+    try:
+        resp = requests.get(url, headers=header, timeout=30)
+    except:
+        print('Net Error %s' % (no))
+        return ret #,-1
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    #print(body)
+    try:
+        j = json.loads(body)
+    except ValueError:
+        print('ValueError %s' % (no))
+        return ret #,-1
+    if 'data' in j:
+        with open(fn, 'wb') as f:
+            f.write(resp.content)
+        ret = [
+            no,
+            j['data'][0]['trainsetType'], 
+            j['data'][0]['trainsetName'], 
+            j['data'][0]['bureaName'],
+            j['data'][0]['deploydepotName'], 
+            j['data'][0]['depotName'], 
+            j['data'][0]['trainsetStatus'], 
+            j['data'][0]['date'], 
+            str(j['data'][0]['eId']), 
+        ]
+        print(' '.join(ret))
+        return ret
+    else:
+        print('equip %s no data' % (no))
+        return ret
+
+#getequip('6c00000G6605', date)
+
+
+def getpreseq(code, date):
+    name = 'preseq/preseq_' + date + '_' + code + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    url = "https://wifi.12306.cn/wifiapps/ticket/api/trainDetailInfo/queryPreseqTrainsByTrainCode?trainCode=%s" % (
+        code
+    )
+    #print(url)
+    header = {
+        "User-Agent": "MicroMessenger",
+        #"wx":wx
+    }
+    try:
+        resp = requests.get(url, headers=header, timeout=30)
+    except:
+        print('Net Error %s' % (code))
+        return date,date, -1
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    #print(body)
+    try:
+        j = json.loads(body)
+    except ValueError:
+        print('ValueError %s' % (code))
+        return date,date, -1
+    if 'data' in j:
+        with open('preseq/preseq_' + date + '_' + code + '.json', 'wb') as f:
+            f.write(resp.content)
+            j['data']
+        print(j['data'])
+        return j['data']
+    else:
+        if 'error' in j:
+            print('preseq %s data error %s' % (code, j['error']))
+            return date,date, -2
+        print('preseq %s no data' % (code))
+        return ''
+
+
+def getcdinfo(date, s, cache=2):
+    yyyymmdd = re.sub(
+        r'(\d\d)(\d\d)-(\d+)-(\d+)',
+        r"\1\2\3\4",
+        date
+    )
+    name = 'ccrgt/ccrgt_' + yyyymmdd + '_' + s + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if os.path.exists(fn):
+        with open(fn, 'rb') as f:
+            data = f.read()
+        try:
+            j = json.loads(data)
+            ret = [
+                s.encode('utf-8'),
+                '%s(%d)' % (
+                    j['data']['trainType'].encode('utf-8'),
+                    sum([int(re.sub(r'\D', '', x['peopleNum'])) for x in j['data']['cdInfoList']])
+                ),
+                re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']).encode('utf-8'),
+                re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']).encode('utf-8'),
+                re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T', j['data']['trainTeam']).encode('utf-8'),
+                seatcapsccrgt(
+                    [(x['seatType1'] if x['seatType1'] else '') +
+                     (x['seatType2'] if x['seatType2'] else '') +
+                     (x['dinnerCar'] if x['dinnerCar'] else '') for x in j['data']['cdInfoList']],
+                    [re.sub(r'\D', '', x['peopleNum']) for x in j['data']['cdInfoList']]
+                ).encode('utf-8'),
+            ]
+            return ret, 0
+        except:
+            pass
+            #print(s + "-")
+            # print(fn)
+    if cache >= 2:
+        print('%s no file' % (s))
+        return [s.encode('utf-8'), "", "", "", "", ""], -1
+    url = 'https://tripapi.ccrgt.com/crgt/trip-server-app/travel/getCDInfo'
+    j = {"params": {"date": date, "trainNumber": s}}
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
+        "Content-Type": "application/json"
+    }
+    try:
+        resp = requests.post(url, data=json.dumps(j),
+                             headers=header, timeout=20)
+    except:
+        print('net error %s' % (s))
+        return [s.encode('utf-8'), "", "", "", "", ""], -3
+    body = resp.content.decode('utf-8')
+    time.sleep(0.2)
+    #
+    try:
+        j = json.loads(body)
+    except:
+        print('json error %s' % (s))
+        return [s.encode('utf-8'), "", "", "", "", ""], -2
+    if 'data' in j and j['data']:
+        ret = [
+            s.encode('utf-8'),
+            '%s(%d)' % (
+                j['data']['trainType'].encode('utf-8'),
+                sum([int(re.sub(r'\D', '', x['peopleNum'])) for x in j['data']['cdInfoList']])
+            ),
+            re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']).encode('utf-8'),
+            re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']).encode('utf-8'),
+            re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T', j['data']['trainTeam']).encode('utf-8'),
+            seatcapsccrgt(
+                [(x['seatType1'] if x['seatType1'] else '') +
+                 (x['seatType2'] if x['seatType2'] else '') +
+                 (x['dinnerCar'] if x['dinnerCar'] else '') for x in j['data']['cdInfoList']],
+                [re.sub(r'\D', '', x['peopleNum']) for x in j['data']['cdInfoList']]
+            ).encode('utf-8'),
+        ]
+        # for r in ret:
+        # print(type(r))
+        print((','.join(ret)).decode('utf-8'))
+        with open(fn, 'wb') as f:
+            f.write(resp.content)
+        return ret, 0
+    # except:
+    else:
+        print('%s -' % (s))
+        return [s.encode('utf-8'), "", "", "", "", ""], -1
+    return j, 0
+
+
+def ccrgtcsv(date):
+    name = 'js/train.csv'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+
+    c = readcsv(fn)
+    idx = 0
+    map = {}
+    ret = []
+    for i in range(idx, len(c), 1):
+        if len(c[i]) <= 3 or c[i][3] in map:
+            continue
+        if c[i][3][0] in 'GDCS':
+            # print(c[i][3])
+            cache = 1
+            row = []
+            for retry in range(3):
+                row, status = getcdinfo(date, c[i][3], cache)
+                if status >= -1:
+                    break
+            ret.append([x for x in row])
+            #print(','.join(row))
+            idx = i + 1
+            map[c[i][3]] = 1
+    return ret
+
+
+#gtzwd
 def gtzwdjsp():
     url = 'http://www.gtbyxx.com/wxg/ky/zhengwan.jsp'
     header = {
@@ -2147,6 +2798,7 @@ for t in c:
 
 '''
 import json
+import os
 import re
 import time
 import requests
@@ -2186,6 +2838,42 @@ def getsearch(kw, cache=1):
         return [], 0
 
 
+def getsearch2(kw, cache=1):
+    fn = 'hyfw/hyfw_%s.json' % kw
+    if cache and os.path.exists(fn):
+        with open(fn, 'rb') as f:
+            data = f.read().decode('utf-8')
+        j = json.loads(data)
+        if 'data' in j and len(j['data']):
+            return j['data'], len(j['data'])
+    #
+    url = "http://hyfw.95306.cn/Hywsyyt/ajax/getSzjfZdZmHwkyLjm.json?q=" + kw
+    # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
+    try:
+        resp = requests.get(url, headers=header, timeout=20)
+    except:
+        print('Net Error ' + kw)
+        return [], -1
+    body = resp.content.decode('utf-8')
+    try:
+        j = json.loads(body)
+    except ValueError:
+        print('ValueError ' + kw)
+        return [], -1
+    if 'data' in j and len(j['data']):
+        with open(fn, 'wb') as f:
+            f.write(resp.content)
+        print('save  %-3s %2d' % (
+            kw, len(j['data'])
+        ))
+        return j['data'], len(j['data'])
+    else:
+        print('empty %-3s' % (kw))
+        return [], 0
+
+
 def dfsSearchAll(map, st):
     # dfs search_v1 in stack
     dead = []
@@ -2214,6 +2902,65 @@ def dfsSearchAll(map, st):
                 st.append(k)
     return dead
 
+
+def dfsSearchAll2(map, st):
+    # dfs hyfw in stack
+    dead = []
+    while(len(st)):
+        kw = st.pop()
+        max_depth = 3
+        res = []
+        for retry in range(3):
+            res, ret = getsearch2(kw, 1)
+            if ret >= 0:
+                break
+            time.sleep(1 << retry)
+        if ret == -1:
+            dead.append(kw)
+            continue
+        for i in range(len(res)):
+            map[hash_tele(res[i]['DBM'])] = res[i] #add_map(map, res[i])
+        if len(res) + 1 < 10:
+            continue
+        if len(kw) >= max_depth:
+            print("max_depth " + kw)
+            continue
+        for i in range(ord('Z'), ord('@'), -1):
+            k = kw + chr(i)
+            if chr(i) not in 'IOUV':
+                st.append(k)
+    return dead
+
+
+def dfsSearchAll123(map, st):
+    # dfs hyfw in stack
+    dead = []
+    while(len(st)):
+        kw = st.pop()
+        max_depth = 4
+        res = []
+        for retry in range(3):
+            res, ret = getsearch2(kw, 1)
+            if ret >= 0:
+                break
+            time.sleep(1 << retry)
+        if ret == -1:
+            dead.append(kw)
+            continue
+        for i in range(len(res)):
+            map[hash_tele(res[i]['DBM'])] = res[i] #add_map(map, res[i])
+        if len(res) + 1 < 10:
+            continue
+        if len(kw) >= max_depth:
+            print("max_depth " + kw)
+            continue
+        for i in range(ord('9'), ord('0')-1, -1):
+            k = kw + chr(i)
+            if chr(i) not in 'IOUV':
+                st.append(k)
+    return dead
+
+
 kw = ''
 st = []
 for i in range(ord('Z'), ord('@'), -1):
@@ -2224,6 +2971,20 @@ for i in range(ord('Z'), ord('@'), -1):
 map = [None for i in range(26*26*26)]
 
 dfsSearchAll(map, st)
+
+dfsSearchAll2(map, st)
+
+map = [None for i in range(26*26*26)]
+kw = ''
+st = []
+for i in range(ord('9'), ord('0'), -1):
+            k = kw + chr(i)
+            if chr(i) not in 'IOUV':
+                st.append(k)
+
+dfsSearchAll123(map, st)
+
+writebyte('dbm_map_json.txt', b=json.dumps(map))
 
 ret = []
 for v in map:
@@ -2238,7 +2999,25 @@ for v in map:
         v["ZMHZ"].encode('utf-8')
     ])
 
-writecsv("DBM.csv", ret)
+
+{"HZZM":"艾不盖","LJDM":"C00","TMISM":"15281","LJQC":"呼和局","DBM":"ABC","LJM":"00004","PYM":"ABG"}
+ret = []
+for v in map:
+    if v == None:
+        continue
+    ret.append([
+        v["LJM"].encode('utf-8'),
+        v["LJDM"].encode('utf-8'),
+        v["LJQC"].encode('utf-8'),
+        v["DBM"].encode('utf-8'),
+        v["PYM"].encode('utf-8'),
+        v["TMISM"].encode('utf-8'),
+        # x v["SSJC"].encode('utf-8'),
+        v["HZZM"].encode('utf-8')
+    ])
+
+
+writecsv("DBM2.csv", ret)
 '''
 
 '''
