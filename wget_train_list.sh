@@ -17,7 +17,7 @@ fi
 /usr/bin/wget -N -nv -S --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -P ${path}js/
 #/usr/bin/wget -N -nv -S --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -P ${path}js/ && ${path}js/view_train_list.py ${path}js/train_list.js
 
-#always teain_list_yymmdd.js
+#always train_list_yymmdd.js
 #date=`date -d today +"%y%m%d"`
 #echo ${date}
 #/usr/bin/wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_list.js -O ${path}js/train_list_${date}.js && ${path}js/view_train_list.py ${path}js/train_list_${date}.js
