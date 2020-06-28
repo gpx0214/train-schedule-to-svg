@@ -1870,7 +1870,7 @@ def getequip(no, date):
             j['data'][0]['date'], 
             str(j['data'][0]['eId']), 
         ]
-        print(' '.join(ret))
+        #print(' '.join(ret))
         return ret
     else:
         print('equip %s no data' % (no))
@@ -1998,7 +1998,7 @@ def getcdinfo(date, s, cache=2):
         ]
         # for r in ret:
         # print(type(r))
-        print((','.join(ret)).decode('utf-8'))
+        #print((','.join(ret)).decode('utf-8'))
         with open(fn, 'wb') as f:
             f.write(resp.content)
         return ret, 0
