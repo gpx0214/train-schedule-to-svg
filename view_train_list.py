@@ -69,7 +69,6 @@ def writebyte(f1, b):
         f.write(b)
 
 
-
 def isLeap(y):
     if y & 0x03:
         return 0
@@ -187,6 +186,7 @@ def weekday(date):
     c = y // 100
     y = y % 100
     w = y+y//4+c//4-2*c+(13*(m+1))//5+d-1
+    # return 365*(y-1)+y//4 +36524*c+c//4 +153*(m + 1)//5-63 + d
     return w % 7
 
 
@@ -230,15 +230,15 @@ def has_a_day(s):
     return date
 
 
-def is_a_day(s,date):
+def is_a_day(s, date):
     #print('is_a_day() %s %s'%(s,date))
     s = re.sub("^(.*)&", "", s)
     if s == "":
         return 1
     if s[0] == u'停':
-        return 1-is_a_day(re.sub(u'停', '', s),date)
+        return 1-is_a_day(re.sub(u'停', '', s), date)
     if s[0] == '!':
-        return 1-is_a_day(re.sub(u'!', '', s),date)
+        return 1-is_a_day(re.sub(u'!', '', s), date)
     if s[0] == u'b':
         return 1
     if s[0] == u'单':
@@ -250,12 +250,12 @@ def is_a_day(s,date):
         w = weekday(re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", date))
         if w < 0:
             w += 7
-        return 0
+        return 1
     #
     if len(s) < 4:
-        return 0
+        return 1
     #
-    #TODO
+    # TODO
     yyyymmdd = '20000000'
     sp = s.split("|")
     for i in range(len(sp)):
@@ -1419,7 +1419,7 @@ def print_block(stat):
     return s, cnt
 
 
-#czxx
+# czxx
 def getczxx(t1, date, cache=1):
     data = []
     samestations = []
@@ -1517,7 +1517,7 @@ for i in range(len(station)):
         checkczxx(station[i][2], date)
 '''
 
-#leftTicket
+# leftTicket
 LeftTicketUrl = "leftTicket/query"
 
 
@@ -1593,7 +1593,7 @@ for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2
 '''
 
 
-#wifi.12306.cn
+# wifi.12306.cn
 def getstation(tele, date):
     name = 'station/station_%s_%s.json' % (tele, date)
     try:
@@ -1607,10 +1607,8 @@ def getstation(tele, date):
     url = "https://wifi.12306.cn/wifiapps/ticket/api/stoptime/queryByStationCodeAndDate?stationCode=%s&trainDate=%s" % (
         tele, date
     )
-    #print(url)
     header = {
         "User-Agent": "MicroMessenger",
-        #"wx":wx,
     }
     try:
         resp = requests.get(url, headers=header, timeout=30)
@@ -1618,7 +1616,7 @@ def getstation(tele, date):
         print('Net Error %s %s' % (tele, date))
         return [], -1
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
-    #print(body)
+    # print(body)
     try:
         j = json.loads(body)
     except ValueError:
@@ -1633,7 +1631,7 @@ def getstation(tele, date):
 
 
 def getdetail(tele, no, date):
-    name = 'detail/detail_' + no  + '.json'
+    name = 'detail/detail_' + no + '.json'
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -1644,25 +1642,24 @@ def getdetail(tele, no, date):
     url = "https://wifi.12306.cn/wifiapps/appFrontEnd/v2/kpBigScreen/getBigScreenTrainDetail?stationCode=%s&stationTrainCode=%s&trainDate=%s&fullTrainCode=%s" % (
         tele, code, date, no
     )
-    #print(url)
+    # print(url)
     header = {
         "User-Agent": "MicroMessenger",
-        #"wx":wx,
     }
     try:
         resp = requests.get(url, headers=header, timeout=30)
     except:
         print('Net Error %s %s %s' % (tele, date, no))
-        return date,date, -1
+        return date, date, -1
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
-    #print(body)
+    # print(body)
     try:
         j = json.loads(body)
     except ValueError:
         print('ValueError %s %s' % (date, no))
-        return date,date, -1
+        return date, date, -1
     if 'data' in j:
-        with open('detail/detail_' + no  + '.json', 'wb') as f:
+        with open('detail/detail_' + no + '.json', 'wb') as f:
             f.write(resp.content)
         #print('%s %s %s %d' % (no, len(j['data']['stopTime'])))
         if 'stopTime' in j['data'] and len(j['data']['stopTime']) > 0:
@@ -1682,15 +1679,15 @@ def getdetail(tele, no, date):
         return j['data']['stopTime'][0]['startDate'], j['data']['stopTime'][0]['stopDate'], len(j['data']['stopTime'])
     else:
         if 'error' in j:
-            print('trydetail(\'%s\',\'%s\',\'%s\') data error %s' % (tele,no, date, j['error']))
+            print('trydetail(\'%s\',\'%s\',\'%s\') data error %s' % (tele, no, date, j['error']))
             if j['error'] == u'发到站信息不完整':
-                return date,date, -1
-            return date,date, -2
-        print('trydetail(\'%s\',\'%s\',\'%s\') no data' % (tele,no, date))
-        return date,date, -3
+                return date, date, -1
+            return date, date, -2
+        print('trydetail(\'%s\',\'%s\',\'%s\') no data' % (tele, no, date))
+        return date, date, -3
 
 
-def trydetail(s,no,date, add = -1):
+def trydetail(s, no, date, add=-1):
     ans = 0
     #s = 'BJP'
     #no = '24000014611P'
@@ -1699,7 +1696,7 @@ def trydetail(s,no,date, add = -1):
     dmax = date
     ret = 0
     correct = 1
-    while correct > 0: #ret >= 0:
+    while correct > 0:  # ret >= 0:
         dmin, dmax, ret = getdetail(s, no, date)
         if ret <= -2:
             return dmin, dmax, ret
@@ -1723,13 +1720,13 @@ def trydetail(s,no,date, add = -1):
     return dmin, dmax, ans
 
 
-def tryzero(s, no, date, l = 6):
+def tryzero(s, no, date, l=6):
     dmin = date
     dmax = date
     ret = 1
     while ret > 0:
         for c in '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'[:l]:
-            dmin, dmax, ret = trydetail(s,(no[:-1] + '%s')%(c),date)
+            dmin, dmax, ret = trydetail(s, (no[:-1] + '%s') % (c), date)
             if ret > 0:
                 #print(dmin, dmax, ret)
                 break
@@ -1772,23 +1769,21 @@ def getcompilelist(no):
     url = "https://wifi.12306.cn/wifiapps/ticket/api/trainDetailInfo/queryTrainCompileListByTrainNo?trainNo=%s" % (
         no
     )
-    #print(url)
     header = {
         "User-Agent": "MicroMessenger",
-        #"wx":wx
     }
     try:
         resp = requests.get(url, headers=header, timeout=30)
     except:
         print('Net Error %s' % (no))
-        return [] #,-1
+        return []  # ,-1
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
-    #print(body)
+    # print(body)
     try:
         j = json.loads(body)
     except ValueError:
         print('ValueError %s' % (no))
-        return [] #,-1
+        return []  # ,-1
     if 'data' in j:
         with open(fn, 'wb') as f:
             f.write(resp.content)
@@ -1825,56 +1820,75 @@ def getequip(no, date):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
+    ret = [
+        no,
+        u'',
+        u'',
+        u'',
+        u'',
+        u'',
+        u'',
+        u'',
+        u'',
+    ]
+    if os.path.exists(fn):
+        with open(fn, 'rb') as f:
+            data = f.read()
+        try:
+            j = json.loads(data)
+            if 'data' in j:
+                ret = [
+                    no,
+                    j['data'][0]['trainsetType'],
+                    j['data'][0]['trainsetName'],
+                    j['data'][0]['bureaName'],
+                    j['data'][0]['deploydepotName'],
+                    j['data'][0]['depotName'],
+                    j['data'][0]['trainsetStatus'],
+                    j['data'][0]['date'],
+                    str(j['data'][0]['eId']),
+                ]
+                #print(' '.join(ret))
+                return ret, 0
+        except:
+            pass
     url = "https://wifi.12306.cn/wifiapps/ticket/api/trainDetailInfo/queryTrainEquipmentByTrainNo?trainNo=%s" % (
         no
     )
-    #print(url)
-    ret = [
-        no, 
-        u'', 
-        u'', 
-        u'', 
-        u'', 
-        u'', 
-        u'', 
-        u'', 
-        u'', 
-    ]
     header = {
         "User-Agent": "MicroMessenger",
-        #"wx":wx
     }
     try:
         resp = requests.get(url, headers=header, timeout=30)
     except:
         print('Net Error %s' % (no))
-        return ret #,-1
+        return ret, -1
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
-    #print(body)
+    # print(body)
     try:
         j = json.loads(body)
     except ValueError:
         print('ValueError %s' % (no))
-        return ret #,-1
+        return ret, -1
     if 'data' in j:
         with open(fn, 'wb') as f:
             f.write(resp.content)
         ret = [
             no,
-            j['data'][0]['trainsetType'], 
-            j['data'][0]['trainsetName'], 
+            j['data'][0]['trainsetType'],
+            j['data'][0]['trainsetName'],
             j['data'][0]['bureaName'],
-            j['data'][0]['deploydepotName'], 
-            j['data'][0]['depotName'], 
-            j['data'][0]['trainsetStatus'], 
-            j['data'][0]['date'], 
-            str(j['data'][0]['eId']), 
+            j['data'][0]['deploydepotName'],
+            j['data'][0]['depotName'],
+            j['data'][0]['trainsetStatus'],
+            j['data'][0]['date'],
+            str(j['data'][0]['eId']),
         ]
         #print(' '.join(ret))
-        return ret
+        return ret, 0
     else:
         print('equip %s no data' % (no))
-        return ret
+        return ret, 0
 
 #getequip('6c00000G6605', date)
 
@@ -1888,23 +1902,22 @@ def getpreseq(code, date):
     url = "https://wifi.12306.cn/wifiapps/ticket/api/trainDetailInfo/queryPreseqTrainsByTrainCode?trainCode=%s" % (
         code
     )
-    #print(url)
+    # print(url)
     header = {
         "User-Agent": "MicroMessenger",
-        #"wx":wx
     }
     try:
         resp = requests.get(url, headers=header, timeout=30)
     except:
         print('Net Error %s' % (code))
-        return date,date, -1
+        return date, date, -1
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
-    #print(body)
+    # print(body)
     try:
         j = json.loads(body)
     except ValueError:
         print('ValueError %s' % (code))
-        return date,date, -1
+        return date, date, -1
     if 'data' in j:
         with open('preseq/preseq_' + date + '_' + code + '.json', 'wb') as f:
             f.write(resp.content)
@@ -1914,7 +1927,7 @@ def getpreseq(code, date):
     else:
         if 'error' in j:
             print('preseq %s data error %s' % (code, j['error']))
-            return date,date, -2
+            return date, date, -2
         print('preseq %s no data' % (code))
         return ''
 
@@ -1939,16 +1952,21 @@ def getcdinfo(date, s, cache=2):
                 s.encode('utf-8'),
                 '%s(%d)' % (
                     j['data']['trainType'].encode('utf-8'),
-                    sum([int(re.sub(r'\D', '', x['peopleNum'])) for x in j['data']['cdInfoList']])
+                    sum([int(re.sub(r'\D', '', x['peopleNum']))
+                         for x in j['data']['cdInfoList']])
                 ),
-                re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']).encode('utf-8'),
-                re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']).encode('utf-8'),
-                re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T', j['data']['trainTeam']).encode('utf-8'),
+                re.sub(u'中国铁路(.*)局动车段', r'\1',
+                       j['data']['fixDepart']).encode('utf-8'),
+                re.sub(u'中国铁路(.*)局客运段', r'\1',
+                       j['data']['serverDepart']).encode('utf-8'),
+                re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T',
+                       j['data']['trainTeam']).encode('utf-8'),
                 seatcapsccrgt(
                     [(x['seatType1'] if x['seatType1'] else '') +
                      (x['seatType2'] if x['seatType2'] else '') +
                      (x['dinnerCar'] if x['dinnerCar'] else '') for x in j['data']['cdInfoList']],
-                    [re.sub(r'\D', '', x['peopleNum']) for x in j['data']['cdInfoList']]
+                    [re.sub(r'\D', '', x['peopleNum'])
+                     for x in j['data']['cdInfoList']]
                 ).encode('utf-8'),
             ]
             return ret, 0
@@ -1984,21 +2002,26 @@ def getcdinfo(date, s, cache=2):
             s.encode('utf-8'),
             '%s(%d)' % (
                 j['data']['trainType'].encode('utf-8'),
-                sum([int(re.sub(r'\D', '', x['peopleNum'])) for x in j['data']['cdInfoList']])
+                sum([int(re.sub(r'\D', '', x['peopleNum']))
+                     for x in j['data']['cdInfoList']])
             ),
-            re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']).encode('utf-8'),
-            re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']).encode('utf-8'),
-            re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T', j['data']['trainTeam']).encode('utf-8'),
+            re.sub(u'中国铁路(.*)局动车段', r'\1',
+                   j['data']['fixDepart']).encode('utf-8'),
+            re.sub(u'中国铁路(.*)局客运段', r'\1',
+                   j['data']['serverDepart']).encode('utf-8'),
+            re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T',
+                   j['data']['trainTeam']).encode('utf-8'),
             seatcapsccrgt(
                 [(x['seatType1'] if x['seatType1'] else '') +
                  (x['seatType2'] if x['seatType2'] else '') +
                  (x['dinnerCar'] if x['dinnerCar'] else '') for x in j['data']['cdInfoList']],
-                [re.sub(r'\D', '', x['peopleNum']) for x in j['data']['cdInfoList']]
+                [re.sub(r'\D', '', x['peopleNum'])
+                 for x in j['data']['cdInfoList']]
             ).encode('utf-8'),
         ]
         # for r in ret:
         # print(type(r))
-        #print((','.join(ret)).decode('utf-8'))
+        # print((','.join(ret)).decode('utf-8'))
         with open(fn, 'wb') as f:
             f.write(resp.content)
         return ret, 0
@@ -2015,13 +2038,19 @@ def ccrgtcsv(date):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-
+    yyyymmdd = re.sub(
+        r'(\d\d)(\d\d)-(\d+)-(\d+)',
+        r"\1\2\3\4",
+        nowdate()
+    )
     c = readcsv(fn)
     idx = 0
     map = {}
     ret = []
     for i in range(idx, len(c), 1):
         if len(c[i]) <= 3 or c[i][3] in map:
+            continue
+        if not is_a_day(c[i][7], yyyymmdd):
             continue
         if c[i][3][0] in 'GDCS':
             # print(c[i][3])
@@ -2032,13 +2061,13 @@ def ccrgtcsv(date):
                 if status >= -1:
                     break
             ret.append([x for x in row])
-            #print(','.join(row))
+            # print(','.join(row))
             idx = i + 1
             map[c[i][3]] = 1
     return ret
 
 
-#gtzwd
+# gtzwd
 def gtzwdjsp():
     url = 'http://www.gtbyxx.com/wxg/ky/zhengwan.jsp'
     header = {
@@ -2450,7 +2479,7 @@ if __name__ == '__main__':
     train_map = [[] for i in range(maxlen)]
     #
     now = nowdate()
-    base_date = '2020-04-10'
+    base_date = '2020-07-01'
     #end_date = ''
     #
     #base_date, mask, msg = add_train_list(train_map, fn0, '2019-12-30')
@@ -2797,6 +2826,7 @@ for t in c:
 '''
 
 '''
+from view_train_list import *
 import json
 import os
 import re
@@ -2877,6 +2907,45 @@ def getsearch2(kw, cache=1):
         return [], 0
 
 
+def getAllFz(kw, cache=1):
+    fn = 'hyfw/getAllFz_%s.json' % kw
+    if cache and os.path.exists(fn):
+        with open(fn, 'rb') as f:
+            data = f.read().decode('utf-8')
+        try:
+            j = json.loads(data)
+            if len(j):
+                return j, len(j)
+        except:
+            pass
+    #
+    url = "http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/AjaxAction_getAllFz?q=" + kw
+    # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"}
+    try:
+        resp = requests.get(url, headers=header, timeout=20)
+    except:
+        print('Net Error ' + kw)
+        return [], -1
+    body = resp.content.decode('utf-8')
+    try:
+        j = json.loads(body)
+    except ValueError:
+        print('ValueError ' + kw)
+        return [], -1
+    if len(j):
+        with open(fn, 'wb') as f:
+            f.write(resp.content)
+        print('save  %-3s %2d' % (
+            kw, len(j)
+        ))
+        return j, len(j)
+    else:
+        print('empty %-3s' % (kw))
+        return [], 0
+
+
 def dfsSearchAll(map, st):
     # dfs search_v1 in stack
     dead = []
@@ -2952,7 +3021,36 @@ def dfsSearchAll123(map, st):
             continue
         for i in range(len(res)):
             map[hash_tele(res[i]['DBM'])] = res[i] #add_map(map, res[i])
-        if len(res) + 1 < 10:
+        if len(res) < 10:
+            continue
+        if len(kw) >= max_depth:
+            print("max_depth " + kw)
+            continue
+        for i in range(ord('9'), ord('0')-1, -1):
+            k = kw + chr(i)
+            if chr(i) not in 'IOUV':
+                st.append(k)
+    return dead
+
+
+def dfsSearchAllFz(map, st):
+    # dfs hyfw in stack
+    dead = []
+    while(len(st)):
+        kw = st.pop()
+        max_depth = 4
+        res = []
+        for retry in range(3):
+            res, ret = getAllFz(kw, 1)
+            if ret >= 0:
+                break
+            time.sleep(1 << retry)
+        if ret == -1:
+            dead.append(kw)
+            continue
+        for i in range(len(res)):
+            map[hash_tele(res[i]['DBM'])] = res[i] #add_map(map, res[i])
+        if len(res) < 50:
             continue
         if len(kw) >= max_depth:
             print("max_depth " + kw)
@@ -2985,9 +3083,10 @@ for i in range(ord('9'), ord('0'), -1):
             if chr(i) not in 'IOUV':
                 st.append(k)
 
-dfsSearchAll123(map, st)
+dfsSearchAllFz(map, st)
+#dfsSearchAll123(map, st)
 
-writebyte('dbm_map_json.txt', b=json.dumps(map))
+writebyte('dbm3_map_json.txt', b=json.dumps(map))
 
 ret = []
 for v in map:
@@ -3003,7 +3102,6 @@ for v in map:
     ])
 
 
-{"HZZM":"艾不盖","LJDM":"C00","TMISM":"15281","LJQC":"呼和局","DBM":"ABC","LJM":"00004","PYM":"ABG"}
 ret = []
 for v in map:
     if v == None:
@@ -3020,7 +3118,27 @@ for v in map:
     ])
 
 
-writecsv("DBM2.csv", ret)
+#{"HZZM":"北京西","SBDM":"11","LJDM":"P00","TMISM":"21152","LJQC":"北京局","DBM":"BXP","LJJC":"京","PYM":"BJX","SSSX":"京"}
+ret = []
+for v in map:
+    if v == None:
+        continue
+    ret.append([
+        # x v["LJM"].encode('utf-8'),
+        v["LJDM"][0].encode('utf-8'),
+        #v["LJQC"].encode('utf-8'),
+        #v["LJJC"].encode('utf-8'),
+        v["DBM"].encode('utf-8'),
+        v["PYM"].encode('utf-8'),
+        v["TMISM"].encode('utf-8'),
+        # x v["SSJC"].encode('utf-8'),
+        # v["SBDM"].encode('utf-8'),
+        v["SSSX"].encode('utf-8'),
+        v["HZZM"].encode('utf-8')
+    ])
+
+
+writecsv("DBM3.csv", ret)
 '''
 
 '''
