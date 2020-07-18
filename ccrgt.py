@@ -4,10 +4,16 @@
 from view_train_list import *
 import re
 import os
+import sys
 
 
-date = nowdate()
-ret = ccrgtcsv(date)
+try:
+    date = sys.argv[1]
+except:
+    date = nowdate()
+
+name = 'js/train.csv'
+ret = ccrgtcsv(name, date)
 
 yyyymmdd = re.sub(
     r'(\d\d)(\d\d)-(\d+)-(\d+)',
