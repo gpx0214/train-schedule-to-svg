@@ -1601,9 +1601,12 @@ def getstation(tele, date):
     except:
         fn = name
     if os.path.exists(fn):
-        j = json.loads(readbyte(fn))
-        print('read wifi_station %s %s %d' % (tele, date, len(j['data'])))
-        return j['data'], 0
+        try:
+            j = json.loads(readbyte(fn))
+            print('read wifi_station %s %s %d' % (tele, date, len(j['data'])))
+            return j['data'], 0
+        except:
+            print('read wifi_station %s %s error' % (tele, date))
     url = "https://wifi.12306.cn/wifiapps/ticket/api/stoptime/queryByStationCodeAndDate?stationCode=%s&trainDate=%s" % (
         tele, date
     )
@@ -1619,7 +1622,7 @@ def getstation(tele, date):
     # print(body)
     try:
         j = json.loads(body)
-    except ValueError:
+    except:
         print('ValueError %s %s' % (tele, date))
         return [], -1
     if 'data' in j:
@@ -1652,6 +1655,7 @@ def getdetail(tele, no, date):
         print('Net Error %s %s %s' % (tele, date, no))
         return date, date, -1
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    time.sleep(0.05)
     # print(body)
     try:
         j = json.loads(body)
@@ -1681,6 +1685,8 @@ def getdetail(tele, no, date):
         if 'error' in j:
             print('trydetail(\'%s\',\'%s\',\'%s\') data error %s' % (tele, no, date, j['error']))
             if j['error'] == u'发到站信息不完整':
+                return date, date, -1
+            if j['error'] == u'查询异常,请重试':
                 return date, date, -1
             return date, date, -2
         print('trydetail(\'%s\',\'%s\',\'%s\') no data' % (tele, no, date))
@@ -1762,7 +1768,7 @@ def getcompilelist(no):
                     [re.sub(r'\s', '', x['coachType']) for x in j['data']],
                     [str(x['limit1'] + x['limit2']) for x in j['data']]
                 ))
-                print(' '.join(ret))
+                #print(' '.join(ret))
                 return j['data']
         except:
             print('json error %s' % (no))
@@ -1806,6 +1812,13 @@ import time
 c = readcsv('detail.csv')
 for i in range(0, len(c), 1):
     if len(c[i]) < 7:
+        continue
+    name = 'list/list_' + c[i][0] + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if os.path.exists(fn):
         continue
     ret = getcompilelist(c[i][0])
     time.sleep(0.1)
@@ -1865,6 +1878,7 @@ def getequip(no, date):
         return ret, -1
     body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
     # print(body)
+    time.sleep(0.1)
     try:
         j = json.loads(body)
     except ValueError:
@@ -2032,8 +2046,8 @@ def getcdinfo(date, s, cache=2):
     return j, 0
 
 
-def ccrgtcsv(date):
-    name = 'js/train.csv'
+def ccrgtcsv(name, date):
+    #name = 'js/train.csv'
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -2041,7 +2055,7 @@ def ccrgtcsv(date):
     yyyymmdd = re.sub(
         r'(\d\d)(\d\d)-(\d+)-(\d+)',
         r"\1\2\3\4",
-        nowdate()
+        date
     )
     c = readcsv(fn)
     idx = 0
@@ -2414,7 +2428,7 @@ def compress_bin_vector(date_bin, base_date, size):
         return "双&" + slice_to_str(ret_mask_one_slice, base_date), step + 7
     if c == 0b10 and step == 2:
         return "单&" + slice_to_str(ret_mask_one_slice, base_date), step + 7
-    if step >= 2 and bin_count1n(date_bin, step) >= 3:
+    if step >= 2 and bin_count1n(date_bin, step) >= 3 and len(ret_mask_one_slice) <= 3:
         if step == 7:
             return 'w%s&' % (cycle7(c, weekday(base_date))) + slice_to_str(ret_mask_one_slice, base_date), step + 7
         return ('b{:0>%db}&' % (step)).format(c) + slice_to_str(ret_mask_one_slice, base_date), step + 7
@@ -2493,7 +2507,8 @@ if __name__ == '__main__':
     for i in range(-datediff(now, base_date), 32):
         date = date_add(now, i)
         freq = re.split(
-            r'[\s\n,*]+', u'''北京 天津 沈阳 长春 哈尔滨 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都 昆明''')
+            r'[\s\n,*]+', u'''北京 天津 沈阳 长春 哈尔滨 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都
+            深圳 昆明 济南 呼和浩特 西宁 乌鲁木齐 大连''')
         samecity_arr = []
         samecity_map = {}
         for name in citys:
@@ -3147,7 +3162,7 @@ from view_train_list import *
 import math
 
 now = nowdate()
-base_date = '2020-04-10'
+base_date = '2020-07-01'
 station = getStation()
 
 samecity_arr = []
@@ -3199,4 +3214,7 @@ for name in citys:
             print(mt, date, t1)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 
+for t1 in ['BJP']:
+    for i in range(1,30):
+        c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 '''
