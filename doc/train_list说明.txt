@@ -71,6 +71,24 @@ http://dynamic.12306.cn/yjcx/doPickJZM?param=AA&type=1&czlx=0
 http://dynamic.12306.cn/yjcx/doPickJZM?param=AA&type=2&czlx=0
 POST
 
+http://hyfw.95306.cn/gateway/DzswD2D/DzswWsyyt/action/KsblCcAction_initTkTimeQuery
+http://hyfw.95306.cn/gateway/DzswD2D/DzswWsyyt/action/KsblCcAction_queryTkInfo?zczhzzm=&xczhzzm=&checi=&_search=true&nd=1593269516921&page.pageSize=100&page.curPageNo=1&page.orderBy=&page.order=asc
+http://hyfw.95306.cn/gateway/DzswD2D/DzswWsyyt/action/KsblCcAction_queryKsInfo?zczhzzm=&xczhzzm=&checi=&_search=true&nd=1593269394432&page.pageSize=100&page.curPageNo=1&page.orderBy=&page.order=asc
+http://hyfw.95306.cn/gateway/DzswD2D/DzswWsyyt/action/KsblCcAction_showTimeSkb?carci=X111
+http://hyfw.95306.cn/gateway/DzswD2D/DzswWsyyt/action/KsblCcAction_showTimeSkb?carci=X202/3
+http://hyfw.95306.cn/Hywsyyt/ajax/getSzjfZdZmHwkyLjm.json?q=10001
+http://hyfw.95306.cn/Hywsyyt/ajax/getSzjfZdZmHwkyLjm.json?q=BJ
+http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/AjaxAction_getAllFz?q=100
+http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/AjaxAction_getAllDz?q=100
+http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/AjaxAction_queryZyxByTmism?TMISM=21152
+http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/AjaxAction_getAllFzGtxb?q=
+http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/AjaxAction_getAllFzPtxb?q=21
+http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/AjaxAction_getSzjfZdZmHwky?q=
+http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/AjaxAction_getSzjfZdzmHyz?q=22
+http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/WyfhAction_getGjzAndGkList?q=
+
+
+http://hyfw.95306.cn/hyinfo/action/FwcszsAction_hyblzxx?LJDM=00&lxs=0&dz2=&hzzm=&sheng=&PageUpperBound=10000&PageLowerBound=0&Pagenum=1
 http://hyfw.12306.cn/hyinfo/action/FwcszsAction_index?type=1
 http://hyfw.12306.cn/hyinfo/action/FwcszsAction_getljcz
 q=&limit=50&timestamp=1545757098789&sheng=%E6%B4%A5&shi=&ljdm=
