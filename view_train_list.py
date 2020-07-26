@@ -2512,20 +2512,28 @@ if __name__ == '__main__':
         samecity_arr = []
         samecity_map = {}
         for name in citys:
-            cache = 1
-            if i == 0:
-                cache = 0
-            if i > 29:
-                cache = 0
-            if i < 0:  # min -8
-                cache = 2
-            if (i >= -1) and (name in freq):
-                cache = 0
             t1 = telecode(name, station)
             if len(t1) == 0:
                 continue
             if name in samecity_map:
                 continue
+            fn = 'ticket/%s_%s.json'%(date, t1)
+            mdate = '1970-01-01'
+            if os.path.exists(fn):
+                mdate = time.strftime("%Y-%m-%d", time.localtime(os.path.getmtime(fn)))
+            cache = 1
+            if i == 0:
+                cache = 0
+            if datediff(date, mdate) > 29:
+                cache = 0
+            if i < 0:  # min -8
+                cache = 2
+            if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
+                cache = 0
+            if (0 <= i) and (name in freq): #and datediff(now, mdate) >= 3
+                cache = 0
+            if (0 <= i) and datediff(now, mdate) >= 22: #20
+                cache = 0
             for retry in range(5):
                 c, samecity, ret = getczxx(t1, date, cache)
                 if ret > -1:
@@ -3190,7 +3198,7 @@ for name in citys:
     ex2 = sum([x*x for x in rets]) #/n
     sd = round(math.sqrt((ex2*n - ex * ex)) /n)
     level = round(ex/n) - 2*sd # sorted(rets)[len(rets)//2]*8//10
-    for i in range(-8, 7): #-8...32
+    for i in range(1, 30): #-8...32
         if rets[i] < level:
             print(t1, date_add(now, i), rets[i], level)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
@@ -3210,7 +3218,7 @@ for name in citys:
         if not os.path.exists(fn):
             continue
         mt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(fn)))
-        if '2020-05' in mt:
+        if '2020-06-2' in mt:
             print(mt, date, t1)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 
