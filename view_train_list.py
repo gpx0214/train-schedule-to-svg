@@ -2530,9 +2530,11 @@ if __name__ == '__main__':
                 cache = 2
             if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
                 cache = 0
-            if (0 <= i) and (name in freq): #and datediff(now, mdate) >= 3
+            if (0 <= i and i < 7) and (name in freq):
                 cache = 0
-            if (0 <= i) and datediff(now, mdate) >= 22: #20
+            if (7 <= i) and (name in freq) and datediff(now, mdate) >= 3:
+                cache = 0
+            if (0 <= i) and datediff(now, mdate) >= 20: #20
                 cache = 0
             for retry in range(5):
                 c, samecity, ret = getczxx(t1, date, cache)
@@ -3222,7 +3224,7 @@ for name in citys:
             print(mt, date, t1)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 
-for t1 in ['BJP']:
-    for i in range(1,30):
+for t1 in ['ZHQ']:
+    for i in range(0,30):
         c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 '''
