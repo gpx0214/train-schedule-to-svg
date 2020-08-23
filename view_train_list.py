@@ -2504,6 +2504,37 @@ if __name__ == '__main__':
     # 京哈线及东北地区 京沪线及华东地区 京九线 京广线及中南地区 陇海线及西南、西北地区 宝成线及西南地区 侯月、京原、京包、南北同蒲
 
     citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
+    '''
+    samecity_arr = []
+    samecity_map = {}
+    import math
+    #get data less than ex-sd //ex-2sd
+    for name in citys:
+        t1 = telecode(name, station)
+        if len(t1) == 0:
+            continue
+        if name in samecity_map:
+            continue
+        rets = []
+        for i in range(-7, 28): #-8...32
+            date = date_add(now, i)
+            c, samecity, ret = getczxx(t1, date, cache = 2)
+            rets.append(ret)
+            if len(samecity) > 1:
+                samecity_arr.append(samecity)
+                for ii in samecity:
+                    samecity_map[ii] = name
+        n = len(rets)
+        ex = sum(rets) #/n
+        ex2 = sum([x*x for x in rets]) #/n
+        sd = round(math.sqrt((ex2*n - ex * ex)) /n)
+        level = round(ex/n) - 1*sd # sorted(rets)[len(rets)//2]*8//10
+        for i in range(len(rets)):
+            if rets[i] < level:
+                print(t1, date_add(now, i-7), rets[i], level)
+                c, samecity, ret = getczxx(t1, date_add(now, i-7), cache = 0)
+    '''
+    #
     for i in range(-datediff(now, base_date), 32):
         date = date_add(now, i)
         freq = re.split(
@@ -2528,14 +2559,16 @@ if __name__ == '__main__':
                 cache = 0
             if i < 0:  # min -8
                 cache = 2
+            if name in freq:
+                if (0 <= i and i < 7):
+                    cache = 0
+                if (7 <= i) and datediff(now, mdate) >= 3:
+                    cache = 0
             if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
-                cache = 0
-            if (0 <= i and i < 7) and (name in freq):
-                cache = 0
-            if (7 <= i) and (name in freq) and datediff(now, mdate) >= 3:
                 cache = 0
             if (0 <= i) and datediff(now, mdate) >= 20: #20
                 cache = 0
+            cache = 2
             for retry in range(5):
                 c, samecity, ret = getczxx(t1, date, cache)
                 if ret > -1:
@@ -2590,19 +2623,21 @@ if __name__ == '__main__':
     train_arr = mapToArr(train_map)
     #
     ret = checkSchdatebintocsv(train_arr, base_date, size, station)
-    num = writecsv("delay/time.csv", ret)
+    num = writecsv("js/time.csv", ret)
     print(num)
     #
     buf = trainlistStr(train_arr, base_date, size, station)
     writebyte('js/train.csv', buf)
     #
     #
+    '''
     for i in range(size):
         mask = 1 << i
         date = date_add(base_date, i)
         ret = checkSchdatemasktocsv(train_arr, base_date, size, mask, station)
         num = writecsv("delay/sort"+date+".csv", ret)
         print('%s %6d' % (date, num))
+    '''
 
 r'''
 from view_train_list import *
@@ -3187,7 +3222,7 @@ for name in citys:
     if name in samecity_map:
         continue
     rets = []
-    for i in range(0, 31): #32
+    for i in range(-7, 28): #32
         date = date_add(now, i)
         c, samecity, ret = getczxx(t1, date, cache = 2)
         rets.append(ret)
@@ -3200,10 +3235,11 @@ for name in citys:
     ex2 = sum([x*x for x in rets]) #/n
     sd = round(math.sqrt((ex2*n - ex * ex)) /n)
     level = round(ex/n) - 2*sd # sorted(rets)[len(rets)//2]*8//10
-    for i in range(1, 30): #-8...32
+    #print(t1, level)
+    for i in range(len(rets)): #-8...32
         if rets[i] < level:
-            print(t1, date_add(now, i), rets[i], level)
-            c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
+            print(t1, date_add(now, i-7), rets[i], level)
+            c, samecity, ret = getczxx(t1, date_add(now, i-7), cache = 0)
 
 
 samecity_arr = []
