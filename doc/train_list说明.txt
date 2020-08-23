@@ -388,23 +388,6 @@ result[35]// + "\t|" +
 }
 
 
-
-function hash(str) {
-  var c = str.charAt(0);
-  var offset={
-    "Z":10000, "T":20000, "K":30000,
-    "Y":00000,
-    "G":40000, "D":50000, "C":60000,
-    "S":70000,
-    "L":80000, "A":80000, "N":80000,
-    "P":10000, "Q":20000, "W":30000,
-    "V":01000, "B":02000, "U":04000, "X":05000
-  }
-  var num = Number(str.replace(/\D/,'')) % 10000;
-  return (offset[c] || 0) + num -1;
-}
-maxlen = 90000
-
 var d = {}
 var st = {}
 var fromto = new Set();
@@ -413,7 +396,7 @@ var stat = new Array(2000);
 for(i in train) {
       t = train[i];
       // if (!is_a_day(t.date, date.replace(/(\d\d\d\d)-(\d\d)-(\d\d)/, "$1$2$3"))) continue
-      key = hash(t.station_train_code)-1
+      key = hash_no(t.station_train_code)-1
       fromto.add(t.from_station+'-'+t.to_station)
       d[t.from_station+'-'+t.to_station] = (d[t.from_station+'-'+t.to_station] || 0) + 1;
       st[t.from_station] = (st[t.from_station] || 0) + 1;
