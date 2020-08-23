@@ -13,8 +13,21 @@ MAILTO=""
 # |  |  |  |  |
 # *  *  *  *  * user-name  command to be executed
 #10,40 * * * * root /usr/bin/python2.7 /var/ftp/1.py >/dev/null 2>&1
-#5,15,25,35,45,55 * * * * root /usr/bin/python2.7 /var/ftp/zwdcx_email.py >/dev/null 2>&1
-*/5 * * * * root /usr/bin/python2.7 /var/ftp/zwdcx.py >/dev/null 2>&1 &
-4 2,5,10,15,22 * * * root /bin/bash /var/ftp/wget_station_name.sh >/dev/null 2>&1 &
-33 2 * * * root /bin/bash /var/ftp/wget_train_list.sh >>/var/ftp/log_wget_view.txt 2>&1 &
-0 0 1 * * root mv /var/ftp/delay/log.html /var/ftp/delay/log_`date -d '-1day' +'\%Y\%m'`.html >/dev/null 2>&1
+##5,15,25,35,45,55 * * * * root /usr/bin/python2.7 /var/ftp/zwdcx_email.py >/dev/null 2>&1
+#*/5 * * * * root /usr/bin/python2.7 /var/ftp/zwdcx.py >/dev/null 2>&1 &
+
+#*/1 * * * * root /root/c1 >>/root/log_c1.txt 2>&1
+28 2 * * * root /bin/bash /root/wget_train_list.sh >>/root/log_wget_view.txt 2>&1
+
+4 2,5,10,15,22 * * * root /bin/bash /root/wget_station_name.sh >/dev/null 2>&1
+
+14 7,22 * * * root /bin/python2.7 /root/ccrgt.py >/root/log_ccrgt.txt 2>&1
+48 6  * * * root /bin/python2.7 /root/equip.py >/root/log_equip.txt 2>&1
+48 16  * * * root /bin/python2.7 /root/equip.py >/root/log_equip.txt 2>&1
+
+0 0 1 * * root mv /root/log_c1.txt /root/log/log_c1_`date -d '-1day' +'\%Y\%m'`.txt >/dev/null 2>&1
+0 0 1 * * root mv /root/log_wget_view.txt /root/log/log_wget_view_`date -d '-1day' +'\%Y\%m'`.txt >/dev/null 2>&1
+0 0 1 * * root mv /root/log_ccrgt.txt /root/log/log_ccrgt_`date -d '-1day' +'\%Y\%m'`.txt >/dev/null 2>&1
+0 0 1 * * root mv /root/log_equip.txt /root/log/log_equip_`date -d '-1day' +'\%Y\%m'`.txt >/dev/null 2>&1
+
+*/10 * * * * root free > /root/free.txt 2>&1

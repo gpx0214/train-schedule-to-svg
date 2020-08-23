@@ -2504,7 +2504,6 @@ if __name__ == '__main__':
     # 京哈线及东北地区 京沪线及华东地区 京九线 京广线及中南地区 陇海线及西南、西北地区 宝成线及西南地区 侯月、京原、京包、南北同蒲
 
     citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
-    '''
     samecity_arr = []
     samecity_map = {}
     import math
@@ -2533,7 +2532,6 @@ if __name__ == '__main__':
             if rets[i] < level:
                 print(t1, date_add(now, i-7), rets[i], level)
                 c, samecity, ret = getczxx(t1, date_add(now, i-7), cache = 0)
-    '''
     #
     for i in range(-datediff(now, base_date), 32):
         date = date_add(now, i)
@@ -2568,7 +2566,6 @@ if __name__ == '__main__':
                 cache = 0
             if (0 <= i) and datediff(now, mdate) >= 20: #20
                 cache = 0
-            cache = 2
             for retry in range(5):
                 c, samecity, ret = getczxx(t1, date, cache)
                 if ret > -1:
