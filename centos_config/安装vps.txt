@@ -22,6 +22,9 @@ https://blog.csdn.net/morose999/article/details/51363846?locationNum=15
 #https://www.cnblogs.com/st-jun/p/7737188.html
 timedatectl set-timezone Asia/Shanghai
 date
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+service crond restart
+service rsyslog restart
 
 yum -y install epel-release
 yum -y install lrzsz python-pip wget mtr vim zip unzip p7zip git
@@ -89,21 +92,208 @@ ssserver -c /etc/shadowsocks.json -d stop
 vi /etc/rc.d/rc.local
 chmod +x /etc/rc.d/rc.local
 
+#编译相关
+yum -y install gcc gcc-c++ autoconf automake make
+
+
+#源码安装git2
+yum -y install perl-ExtUtils-CBuilder perl-ExtUtils-MakeMaker
+yum -y install curl-devel expat-devel gettext-devel openssl-devel zlib-devel
+yum -y install asciidoc xmlto docbook2X
+wget https://www.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz
+tar xzf git-2.28.0.tar.gz
+cd git-2.28.0
+./configure
+make
+make install
+
+#装完git 退出重进终端
+
+#libgd
+yum -y install libimagequant libimagequant-devel
+
+wget https://github.com/libgd/libgd/releases/download/gd-2.2.5/libgd-2.2.5.tar.gz
+tar zxf libgd-2.2.5.tar.gz
+cd libgd-2.2.5
+./configure --x-includes=/usr/include/imagequant/
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a thread-safe mkdir -p... /usr/bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking whether make supports nested variables... yes
+checking for style of include used by make... GNU
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables...
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ISO C89... none needed
+checking whether gcc understands -c and -o together... yes
+checking dependency style of gcc... gcc3
+checking for ar... ar
+checking the archiver (ar) interface... ar
+checking for gcc option to accept ISO C99... -std=gnu99
+checking for gcc -std=gnu99 option to accept ISO Standard C... (cached) -std=gnu99
+checking how to print strings... printf
+checking for a sed that does not truncate output... /usr/bin/sed
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking for fgrep... /usr/bin/grep -F
+checking for ld used by gcc -std=gnu99... /usr/bin/ld
+checking if the linker (/usr/bin/ld) is GNU ld... yes
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
+checking the name lister (/usr/bin/nm -B) interface... BSD nm
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 1572864
+checking how to convert x86_64-pc-linux-gnu file names to x86_64-pc-linux-gnu format... func_convert_file_noop
+checking how to convert x86_64-pc-linux-gnu file names to toolchain format... func_convert_file_noop
+checking for /usr/bin/ld option to reload object files... -r
+checking for objdump... objdump
+checking how to recognize dependent libraries... pass_all
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for archiver @FILE support... @
+checking for strip... strip
+checking for ranlib... ranlib
+checking command to parse /usr/bin/nm -B output from gcc -std=gnu99 object... ok
+checking for sysroot... no
+checking for a working dd... /usr/bin/dd
+checking how to truncate binary pipes... /usr/bin/dd bs=4096 count=1
+checking for mt... no
+checking if : is a manifest tool... no
+checking how to run the C preprocessor... gcc -std=gnu99 -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if gcc -std=gnu99 supports -fno-rtti -fno-exceptions... no
+checking for gcc -std=gnu99 option to produce PIC... -fPIC -DPIC
+checking if gcc -std=gnu99 PIC flag -fPIC -DPIC works... yes
+checking if gcc -std=gnu99 static flag -static works... no
+checking if gcc -std=gnu99 supports -c -o file.o... yes
+checking if gcc -std=gnu99 supports -c -o file.o... (cached) yes
+checking whether the gcc -std=gnu99 linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+checking whether ln -s works... yes
+checking whether make sets $(MAKE)... (cached) yes
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking for X... libraries , headers /usr/include/imagequant/
+checking for ANSI C header files... (cached) yes
+checking for dirent.h... yes
+checking for errno.h... yes
+checking for inttypes.h... (cached) yes
+checking for limits.h... yes
+checking for stddef.h... yes
+checking for stdint.h... (cached) yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking for strings.h... (cached) yes
+checking for unistd.h... (cached) yes
+checking for sys/stat.h... (cached) yes
+checking for sys/types.h... (cached) yes
+checking for ld used by gcc -std=gnu99... /usr/bin/ld -m elf_x86_64
+checking if the linker (/usr/bin/ld -m elf_x86_64) is GNU ld... yes
+checking for shared library run path origin... done
+checking for iconv... yes
+checking for working iconv... yes
+checking for iconv declaration...
+         extern size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
+checking iconv.h usability... yes
+checking iconv.h presence... yes
+checking for iconv.h... yes
+checking whether iconv.h defines iconv_t... yes
+checking for sin... no
+checking for sin in -lm... yes
+checking whether gcc -std=gnu99 is Clang... no
+checking whether pthreads work with -pthread... yes
+checking for joinable pthread attribute... PTHREAD_CREATE_JOINABLE
+checking whether more special flags are required for pthreads... no
+checking for PTHREAD_PRIO_INHERIT... yes
+checking for OpenMP flag of C compiler... -fopenmp
+checking whether to support zlib... auto
+checking for LIBZ... yes
+checking whether to support png... auto
+checking for LIBPNG... yes
+checking whether to support freetype... auto
+checking for LIBFREETYPE... yes
+checking whether to support fontconfig... auto
+checking for LIBFONTCONFIG... yes
+checking whether to support jpeg... auto
+checking for jpeg_set_defaults in -ljpeg... yes
+checking whether to support liq... auto
+checking libimagequant.h usability... yes
+checking libimagequant.h presence... no
+configure: WARNING: libimagequant.h: accepted by the compiler, rejected by the preprocessor!
+configure: WARNING: libimagequant.h: proceeding with the compiler's result
+checking for libimagequant.h... yes
+checking for liq_attr_create_with_allocator in -limagequant... yes
+checking whether to support xpm... auto
+checking for LIBXPM... yes
+checking whether to support tiff... auto
+checking for LIBTIFF... yes
+checking whether to support webp... auto
+checking for WebPGetInfo in -lwebp... yes
+checking for simple visibility declarations... yes
+checking whether we are building for a Win32 host... no
+checking CFLAGS for maximum warnings... -Wall
+
+** Configuration summary for libgd 2.2.5:
+
+   Support for Zlib:                 yes
+   Support for PNG library:          yes
+   Support for JPEG library:         yes
+   Support for WebP library:         yes
+   Support for TIFF library:         yes
+   Support for Freetype 2.x library: yes
+   Support for Fontconfig library:   yes
+   Support for Xpm library:          yes
+   Support for liq library:          yes
+   Support for pthreads:             yes
+
+checking that generated files are newer than configure... done
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating src/Makefile
+config.status: creating tests/Makefile
+config.status: creating config/Makefile
+config.status: creating config/gdlib-config
+config.status: creating config/gdlib.pc
+config.status: creating src/config.h
+config.status: executing depfiles commands
+config.status: executing libtool commands
 
 
 #源码安装nginx
-
-yum -y install gcc gcc-c++ autoconf automake make
-
 yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel GeoIP GeoIP-devel GeoIP-data gd gd-devel libvpx libvpx-devel libwebp libwebp-devel libwebp-tools libXpm libxslt libxslt-devel perl-ExtUtils-Embed
 
 git clone https://github.com/arut/nginx-rtmp-module.git
 
-wget http://nginx.org/download/nginx-1.16.1.tar.gz
-tar -zxvf nginx-1.16.1.tar.gz
-cd nginx-1.16.1
+wget http://nginx.org/download/nginx-1.18.0.tar.gz
+tar -zxvf nginx-1.18.0.tar.gz
+cd nginx-1.18.0
 
-#nginx1.14.0编译选项
+#nginx1.14.0 1.18.0编译选项
 ./configure --help
 
   --help                             print this message
@@ -281,12 +471,9 @@ cd nginx-1.16.1
 
 
 
-./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_addition_module --with-http_dav_module --with-http_geoip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_v2_module --with-http_sub_module --with-http_xslt_module --with-mail --with-mail_ssl_module --add-module=../nginx-rtmp-module --with-http_ssl_module
-
-./configure: warning: the "--with-ipv6" option is deprecated
-
+./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_v2_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_geoip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module
 checking for OS
- + Linux 4.19.8-1.el7.elrepo.x86_64 x86_64
+ + Linux 5.8.1-1.el7.elrepo.x86_64 x86_64
 checking for C compiler ... found
  + using GNU C compiler
  + gcc version: 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC)
@@ -341,7 +528,7 @@ checking for SO_ACCEPTFILTER ... not found
 checking for SO_BINDANY ... not found
 checking for IP_TRANSPARENT ... found
 checking for IP_BINDANY ... not found
-checking for IP_BIND_ADDRESS_NO_PORT ... not found
+checking for IP_BIND_ADDRESS_NO_PORT ... found
 checking for IP_RECVDSTADDR ... not found
 checking for IP_SENDSRCADDR ... not found
 checking for IP_PKTINFO ... found
@@ -386,6 +573,7 @@ checking for POSIX semaphores ... not found
 checking for POSIX semaphores in libpthread ... found
 checking for struct msghdr.msg_control ... found
 checking for ioctl(FIONBIO) ... found
+checking for ioctl(FIONREAD) ... found
 checking for struct tm.tm_gmtoff ... found
 checking for struct dirent.d_namlen ... not found
 checking for struct dirent.d_type ... found
@@ -403,7 +591,10 @@ checking for zlib library ... found
 checking for libxslt ... found
 checking for libexslt ... found
 checking for GD library ... found
-checking for GD WebP support ... not found
+checking for GD WebP support ... found
+checking for perl
+ + perl version: This is perl 5, version 16, subversion 3 (v5.16.3) built for x86_64-linux-thread-multi
+ + perl interpreter multiplicity found
 checking for GeoIP library ... found
 checking for GeoIP IPv6 support ... found
 creating objs/Makefile
@@ -598,6 +789,8 @@ chkconfig --add nginx
 /sbin/chkconfig --level 345 nginx on
 
 #注意 /etc/nginx/sites-enabled/
+#查看依赖.so ldd /usr/local/nginx/sbin/nginx
+# /lib64/*.so.*
 
 #vsftpd
 yum -y install vsftpd
