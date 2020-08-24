@@ -2675,7 +2675,7 @@ lines = [
 [u'成灌线', r'[C]\d{1,4}|G2\d{2}']
 ]
 
-c = readcsv('delay/time.csv')
+c = readcsv('js/time.csv')
 for line in lines:
     fni = u'test/%s里程.txt' % (line[0])
     fn = u'test/200410%s.svg' % (line[0])
