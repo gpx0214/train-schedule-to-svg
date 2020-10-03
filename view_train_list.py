@@ -466,7 +466,7 @@ def cmpby0_7_i2_i5_i3_m4(a1, a2):
 
 
 # station_name.js
-def getStation(fn='js/station_name.js'):
+def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     # f = open(fn, 'r',encoding = 'utf8'); #py3
     with open(fn, 'rb') as f:  # py2
         s = f.read().decode('utf-8')
@@ -475,7 +475,7 @@ def getStation(fn='js/station_name.js'):
     for i in range(len(s)):
         s[i] = s[i].split('|')
     print('read %d stations in %s' % (len(s), fn))
-    s.append([u"dxc", u"大兴机场", u"IWP", u"daxingjichang", u"dxjc", u"-1"])
+    #s.append([u"dxc", u"大兴机场", u"IWP", u"daxingjichang", u"dxjc", u"-1"])
     s.append([u"tsn", u"唐山南", u"TNP", u"tangshannan", u"tsn", u"-1"])
     s.append([u"gye", u"古冶", u"GYP", u"guye", u"gy", u"-1"])
     s.append([u"", u"香港红磡", u"JQO", u"xiangganghongkan", u"xghk", u"-1"])
@@ -488,6 +488,16 @@ def getStation(fn='js/station_name.js'):
     s.append([u'nsb', u'南山北', u'NBQ', u'nanshanbei', u'nsb', u'-1'])
     s.append([u'', u'车墩', u'MIH', u'chedun', u'cd', u'-1'])
     s.append([u'', u'羊木', u'AMJ', u'yangmu', u'ym', u'-1'])
+    try:
+        with open(fn1, 'rb') as f:  # py2
+            qss = f.read().decode('utf-8')
+        qss = re.findall(r'{.*}', qss, re.I | re.M | re.S)[0]
+        jqss = json.loads(qss)
+        print('read %d qss in %s' % (len(jqss), fn1))
+    except:
+        jqss = {}
+    for row in s:
+        row.append(jqss.get(row[1], ""))
     return s
 
 
@@ -1242,7 +1252,7 @@ def csvToPolyline(c, m, station=None):
                     c[0][0], day, polyline_class,
                     0, split_y
                 )
-            if lastx == -1 or lastdate != date and i > 0:
+            if lastx == -1 or (lastdate != date and i > 0):
                 day = 0
                 buf += '"/>\n<polyline name="%s_%s+%d" class="%s" points="' % (
                     date.replace('&', ''),
@@ -1675,7 +1685,7 @@ def getdetail(tele, no, date):
                 j['data']['stopTime'][0]['stopDate'],
             ]
             if 'trainsetTypeInfo' in j['data']:
-                ret.append(j['data']['trainsetTypeInfo']['trainsetType'])
+                #ret.append(j['data']['trainsetTypeInfo']['trainsetType'])
                 ret.append(re.sub(r'\D', '', j['data']['trainsetTypeInfo']['capacity']))
                 if 'trainsetTypeName' in j['data']['trainsetTypeInfo']:
                     ret.append(j['data']['trainsetTypeInfo']['trainsetTypeName'])
@@ -1747,7 +1757,7 @@ def tryzero(s, no, date, l=6):
         date = date_add_ymd(dmin, add)
 
 
-def getcompilelist(no):
+def getcompilelist(no, cache = 1):
     if len(no) < 12:
         return []
     name = 'list/list_' + no + '.json'
@@ -1768,10 +1778,13 @@ def getcompilelist(no):
                     [re.sub(r'\s', '', x['coachType']) for x in j['data']],
                     [str(x['limit1'] + x['limit2']) for x in j['data']]
                 ))
+                ret.append('|'.join(list(set([x['seatFeature'] for x in j['data']]))) )
                 #print(' '.join(ret))
-                return j['data']
+                return ret
         except:
             print('json error %s' % (no))
+    if cache >= 2:
+        return []
     url = "https://wifi.12306.cn/wifiapps/ticket/api/trainDetailInfo/queryTrainCompileListByTrainNo?trainNo=%s" % (
         no
     )
@@ -1790,6 +1803,7 @@ def getcompilelist(no):
     except ValueError:
         print('ValueError %s' % (no))
         return []  # ,-1
+    time.sleep(0.1)
     if 'data' in j:
         with open(fn, 'wb') as f:
             f.write(resp.content)
@@ -1800,6 +1814,7 @@ def getcompilelist(no):
             [re.sub(r'\s', '', x['coachType']) for x in j['data']],
             [str(x['limit1'] + x['limit2']) for x in j['data']]
         ))
+        ret.append('|'.join(list(set([x['seatFeature'] for x in j['data']]))) )
         print(' '.join(ret))
         return ret
     else:
@@ -1818,10 +1833,11 @@ for i in range(0, len(c), 1):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    if os.path.exists(fn):
-        continue
-    ret = getcompilelist(c[i][0])
-    time.sleep(0.1)
+    #if os.path.exists(fn):
+        #continue
+    ret = getcompilelist(c[i][0], 1)
+    if len(ret) > 2 and '|' in ret[2]:
+        print(' '.join(ret))
 '''
 
 
@@ -2507,7 +2523,7 @@ if __name__ == '__main__':
     samecity_arr = []
     samecity_map = {}
     import math
-    #get data less than ex-sd //ex-2sd
+    #get data less than ex-2sd
     for name in citys:
         t1 = telecode(name, station)
         if len(t1) == 0:
@@ -2515,7 +2531,7 @@ if __name__ == '__main__':
         if name in samecity_map:
             continue
         rets = []
-        for i in range(-7, 28): #-8...32
+        for i in range(-1, 29): #-8...32
             date = date_add(now, i)
             c, samecity, ret = getczxx(t1, date, cache = 2)
             rets.append(ret)
@@ -2527,11 +2543,11 @@ if __name__ == '__main__':
         ex = sum(rets) #/n
         ex2 = sum([x*x for x in rets]) #/n
         sd = round(math.sqrt((ex2*n - ex * ex)) /n)
-        level = round(ex/n) - 1*sd # sorted(rets)[len(rets)//2]*8//10
+        level = round(ex/n) - 2*sd # sorted(rets)[len(rets)//2]*8//10
         for i in range(len(rets)):
             if rets[i] < level:
-                print(t1, date_add(now, i-7), rets[i], level)
-                c, samecity, ret = getczxx(t1, date_add(now, i-7), cache = 0)
+                print(t1, date_add(now, i-1), rets[i], level)
+                c, samecity, ret = getczxx(t1, date_add(now, i-1), cache = 0)
     #
     for i in range(-datediff(now, base_date), 32):
         date = date_add(now, i)
@@ -2546,6 +2562,8 @@ if __name__ == '__main__':
                 continue
             if name in samecity_map:
                 continue
+            if i > 30 and name not in freq:
+                continue
             fn = 'ticket/%s_%s.json'%(date, t1)
             mdate = '1970-01-01'
             if os.path.exists(fn):
@@ -2558,13 +2576,15 @@ if __name__ == '__main__':
             if i < 0:  # min -8
                 cache = 2
             if name in freq:
-                if (0 <= i and i < 7):
+                if (0 <= i and i < 5):
                     cache = 0
-                if (7 <= i) and datediff(now, mdate) >= 3:
+                if (5 <= i and i < 14) and datediff(now, mdate) >= 2:
+                    cache = 0
+                if (14 <= i) and datediff(now, mdate) >= 5:
                     cache = 0
             if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
                 cache = 0
-            if (0 <= i) and datediff(now, mdate) >= 20: #20
+            if (0 <= i) and datediff(now, mdate) >= 19: #20
                 cache = 0
             for retry in range(5):
                 c, samecity, ret = getczxx(t1, date, cache)
@@ -2678,7 +2698,7 @@ lines = [
 c = readcsv('js/time.csv')
 for line in lines:
     fni = u'test/%s里程.txt' % (line[0])
-    fn = u'test/200410%s.svg' % (line[0])
+    fn = u'test/200701%s.svg' % (line[0])
     restr = line[1]
     m = openMilage(fni)
     buf,_ = csvToSvg(m, c, restr, station)
@@ -3219,7 +3239,7 @@ for name in citys:
     if name in samecity_map:
         continue
     rets = []
-    for i in range(-7, 28): #32
+    for i in range(-7, 29): #32
         date = date_add(now, i)
         c, samecity, ret = getczxx(t1, date, cache = 2)
         rets.append(ret)
@@ -3257,7 +3277,7 @@ for name in citys:
             print(mt, date, t1)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 
-for t1 in ['ZHQ']:
-    for i in range(0,30):
+for t1 in ['GZQ','SZQ']:
+    for i in range(0,1):
         c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 '''
