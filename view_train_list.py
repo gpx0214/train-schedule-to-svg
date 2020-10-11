@@ -484,7 +484,7 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     s.append([u'jsw', u'金山卫', u'BGH', u'jinshanwei', u'jsw', u'-1'])
     s.append([u'mji', u'梅江', u'MKQ', u'meijiang', u'mj', u'-1'])
     s.append([u'ylo', u'元龙', u'YLY', u'yuanlong', u'yl', u'-1'])
-    s.append([u'bdl', u'八达岭', u'ILP', u'badaling', u'bdl', u'-1'])
+    #s.append([u'bdl', u'八达岭', u'ILP', u'badaling', u'bdl', u'-1'])
     s.append([u'nsb', u'南山北', u'NBQ', u'nanshanbei', u'nsb', u'-1'])
     s.append([u'', u'车墩', u'MIH', u'chedun', u'cd', u'-1'])
     s.append([u'', u'羊木', u'AMJ', u'yangmu', u'ym', u'-1'])
@@ -498,6 +498,8 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
         jqss = {}
     for row in s:
         row.append(jqss.get(row[1], ""))
+        #row.append(row[1].encode('gbk').encode('hex').decode('latin-1'))
+        row.append(row[1].encode('gbk').encode('base64')[:-1].decode('latin-1'))
     return s
 
 
@@ -2509,7 +2511,7 @@ if __name__ == '__main__':
     train_map = [[] for i in range(maxlen)]
     #
     now = nowdate()
-    base_date = '2020-07-01'
+    base_date = '2020-10-11'
     #end_date = ''
     #
     #base_date, mask, msg = add_train_list(train_map, fn0, '2019-12-30')
