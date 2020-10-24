@@ -1,0 +1,362 @@
+﻿<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="1440" height="850" version="1.1" 
+xmlns="http://www.w3.org/2000/svg">
+
+<style>
+line,polyline {
+  stroke-width:1
+}
+line.hour {
+  stroke:rgb(128,128,128);
+}
+line.halfhour, line.station {
+  stroke:rgb(220,220,220);
+}
+polyline {
+  fill:none;opacity:0.8;
+}
+.polylineG {
+  stroke:#3d668f;
+}
+.polylineD {
+  stroke:#a80022;
+}
+.polylineC {
+  stroke:#bf9540;
+}
+.polylineZ {
+  stroke:#004a80;
+}
+.polylineT {
+  stroke:#123da1;
+}
+.polylineK {
+  stroke:#cc4c33;
+}
+.polyline1,
+.polyline2,
+.polyline3,
+.polyline4,
+.polyline5,
+.polyline6,
+.polyline7,
+.polyline8,
+.polyline9 {
+  stroke: #305030
+}
+.temp{
+  stroke-dasharray:10 2
+}
+.peak{
+  stroke-dasharray:9 1 1 1
+}
+</style>
+
+<line class="hour" x1="0" y1="0" x2="0" y2="3000" />
+<line class="halfhour" x1="30" y1="0" x2="30" y2="3000" />
+<line class="hour" x1="60" y1="0" x2="60" y2="3000" />
+<line class="halfhour" x1="90" y1="0" x2="90" y2="3000" />
+<line class="hour" x1="120" y1="0" x2="120" y2="3000" />
+<line class="halfhour" x1="150" y1="0" x2="150" y2="3000" />
+<line class="hour" x1="180" y1="0" x2="180" y2="3000" />
+<line class="halfhour" x1="210" y1="0" x2="210" y2="3000" />
+<line class="hour" x1="240" y1="0" x2="240" y2="3000" />
+<line class="halfhour" x1="270" y1="0" x2="270" y2="3000" />
+<line class="hour" x1="300" y1="0" x2="300" y2="3000" />
+<line class="halfhour" x1="330" y1="0" x2="330" y2="3000" />
+<line class="hour" x1="360" y1="0" x2="360" y2="3000" />
+<line class="halfhour" x1="390" y1="0" x2="390" y2="3000" />
+<line class="hour" x1="420" y1="0" x2="420" y2="3000" />
+<line class="halfhour" x1="450" y1="0" x2="450" y2="3000" />
+<line class="hour" x1="480" y1="0" x2="480" y2="3000" />
+<line class="halfhour" x1="510" y1="0" x2="510" y2="3000" />
+<line class="hour" x1="540" y1="0" x2="540" y2="3000" />
+<line class="halfhour" x1="570" y1="0" x2="570" y2="3000" />
+<line class="hour" x1="600" y1="0" x2="600" y2="3000" />
+<line class="halfhour" x1="630" y1="0" x2="630" y2="3000" />
+<line class="hour" x1="660" y1="0" x2="660" y2="3000" />
+<line class="halfhour" x1="690" y1="0" x2="690" y2="3000" />
+<line class="hour" x1="720" y1="0" x2="720" y2="3000" />
+<line class="halfhour" x1="750" y1="0" x2="750" y2="3000" />
+<line class="hour" x1="780" y1="0" x2="780" y2="3000" />
+<line class="halfhour" x1="810" y1="0" x2="810" y2="3000" />
+<line class="hour" x1="840" y1="0" x2="840" y2="3000" />
+<line class="halfhour" x1="870" y1="0" x2="870" y2="3000" />
+<line class="hour" x1="900" y1="0" x2="900" y2="3000" />
+<line class="halfhour" x1="930" y1="0" x2="930" y2="3000" />
+<line class="hour" x1="960" y1="0" x2="960" y2="3000" />
+<line class="halfhour" x1="990" y1="0" x2="990" y2="3000" />
+<line class="hour" x1="1020" y1="0" x2="1020" y2="3000" />
+<line class="halfhour" x1="1050" y1="0" x2="1050" y2="3000" />
+<line class="hour" x1="1080" y1="0" x2="1080" y2="3000" />
+<line class="halfhour" x1="1110" y1="0" x2="1110" y2="3000" />
+<line class="hour" x1="1140" y1="0" x2="1140" y2="3000" />
+<line class="halfhour" x1="1170" y1="0" x2="1170" y2="3000" />
+<line class="hour" x1="1200" y1="0" x2="1200" y2="3000" />
+<line class="halfhour" x1="1230" y1="0" x2="1230" y2="3000" />
+<line class="hour" x1="1260" y1="0" x2="1260" y2="3000" />
+<line class="halfhour" x1="1290" y1="0" x2="1290" y2="3000" />
+<line class="hour" x1="1320" y1="0" x2="1320" y2="3000" />
+<line class="halfhour" x1="1350" y1="0" x2="1350" y2="3000" />
+<line class="hour" x1="1380" y1="0" x2="1380" y2="3000" />
+<line class="halfhour" x1="1410" y1="0" x2="1410" y2="3000" />
+<text x="0" y="24">北京 8</text>
+<line class="station" x1="0" y1="8" x2="1440" y2="8" />
+<text x="0" y="29">北京东 13</text>
+<line class="station" x1="0" y1="13" x2="1440" y2="13" />
+<text x="0" y="20">双桥 20</text>
+<line class="station" x1="0" y1="20" x2="1440" y2="20" />
+<text x="0" y="26">通州西 26</text>
+<line class="station" x1="0" y1="26" x2="1440" y2="26" />
+<text x="0" y="39">张辛 39</text>
+<line class="station" x1="0" y1="39" x2="1440" y2="39" />
+<text x="0" y="53">顺义 53</text>
+<line class="station" x1="0" y1="53" x2="1440" y2="53" />
+<text x="0" y="68">高各庄 68</text>
+<line class="station" x1="0" y1="68" x2="1440" y2="68" />
+<text x="0" y="72">庙城 72</text>
+<line class="station" x1="0" y1="72" x2="1440" y2="72" />
+<text x="0" y="76">怀柔 76</text>
+<line class="station" x1="0" y1="76" x2="1440" y2="76" />
+<text x="0" y="16">北京北 0</text>
+<line class="station" x1="0" y1="0" x2="1440" y2="0" />
+<text x="0" y="20">清华园 4</text>
+<line class="station" x1="0" y1="4" x2="1440" y2="4" />
+<text x="0" y="27">清河 11</text>
+<line class="station" x1="0" y1="11" x2="1440" y2="11" />
+<text x="0" y="21">沙河 21</text>
+<line class="station" x1="0" y1="21" x2="1440" y2="21" />
+<text x="0" y="31">昌平 31</text>
+<line class="station" x1="0" y1="31" x2="1440" y2="31" />
+<text x="0" y="38">昌平北 38</text>
+<line class="station" x1="0" y1="38" x2="1440" y2="38" />
+<text x="0" y="46">官高 46</text>
+<line class="station" x1="0" y1="46" x2="1440" y2="46" />
+<text x="0" y="74">北宅 74</text>
+<line class="station" x1="0" y1="74" x2="1440" y2="74" />
+<text x="0" y="88">怀柔北 88</text>
+<line class="station" x1="0" y1="88" x2="1440" y2="88" />
+<text x="0" y="147">流水沟 147</text>
+<line class="station" x1="0" y1="147" x2="1440" y2="147" />
+<text x="0" y="157">南大庙 157</text>
+<line class="station" x1="0" y1="157" x2="1440" y2="157" />
+<text x="0" y="164">猴山 164</text>
+<line class="station" x1="0" y1="164" x2="1440" y2="164" />
+<text x="0" y="171">虎什哈 171</text>
+<line class="station" x1="0" y1="171" x2="1440" y2="171" />
+<text x="0" y="179">五道河 179</text>
+<line class="station" x1="0" y1="179" x2="1440" y2="179" />
+<text x="0" y="187">二道沟门 187</text>
+<line class="station" x1="0" y1="187" x2="1440" y2="187" />
+<text x="0" y="197">平坊 197</text>
+<line class="station" x1="0" y1="197" x2="1440" y2="197" />
+<text x="0" y="204">滦平 204</text>
+<line class="station" x1="0" y1="204" x2="1440" y2="204" />
+<text x="0" y="215">窑上 215</text>
+<line class="station" x1="0" y1="215" x2="1440" y2="215" />
+<text x="0" y="222">张百湾 222</text>
+<line class="station" x1="0" y1="222" x2="1440" y2="222" />
+<text x="0" y="233">金沟屯 233</text>
+<line class="station" x1="0" y1="233" x2="1440" y2="233" />
+<text x="0" y="236">滦河沿 236</text>
+<line class="station" x1="0" y1="236" x2="1440" y2="236" />
+<text x="0" y="244">梁底下 244</text>
+<line class="station" x1="0" y1="244" x2="1440" y2="244" />
+<text x="0" y="251">白旗 251</text>
+<line class="station" x1="0" y1="251" x2="1440" y2="251" />
+<text x="0" y="260">超梁沟 260</text>
+<line class="station" x1="0" y1="260" x2="1440" y2="260" />
+<text x="0" y="268">闹海营 268</text>
+<line class="station" x1="0" y1="268" x2="1440" y2="268" />
+<text x="0" y="273">隆化 273</text>
+<line class="station" x1="0" y1="273" x2="1440" y2="273" />
+<text x="0" y="329">承德* 329</text>
+<line class="station" x1="0" y1="329" x2="1440" y2="329" />
+<text x="0" y="279">河洛营 279</text>
+<line class="station" x1="0" y1="279" x2="1440" y2="279" />
+<text x="0" y="287">汤头沟 287</text>
+<line class="station" x1="0" y1="287" x2="1440" y2="287" />
+<text x="0" y="295">沙沱子 295</text>
+<line class="station" x1="0" y1="295" x2="1440" y2="295" />
+<text x="0" y="304">张三营 304</text>
+<line class="station" x1="0" y1="304" x2="1440" y2="304" />
+<text x="0" y="315">东大坝 315</text>
+<line class="station" x1="0" y1="315" x2="1440" y2="315" />
+<text x="0" y="325">庙宫 325</text>
+<line class="station" x1="0" y1="325" x2="1440" y2="325" />
+<text x="0" y="335">四合永 335</text>
+<line class="station" x1="0" y1="335" x2="1440" y2="335" />
+<text x="0" y="344">腰栈 344</text>
+<line class="station" x1="0" y1="344" x2="1440" y2="344" />
+<text x="0" y="349">广德号 349</text>
+<line class="station" x1="0" y1="349" x2="1440" y2="349" />
+<text x="0" y="359">银镇 359</text>
+<line class="station" x1="0" y1="359" x2="1440" y2="359" />
+<text x="0" y="369">纪家沟 369</text>
+<line class="station" x1="0" y1="369" x2="1440" y2="369" />
+<text x="0" y="378">黄家店 378</text>
+<line class="station" x1="0" y1="378" x2="1440" y2="378" />
+<text x="0" y="387">朝阳地 387</text>
+<line class="station" x1="0" y1="387" x2="1440" y2="387" />
+<text x="0" y="398">五十家子 398</text>
+<line class="station" x1="0" y1="398" x2="1440" y2="398" />
+<text x="0" y="407">杨家营 407</text>
+<line class="station" x1="0" y1="407" x2="1440" y2="407" />
+<text x="0" y="414">老府 414</text>
+<line class="station" x1="0" y1="414" x2="1440" y2="414" />
+<text x="0" y="423">中台子 423</text>
+<line class="station" x1="0" y1="423" x2="1440" y2="423" />
+<text x="0" y="431">牛家营子 431</text>
+<line class="station" x1="0" y1="431" x2="1440" y2="431" />
+<text x="0" y="440">四分地 440</text>
+<line class="station" x1="0" y1="440" x2="1440" y2="440" />
+<text x="0" y="447">红花沟 447</text>
+<line class="station" x1="0" y1="447" x2="1440" y2="447" />
+<text x="0" y="454">三把火 454</text>
+<line class="station" x1="0" y1="454" x2="1440" y2="454" />
+<text x="0" y="465">曹家营子 465</text>
+<line class="station" x1="0" y1="465" x2="1440" y2="465" />
+<text x="0" y="472">北台子 472</text>
+<line class="station" x1="0" y1="472" x2="1440" y2="472" />
+<text x="0" y="479">赤峰西 479</text>
+<line class="station" x1="0" y1="479" x2="1440" y2="479" />
+<text x="0" y="485">赤峰 485</text>
+<line class="station" x1="0" y1="485" x2="1440" y2="485" />
+<text x="0" y="493">赤峰东 493</text>
+<line class="station" x1="0" y1="493" x2="1440" y2="493" />
+<text x="0" y="502">东南营子 502</text>
+<line class="station" x1="0" y1="502" x2="1440" y2="502" />
+<text x="0" y="512">水地 512</text>
+<line class="station" x1="0" y1="512" x2="1440" y2="512" />
+<text x="0" y="525">安庆沟 525</text>
+<line class="station" x1="0" y1="525" x2="1440" y2="525" />
+<text x="0" y="530">风水沟 530</text>
+<line class="station" x1="0" y1="530" x2="1440" y2="530" />
+<text x="0" y="537">山湾子 537</text>
+<line class="station" x1="0" y1="537" x2="1440" y2="537" />
+<text x="0" y="543">老哈河 543</text>
+<line class="station" x1="0" y1="543" x2="1440" y2="543" />
+<text x="0" y="549">小河沿 549</text>
+<line class="station" x1="0" y1="549" x2="1440" y2="549" />
+<text x="0" y="562">四道湾 562</text>
+<line class="station" x1="0" y1="562" x2="1440" y2="562" />
+<text x="0" y="576">莲花山 576</text>
+<line class="station" x1="0" y1="576" x2="1440" y2="576" />
+<text x="0" y="588">孤山子 588</text>
+<line class="station" x1="0" y1="588" x2="1440" y2="588" />
+<text x="0" y="601">羊场 601</text>
+<line class="station" x1="0" y1="601" x2="1440" y2="601" />
+<text x="0" y="613">敖汉 613</text>
+<line class="station" x1="0" y1="613" x2="1440" y2="613" />
+<text x="0" y="625">三义井 625</text>
+<line class="station" x1="0" y1="625" x2="1440" y2="625" />
+<text x="0" y="637">新窝铺 637</text>
+<line class="station" x1="0" y1="637" x2="1440" y2="637" />
+<text x="0" y="648">四合 648</text>
+<line class="station" x1="0" y1="648" x2="1440" y2="648" />
+<text x="0" y="656">舍力虎 656</text>
+<line class="station" x1="0" y1="656" x2="1440" y2="656" />
+<text x="0" y="670">奈曼 670</text>
+<line class="station" x1="0" y1="670" x2="1440" y2="670" />
+<text x="0" y="678">嘎什吐 678</text>
+<line class="station" x1="0" y1="678" x2="1440" y2="678" />
+<text x="0" y="691">昂乃 691</text>
+<line class="station" x1="0" y1="691" x2="1440" y2="691" />
+<text x="0" y="701">白音他拉 701</text>
+<line class="station" x1="0" y1="701" x2="1440" y2="701" />
+<text x="0" y="714">黄花筒 714</text>
+<line class="station" x1="0" y1="714" x2="1440" y2="714" />
+<text x="0" y="724">八仙筒 724</text>
+<line class="station" x1="0" y1="724" x2="1440" y2="724" />
+<text x="0" y="734">敖来 734</text>
+<line class="station" x1="0" y1="734" x2="1440" y2="734" />
+<text x="0" y="740">东明村 740</text>
+<line class="station" x1="0" y1="740" x2="1440" y2="740" />
+<text x="0" y="752">嘎什甸子 752</text>
+<line class="station" x1="0" y1="752" x2="1440" y2="752" />
+<text x="0" y="765">治安 765</text>
+<line class="station" x1="0" y1="765" x2="1440" y2="765" />
+<text x="0" y="776">东来 776</text>
+<line class="station" x1="0" y1="776" x2="1440" y2="776" />
+<text x="0" y="786">瓦房 786</text>
+<line class="station" x1="0" y1="786" x2="1440" y2="786" />
+<text x="0" y="795">太平庄 795</text>
+<line class="station" x1="0" y1="795" x2="1440" y2="795" />
+<text x="0" y="804">余粮堡 804</text>
+<line class="station" x1="0" y1="804" x2="1440" y2="804" />
+<text x="0" y="814">西六方 814</text>
+<line class="station" x1="0" y1="814" x2="1440" y2="814" />
+<text x="0" y="823">育新 823</text>
+<line class="station" x1="0" y1="823" x2="1440" y2="823" />
+<text x="0" y="829">通辽西 829</text>
+<line class="station" x1="0" y1="829" x2="1440" y2="829" />
+<text x="0" y="835">通辽 835</text>
+<line class="station" x1="0" y1="835" x2="1440" y2="835" />
+<polyline name="单_Y512" class="polylineY" points="748,13 776,13 797,26 803,26 847,76 852,76 "/>
+<polyline name="双_Y512+0" class="polylineY" points="748,13 776,13 797,26 803,26 847,76 852,76 "/>
+<polyline name="单_Y514" class="polylineY" points="1014,76 1016,76 1081,13 1119,13 "/>
+<polyline name="双_Y514+0" class="polylineY" points="1014,76 1016,76 1081,13 1119,13 "/>
+<polyline name="201107-08_2604" class="polyline2" points="240,8 281,8 "/>
+<polyline name="w671201012-1102|14-23_2604+0" class="polyline2" points="240,8 281,8 "/>
+<polyline name="201011-15_4327" class="polyline4" points="751,549 757,549 770,562 772,562 822,613 824,613 850,625 852,625 863,637 865,637 900,670 902,670 959,724 961,724 975,740 977,740 987,752 989,752 1001,765 1003,765 1014,776 1016,776 1061,804 1063,804 1125,835 "/>
+<polyline name="单201016-1121_4327+0" class="polyline4" points="751,549 757,549 770,562 772,562 822,613 824,613 850,625 852,625 863,637 865,637 900,670 902,670 959,724 961,724 975,740 977,740 987,752 989,752 1001,765 1003,765 1014,776 1016,776 1061,804 1063,804 1125,835 "/>
+<polyline name="201011-14_4330" class="polyline4" points="466,835 497,804 506,804 531,776 535,776 546,765 548,765 560,752 569,752 580,740 589,740 604,724 625,724 690,670 692,670 727,637 729,637 740,625 742,625 765,613 767,613 800,562 802,562 816,549 818,549 "/>
+<polyline name="双201015-1102|08-22_4330+0" class="polyline4" points="466,835 497,804 506,804 531,776 535,776 546,765 548,765 560,752 569,752 580,740 589,740 604,724 625,724 690,670 692,670 727,637 729,637 740,625 742,625 765,613 767,613 800,562 802,562 816,549 818,549 "/>
+<polyline name="201015-1103|11-22_4331" class="polyline4" points="1016,335 1066,369 1068,369 1095,387 1097,387 "/>
+<polyline name="201015-1103|10-22_4332" class="polyline4" points="520,387 522,387 550,369 552,369 603,335 "/>
+<polyline name="201011-31_4471" class="polyline4" points="602,38 611,46 613,46 710,74 711,74 731,88 750,88 866,147 868,147 894,164 896,164 905,171 906,171 917,179 918,179 928,187 930,187 951,204 953,204 975,222 977,222 990,233 992,233 999,236 1001,236 1011,244 1013,244 1022,251 1024,251 1036,260 1038,260 1048,268 1053,268 1061,273 1085,273 "/>
+<polyline name="201101-22_4471+0" class="polyline4" points="602,38 611,46 613,46 658,74 660,74 683,88 704,88 823,147 840,147 882,164 896,164 905,171 906,171 917,179 918,179 928,187 930,187 951,204 953,204 975,222 977,222 990,233 992,233 999,236 1001,236 1011,244 1013,244 1022,251 1024,251 1036,260 1038,260 1048,268 1053,268 1061,273 1085,273 "/>
+<polyline name="_4473" class="polyline4" points="487,273 509,273 523,260 524,260 535,251 536,251 545,244 546,244 555,236 556,236 563,233 564,233 577,222 578,222 588,215 589,215 603,204 605,204 624,187 625,187 635,179 636,179 647,171 648,171 656,164 679,164 688,157 689,157 701,147 702,147 804,88 812,88 834,74 836,74 875,46 877,46 887,38 "/>
+<polyline name="201011-14_6029" class="polyline6" points="880,273 895,273 1014,335 1016,335 1066,369 1068,369 1095,387 1097,387 "/>
+<polyline name="201011-14_6030" class="polyline6" points="520,387 522,387 550,369 552,369 603,335 605,335 703,273 718,273 "/>
+<polyline name="_6419" class="polyline6" points="483,26 496,39 498,39 510,53 526,53 549,72 554,72 560,76 565,76 "/>
+<polyline name="_6420" class="polyline6" points="1001,76 1003,76 1009,72 1010,72 1031,53 1050,53 1063,39 1077,39 1090,26 "/>
+<polyline name="201012-1109_Z282" class="polylineZ" points="622,8 667,8 "/>
+<polyline name="201106-23_Z282+0" class="polylineZ" points="622,8 667,8 "/>
+<polyline name="_T39" class="polylineT" points="820,8 1440,776 "/>
+<polyline name="_T39+1" class="polylineT" points="0,776 47,835 62,835 "/>
+<polyline name="_T40" class="polylineT" points="51,835 71,835 752,8 "/>
+<polyline name="201011-31_T302" class="polylineT" points="1086,835 1109,835 "/>
+<polyline name="201101-22_T302+0" class="polylineT" points="1086,835 1109,835 "/>
+<polyline name="201012-1101_K55" class="polylineK" points="145,8 168,8 "/>
+<polyline name="201102-23_K55+0" class="polylineK" points="145,8 168,8 "/>
+<polyline name="_K276" class="polylineK" points="233,835 256,835 "/>
+<polyline name="201104-05_K276+0" class="polylineK" points="233,835 256,835 "/>
+<polyline name="_K497" class="polylineK" points="822,8 1440,733 "/>
+<polyline name="_K497+1" class="polylineK" points="0,733 86,835 104,835 "/>
+<polyline name="_K498" class="polylineK" points="23,835 42,835 762,8 "/>
+<polyline name="201011-1102_K895" class="polylineK" points="532,613 534,613 581,670 584,670 695,835 715,835 "/>
+<polyline name="201103-22_K895+0" class="polylineK" points="532,613 534,613 581,670 584,670 695,835 715,835 "/>
+<polyline name="_K896" class="polylineK" points="632,835 648,835 717,776 723,776 798,670 800,670 847,613 849,613 "/>
+<polyline name="_K1015" class="polylineK" points="1092,38 1432,273 1440,273 "/>
+<polyline name="_K1015+1" class="polylineK" points="0,273 5,273 410,670 413,670 483,776 485,776 527,835 "/>
+<polyline name="_K1016" class="polylineK" points="1058,835 1102,776 1104,776 1179,670 1181,670 1440,374 "/>
+<polyline name="_K1016+1" class="polylineK" points="0,374 89,273 102,273 378,38 "/>
+<polyline name="_K1017" class="polylineK" points="1285,38 1440,151 "/>
+<polyline name="_K1017+1" class="polylineK" points="0,151 167,273 181,273 455,562 457,562 484,613 486,613 533,670 535,670 571,724 573,724 610,776 612,776 656,835 "/>
+<polyline name="_K1018" class="polylineK" points="1006,835 1087,724 1090,724 1129,670 1132,670 1179,613 1182,613 1210,562 1212,562 1429,335 1431,335 1440,326 "/>
+<polyline name="_K1018+1" class="polylineK" points="0,326 58,273 71,273 323,38 "/>
+<polyline name="_K1189" class="polylineK" points="971,8 992,26 994,26 1051,88 1065,88 1197,204 1199,204 1276,273 1288,273 1353,335 1356,335 1390,369 1398,369 1440,415 "/>
+<polyline name="_K1189+1" class="polylineK" points="0,415 228,670 230,670 266,724 268,724 346,835 364,835 "/>
+<polyline name="_K1190" class="polylineK" points="1419,835 1439,835 1440,833 "/>
+<polyline name="_K1190+1" class="polylineK" points="0,833 114,670 117,670 436,369 438,369 473,335 475,335 542,273 554,273 627,204 629,204 774,88 795,88 841,53 843,53 871,26 876,26 899,8 "/>
+<polyline name="_K1384" class="polylineK" points="5,835 26,835 "/>
+<polyline name="201104-05_K1384+0" class="polylineK" points="5,835 26,835 "/>
+<polyline name="_K1456" class="polylineK" points="1330,13 1355,13 1440,74 "/>
+<polyline name="_K1456+1" class="polylineK" points="0,74 357,335 359,335 648,670 650,670 763,835 "/>
+<polyline name="_K1458" class="polylineK" points="1080,835 1124,776 1126,776 1201,670 1203,670 1440,399 "/>
+<polyline name="_K1458+1" class="polylineK" points="0,399 57,335 60,335 127,273 157,273 566,13 594,13 "/>
+<polyline name="201012|14-1102_K1565" class="polylineK" points="362,835 384,835 "/>
+<polyline name="201103-23_K1565+0" class="polylineK" points="362,835 384,835 "/>
+<polyline name="201012-1122_K2560" class="polylineK" points="1401,273 1414,273 "/>
+<polyline name="201013-1123_K2560+0" class="polylineK" points="296,8 "/>
+<polyline name="单_K7711" class="polylineK" points="472,8 494,26 496,26 540,76 542,76 "/>
+<polyline name="双_K7711+0" class="polylineK" points="472,8 494,26 496,26 540,76 542,76 "/>
+<polyline name="单_K7712" class="polylineK" points="1357,76 1359,76 1421,8 "/>
+<polyline name="双_K7712+0" class="polylineK" points="1357,76 1359,76 1421,8 "/>
+<polyline name="201011-12_K7716" class="polylineK" points="992,8 1025,8 "/>
+<polyline name="201014-1123_K7716+0" class="polylineK" points="132,8 186,8 "/>
+<polyline name="_K7754" class="polylineK" points="714,76 720,76 783,13 831,13 "/>
+</svg>

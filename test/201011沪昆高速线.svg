@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="1440" height="200" version="1.1" 
+xmlns="http://www.w3.org/2000/svg">
+
+<style>
+line,polyline {
+  stroke-width:1
+}
+line.hour {
+  stroke:rgb(128,128,128);
+}
+line.halfhour, line.station {
+  stroke:rgb(220,220,220);
+}
+polyline {
+  fill:none;opacity:0.8;
+}
+.polylineG {
+  stroke:#3d668f;
+}
+.polylineD {
+  stroke:#a80022;
+}
+.polylineC {
+  stroke:#bf9540;
+}
+.polylineZ {
+  stroke:#004a80;
+}
+.polylineT {
+  stroke:#123da1;
+}
+.polylineK {
+  stroke:#cc4c33;
+}
+.polyline1,
+.polyline2,
+.polyline3,
+.polyline4,
+.polyline5,
+.polyline6,
+.polyline7,
+.polyline8,
+.polyline9 {
+  stroke: #305030
+}
+.temp{
+  stroke-dasharray:10 2
+}
+.peak{
+  stroke-dasharray:9 1 1 1
+}
+</style>
+
+<line class="hour" x1="0" y1="0" x2="0" y2="3000" />
+<line class="halfhour" x1="30" y1="0" x2="30" y2="3000" />
+<line class="hour" x1="60" y1="0" x2="60" y2="3000" />
+<line class="halfhour" x1="90" y1="0" x2="90" y2="3000" />
+<line class="hour" x1="120" y1="0" x2="120" y2="3000" />
+<line class="halfhour" x1="150" y1="0" x2="150" y2="3000" />
+<line class="hour" x1="180" y1="0" x2="180" y2="3000" />
+<line class="halfhour" x1="210" y1="0" x2="210" y2="3000" />
+<line class="hour" x1="240" y1="0" x2="240" y2="3000" />
+<line class="halfhour" x1="270" y1="0" x2="270" y2="3000" />
+<line class="hour" x1="300" y1="0" x2="300" y2="3000" />
+<line class="halfhour" x1="330" y1="0" x2="330" y2="3000" />
+<line class="hour" x1="360" y1="0" x2="360" y2="3000" />
+<line class="halfhour" x1="390" y1="0" x2="390" y2="3000" />
+<line class="hour" x1="420" y1="0" x2="420" y2="3000" />
+<line class="halfhour" x1="450" y1="0" x2="450" y2="3000" />
+<line class="hour" x1="480" y1="0" x2="480" y2="3000" />
+<line class="halfhour" x1="510" y1="0" x2="510" y2="3000" />
+<line class="hour" x1="540" y1="0" x2="540" y2="3000" />
+<line class="halfhour" x1="570" y1="0" x2="570" y2="3000" />
+<line class="hour" x1="600" y1="0" x2="600" y2="3000" />
+<line class="halfhour" x1="630" y1="0" x2="630" y2="3000" />
+<line class="hour" x1="660" y1="0" x2="660" y2="3000" />
+<line class="halfhour" x1="690" y1="0" x2="690" y2="3000" />
+<line class="hour" x1="720" y1="0" x2="720" y2="3000" />
+<line class="halfhour" x1="750" y1="0" x2="750" y2="3000" />
+<line class="hour" x1="780" y1="0" x2="780" y2="3000" />
+<line class="halfhour" x1="810" y1="0" x2="810" y2="3000" />
+<line class="hour" x1="840" y1="0" x2="840" y2="3000" />
+<line class="halfhour" x1="870" y1="0" x2="870" y2="3000" />
+<line class="hour" x1="900" y1="0" x2="900" y2="3000" />
+<line class="halfhour" x1="930" y1="0" x2="930" y2="3000" />
+<line class="hour" x1="960" y1="0" x2="960" y2="3000" />
+<line class="halfhour" x1="990" y1="0" x2="990" y2="3000" />
+<line class="hour" x1="1020" y1="0" x2="1020" y2="3000" />
+<line class="halfhour" x1="1050" y1="0" x2="1050" y2="3000" />
+<line class="hour" x1="1080" y1="0" x2="1080" y2="3000" />
+<line class="halfhour" x1="1110" y1="0" x2="1110" y2="3000" />
+<line class="hour" x1="1140" y1="0" x2="1140" y2="3000" />
+<line class="halfhour" x1="1170" y1="0" x2="1170" y2="3000" />
+<line class="hour" x1="1200" y1="0" x2="1200" y2="3000" />
+<line class="halfhour" x1="1230" y1="0" x2="1230" y2="3000" />
+<line class="hour" x1="1260" y1="0" x2="1260" y2="3000" />
+<line class="halfhour" x1="1290" y1="0" x2="1290" y2="3000" />
+<line class="hour" x1="1320" y1="0" x2="1320" y2="3000" />
+<line class="halfhour" x1="1350" y1="0" x2="1350" y2="3000" />
+<line class="hour" x1="1380" y1="0" x2="1380" y2="3000" />
+<line class="halfhour" x1="1410" y1="0" x2="1410" y2="3000" />
+<text x="0" y="16">上海虹桥 0</text>
+<line class="station" x1="0" y1="0" x2="1440" y2="0" />
+<text x="0" y="31">松江南 31</text>
+<line class="station" x1="0" y1="31" x2="1440" y2="31" />
+<text x="0" y="48">金山北 48</text>
+<line class="station" x1="0" y1="48" x2="1440" y2="48" />
+<text x="0" y="67">嘉善南 67</text>
+<line class="station" x1="0" y1="67" x2="1440" y2="67" />
+<text x="0" y="84">嘉兴南 84</text>
+<line class="station" x1="0" y1="84" x2="1440" y2="84" />
+<text x="0" y="112">桐乡 112</text>
+<line class="station" x1="0" y1="112" x2="1440" y2="112" />
+<text x="0" y="133">海宁西 133</text>
+<line class="station" x1="0" y1="133" x2="1440" y2="133" />
+<text x="0" y="144">余杭 144</text>
+<line class="station" x1="0" y1="144" x2="1440" y2="144" />
+<text x="0" y="159">杭州东 159</text>
+<line class="station" x1="0" y1="159" x2="1440" y2="159" />
+<polyline name="_G41" class="polylineG" points="889,0 891,0 918,84 924,84 948,159 "/>
+<polyline name="_G44" class="polylineG" points="975,159 998,84 1000,84 1009,67 1011,67 1034,0 1043,0 "/>
+<polyline name="_G85" class="polylineG" points="480,0 525,159 527,159 "/>
+<polyline name="_G86" class="polylineG" points="840,159 842,159 888,0 "/>
+<polyline name="_G99" class="polylineG" points="850,0 898,159 901,159 "/>
+<polyline name="201011-1107|11-12|16-17|21-22_G100" class="polylineG" points="1116,159 1119,159 1167,0 "/>
+<polyline name="_G110" class="polylineG" points="413,84 440,0 448,0 "/>
+<polyline name="_G155" class="polylineG" points="1301,0 1318,0 1347,84 "/>
+<polyline name="_G1226" class="polylineG" points="1129,0 1133,0 1160,84 1162,84 1186,159 1200,159 "/>
+<polyline name="_G1228" class="polylineG" points="600,159 602,159 615,133 617,133 632,84 634,84 643,67 645,67 670,0 684,0 "/>
+<polyline name="_G1302" class="polylineG" points="1249,159 1255,159 1279,84 1281,84 1312,0 1314,0 "/>
+<polyline name="_G1304" class="polylineG" points="616,0 618,0 646,84 654,84 675,144 677,144 687,159 690,159 "/>
+<polyline name="_G1305" class="polylineG" points="925,0 972,159 974,159 "/>
+<polyline name="_G1306" class="polylineG" points="1337,159 1347,159 1392,0 "/>
+<polyline name="_G1321" class="polylineG" points="370,0 416,159 420,159 "/>
+<polyline name="_G1322" class="polylineG" points="1034,159 1036,159 1046,144 1048,144 1060,112 1062,112 1077,67 1079,67 1102,0 "/>
+<polyline name="_G1328" class="polylineG" points="1227,159 1236,159 1246,144 1252,144 1271,84 1273,84 1302,0 "/>
+<polyline name="_G1329" class="polylineG" points="820,0 848,84 850,84 865,133 867,133 880,159 882,159 "/>
+<polyline name="_G1333" class="polylineG" points="697,0 711,31 715,31 733,84 735,84 759,159 761,159 "/>
+<polyline name="_G1335" class="polylineG" points="1193,159 1196,159 1213,112 1215,112 1230,67 1232,67 1256,0 "/>
+<polyline name="_G1337" class="polylineG" points="504,0 531,84 534,84 545,112 546,112 564,159 566,159 "/>
+<polyline name="_G1339" class="polylineG" points="1327,159 1330,159 1340,144 1342,144 1383,0 "/>
+<polyline name="_G1342" class="polylineG" points="670,159 673,159 691,112 693,112 708,67 710,67 734,0 "/>
+<polyline name="201101-20_G1344" class="polylineG" points="710,159 721,159 738,112 740,112 773,0 "/>
+<polyline name="_G1346" class="polylineG" points="737,159 739,159 756,112 758,112 773,67 775,67 798,0 "/>
+<polyline name="_G1347" class="polylineG" points="591,0 605,31 607,31 638,144 640,144 650,159 653,159 "/>
+<polyline name="_G1348" class="polylineG" points="773,159 775,159 821,0 "/>
+<polyline name="_G1350" class="polylineG" points="826,159 829,159 852,84 854,84 872,31 879,31 894,0 "/>
+<polyline name="_G1352" class="polylineG" points="911,159 914,159 951,31 954,31 968,0 "/>
+<polyline name="201101-20_G1353" class="polylineG" points="805,0 833,84 836,84 852,133 853,133 866,159 872,159 "/>
+<polyline name="_G1354" class="polylineG" points="961,159 963,159 973,144 975,144 993,84 995,84 1023,0 "/>
+<polyline name="_G1355" class="polylineG" points="827,0 845,48 847,48 867,112 869,112 886,159 890,159 "/>
+<polyline name="_G1357" class="polylineG" points="908,0 954,159 956,159 "/>
+<polyline name="_G1359" class="polylineG" points="937,0 955,48 957,48 971,84 973,84 996,159 1000,159 "/>
+<polyline name="_G1361" class="polylineG" points="998,0 1021,67 1023,67 1032,84 1034,84 1057,159 1065,159 "/>
+<polyline name="_G1362" class="polylineG" points="1085,159 1088,159 1113,84 1117,84 1144,0 "/>
+<polyline name="_G1363" class="polylineG" points="1029,0 1047,48 1053,48 1067,84 1069,84 1084,133 1086,133 1099,159 1101,159 "/>
+<polyline name="_G1365" class="polylineG" points="1058,0 1085,84 1088,84 1099,112 1101,112 1118,159 1122,159 "/>
+<polyline name="_G1369" class="polylineG" points="760,0 783,67 785,67 800,112 802,112 819,159 822,159 "/>
+<polyline name="_G1370" class="polylineG" points="932,159 935,159 952,112 953,112 964,84 970,84 997,0 "/>
+<polyline name="_G1371" class="polylineG" points="441,0 468,84 471,84 482,112 484,112 501,159 505,159 "/>
+<polyline name="_G1372" class="polylineG" points="1137,159 1139,159 1186,0 "/>
+<polyline name="_G1373" class="polylineG" points="535,0 582,159 586,159 "/>
+<polyline name="_G1374" class="polylineG" points="1253,159 1260,159 1283,84 1286,84 1315,0 "/>
+<polyline name="_G1375" class="polylineG" points="675,0 702,84 704,84 727,159 730,159 "/>
+<polyline name="_G1376" class="polylineG" points="1322,159 1325,159 1342,112 1345,112 1379,0 "/>
+<polyline name="_G1377" class="polylineG" points="562,0 568,0 586,48 588,48 602,84 604,84 627,159 630,159 "/>
+<polyline name="_G1378" class="polylineG" points="1106,159 1108,159 1132,84 1134,84 1162,0 1168,0 "/>
+<polyline name="_G1382" class="polylineG" points="627,159 631,159 648,112 650,112 670,48 672,48 691,0 "/>
+<polyline name="201011-13|17|19|24|26|31|1102-22_G1383" class="polylineG" points="404,0 431,84 434,84 445,112 447,112 465,159 468,159 "/>
+<polyline name="w1234_G1384" class="polylineG" points="680,159 684,159 707,84 709,84 738,0 "/>
+<polyline name="w567_G1384+0" class="polylineG" points="680,159 684,159 707,84 709,84 738,0 "/>
+<polyline name="_G1385" class="polylineG" points="1020,0 1047,84 1049,84 1064,133 1066,133 1079,159 1085,159 "/>
+<polyline name="_G1386" class="polylineG" points="725,159 734,159 784,0 "/>
+<polyline name="_G1387" class="polylineG" points="740,0 767,84 770,84 785,133 787,133 801,159 803,159 "/>
+<polyline name="_G1388" class="polylineG" points="1127,159 1129,159 1152,84 1154,84 1182,0 "/>
+<polyline name="_G1389" class="polylineG" points="790,0 818,84 821,84 844,159 847,159 "/>
+<polyline name="_G1390" class="polylineG" points="994,159 996,159 1021,84 1023,84 1041,31 1043,31 1057,0 "/>
+<polyline name="201011|16|18|23|25|30|1101|06-08|13-15|20-22_G1394" class="polylineG" points="1276,159 1280,159 1304,84 1307,84 1336,0 "/>
+<polyline name="w1234201012|1102-19_G1394+0" class="polylineG" points="1276,159 1280,159 1304,84 1307,84 1336,0 "/>
+<polyline name="_G1395" class="polylineG" points="1108,0 1135,84 1138,84 1153,133 1155,133 1168,159 1173,159 "/>
+<polyline name="_G1421" class="polylineG" points="402,84 412,112 414,112 434,159 451,159 "/>
+<polyline name="_G1422" class="polylineG" points="1380,159 1384,159 1408,84 "/>
+<polyline name="_G1455" class="polylineG" points="1065,0 1084,48 1086,48 1101,84 1103,84 1126,159 1130,159 "/>
+<polyline name="_G1501" class="polylineG" points="603,0 631,84 633,84 658,159 663,159 "/>
+<polyline name="_G1502" class="polylineG" points="1205,159 1210,159 1233,84 1236,84 1254,31 1260,31 1275,0 "/>
+<polyline name="_G1509" class="polylineG" points="515,0 522,0 572,159 576,159 "/>
+<polyline name="_G1510" class="polylineG" points="1077,159 1083,159 1109,84 1112,84 1140,0 1145,0 "/>
+<polyline name="_G1581" class="polylineG" points="784,159 787,159 800,133 802,133 840,0 845,0 "/>
+<polyline name="_G1583" class="polylineG" points="989,0 992,0 1021,84 1024,84 1047,159 1049,159 "/>
+<polyline name="_G1631" class="polylineG" points="474,0 507,112 512,112 529,159 533,159 "/>
+<polyline name="_G1632" class="polylineG" points="698,159 702,159 725,84 727,84 755,0 "/>
+<polyline name="_G1633" class="polylineG" points="745,0 763,48 765,48 785,112 787,112 805,159 808,159 "/>
+<polyline name="_G1634" class="polylineG" points="763,159 765,159 775,144 777,144 817,0 "/>
+<polyline name="_G1635" class="polylineG" points="875,0 903,84 906,84 921,133 923,133 936,159 938,159 "/>
+<polyline name="_G1636" class="polylineG" points="950,159 954,159 977,84 980,84 994,48 996,48 1015,0 "/>
+<polyline name="_G1637" class="polylineG" points="913,0 927,31 928,31 946,84 952,84 963,112 965,112 982,159 985,159 "/>
+<polyline name="_G1638" class="polylineG" points="977,159 981,159 998,112 1000,112 1011,84 1013,84 1041,0 "/>
+<polyline name="_G1639" class="polylineG" points="1042,0 1066,67 1068,67 1083,112 1085,112 1097,144 1099,144 1109,159 1112,159 "/>
+<polyline name="_G1640" class="polylineG" points="1308,159 1310,159 1333,84 1335,84 1364,0 "/>
+<polyline name="_G1651" class="polylineG" points="414,0 438,67 440,67 458,112 460,112 477,159 483,159 "/>
+<polyline name="_G1652" class="polylineG" points="821,159 824,159 872,0 "/>
+<polyline name="_G1653" class="polylineG" points="495,0 541,159 544,159 "/>
+<polyline name="_G1654" class="polylineG" points="1170,159 1172,159 1205,48 1207,48 1225,0 "/>
+<polyline name="_G1655" class="polylineG" points="563,0 591,84 593,84 608,133 610,133 623,159 625,159 "/>
+<polyline name="_G1656" class="polylineG" points="1180,159 1184,159 1207,84 1209,84 1238,0 "/>
+<polyline name="_G1657" class="polylineG" points="625,0 672,159 680,159 "/>
+<polyline name="_G1658" class="polylineG" points="1312,159 1315,159 1338,84 1340,84 1368,0 "/>
+<polyline name="_G1659" class="polylineG" points="777,0 804,84 806,84 830,159 832,159 "/>
+<polyline name="_G1660" class="polylineG" points="1350,159 1359,159 1406,0 "/>
+<polyline name="_G1673" class="polylineG" points="716,0 743,84 746,84 757,112 762,112 779,159 782,159 "/>
+<polyline name="_G1674" class="polylineG" points="1003,159 1008,159 1021,133 1026,133 1042,84 1044,84 1058,48 1064,48 1085,0 "/>
+<polyline name="_G1689" class="polylineG" points="1121,0 1135,31 1146,31 1165,84 1167,84 1190,159 1193,159 "/>
+<polyline name="_G1690" class="polylineG" points="611,159 615,159 628,133 632,133 647,84 650,84 683,0 "/>
+<polyline name="_G1866" class="polylineG" points="441,159 445,159 456,144 458,144 470,112 472,112 483,84 486,84 515,0 527,0 "/>
+<polyline name="_G1868" class="polylineG" points="1153,0 1161,0 1190,84 1192,84 1210,144 1216,144 1226,159 1249,159 "/>
+<polyline name="_G1952" class="polylineG" points="434,84 442,67 444,67 458,31 460,31 475,0 490,0 "/>
+<polyline name="_G1954" class="polylineG" points="1277,0 1300,0 1323,67 1325,67 1334,84 "/>
+<polyline name="_G2189" class="polylineG" points="449,0 467,48 470,48 484,84 487,84 510,159 515,159 "/>
+<polyline name="_G2191" class="polylineG" points="1281,159 1285,159 1309,84 1312,84 1340,0 "/>
+<polyline name="_G2193" class="polylineG" points="648,0 675,84 677,84 701,159 713,159 "/>
+<polyline name="_G2195" class="polylineG" points="1096,159 1098,159 1122,84 1128,84 1158,0 "/>
+<polyline name="_G2365" class="polylineG" points="430,0 444,31 446,31 464,84 466,84 481,133 483,133 496,159 500,159 "/>
+<polyline name="_G2366" class="polylineG" points="1317,159 1320,159 1343,84 1348,84 1375,0 "/>
+<polyline name="201012_G4917" class="polylineG temp" points="344,0 389,159 396,159 "/>
+<polyline name="201011_G4918" class="polylineG temp" points="1384,159 1391,159 1436,0 "/>
+<polyline name="_G7192" class="polylineG" points="1019,159 1021,159 1047,84 1049,84 1077,0 1084,0 "/>
+<polyline name="_G7193" class="polylineG" points="764,0 770,0 784,31 790,31 808,84 811,84 834,159 839,159 "/>
+<polyline name="_G7194" class="polylineG" points="552,159 554,159 577,84 579,84 608,0 610,0 "/>
+<polyline name="_G7301" class="polylineG" points="810,0 833,67 835,67 850,112 853,112 871,159 877,159 "/>
+<polyline name="_G7303" class="polylineG" points="982,0 1000,48 1002,48 1016,84 1018,84 1029,112 1035,112 1052,159 1054,159 "/>
+<polyline name="_G7304" class="polylineG" points="665,159 676,159 686,144 693,144 711,84 714,84 742,0 "/>
+<polyline name="_G7305" class="polylineG" points="1047,0 1065,48 1067,48 1081,84 1083,84 1098,133 1100,133 1113,159 1117,159 "/>
+<polyline name="_G7306" class="polylineG" points="685,159 694,159 707,133 714,133 729,84 732,84 759,0 "/>
+<polyline name="_G7307" class="polylineG" points="1086,0 1114,84 1117,84 1136,144 1144,144 1154,159 1156,159 "/>
+<polyline name="_G7308" class="polylineG" points="885,159 891,159 908,112 910,112 946,0 "/>
+<polyline name="_G7310" class="polylineG" points="1057,159 1060,159 1078,112 1080,112 1091,84 1093,84 1101,67 1107,67 1133,0 "/>
+<polyline name="_G7311" class="polylineG" points="653,0 680,84 682,84 706,159 708,159 "/>
+<polyline name="_G7312" class="polylineG" points="1091,159 1093,159 1118,84 1122,84 1149,0 "/>
+<polyline name="_G7313" class="polylineG" points="550,0 555,0 582,67 587,67 595,84 598,84 609,112 614,112 632,159 635,159 "/>
+<polyline name="_G7314" class="polylineG" points="1164,159 1167,159 1190,84 1195,84 1204,67 1206,67 1230,0 1244,0 "/>
+<polyline name="_G7315" class="polylineG" points="842,0 845,0 873,84 878,84 893,133 895,133 908,159 911,159 "/>
+<polyline name="_G7316" class="polylineG" points="606,159 612,159 629,112 631,112 642,84 644,84 663,31 665,31 679,0 683,0 "/>
+<polyline name="_G7317" class="polylineG" points="514,0 516,0 544,84 551,84 576,159 581,159 "/>
+<polyline name="_G7318" class="polylineG" points="943,159 949,159 973,84 975,84 993,31 995,31 1010,0 1013,0 "/>
+<polyline name="_G7319" class="polylineG" points="605,0 608,0 637,84 639,84 663,159 674,159 "/>
+<polyline name="_G7320" class="polylineG" points="807,159 809,159 858,0 "/>
+<polyline name="_G7321" class="polylineG" points="977,0 1000,67 1002,67 1017,112 1019,112 1036,159 1043,159 "/>
+<polyline name="_G7322" class="polylineG" points="880,159 882,159 906,84 908,84 922,48 924,48 942,0 "/>
+<polyline name="_G7323" class="polylineG" points="795,0 823,84 826,84 849,159 857,159 "/>
+<polyline name="_G7324" class="polylineG" points="694,159 709,159 735,84 737,84 764,0 "/>
+<polyline name="_G7325" class="polylineG" points="505,0 507,0 525,31 537,31 555,84 563,84 578,133 585,133 598,159 604,159 "/>
+<polyline name="_G7326" class="polylineG" points="922,159 924,159 941,112 946,112 959,84 962,84 989,0 "/>
+<polyline name="_G7330" class="polylineG" points="544,159 547,159 571,84 574,84 593,31 601,31 615,0 "/>
+<polyline name="_G7331" class="polylineG" points="375,0 415,144 417,144 427,159 438,159 "/>
+<polyline name="_G7332" class="polylineG" points="648,159 650,159 660,144 662,144 680,84 683,84 711,0 "/>
+<polyline name="_G7333" class="polylineG" points="387,0 427,133 429,133 442,159 446,159 "/>
+<polyline name="_G7334" class="polylineG" points="830,159 834,159 847,133 854,133 863,112 865,112 889,31 893,31 908,0 "/>
+<polyline name="_G7335" class="polylineG" points="748,0 762,31 766,31 784,84 786,84 809,159 817,159 "/>
+<polyline name="_G7336" class="polylineG" points="1008,159 1013,159 1037,84 1039,84 1057,31 1059,31 1073,0 "/>
+<polyline name="_G7337" class="polylineG" points="932,0 956,67 958,67 973,112 975,112 992,159 995,159 "/>
+<polyline name="_G7338" class="polylineG" points="1222,159 1225,159 1235,144 1240,144 1258,84 1261,84 1288,0 "/>
+<polyline name="_G7339" class="polylineG" points="1115,0 1133,48 1135,48 1149,84 1151,84 1175,159 1180,159 "/>
+<polyline name="_G7340" class="polylineG" points="1258,159 1265,159 1278,133 1280,133 1295,84 1297,84 1324,0 "/>
+<polyline name="_G7343" class="polylineG" points="1128,0 1155,84 1157,84 1180,159 1189,159 "/>
+<polyline name="_G7344" class="polylineG" points="537,159 542,159 567,84 569,84 596,0 "/>
+<polyline name="_G7347" class="polylineG" points="865,0 879,31 881,31 899,84 901,84 925,159 928,159 "/>
+<polyline name="_G7348" class="polylineG" points="789,159 792,159 802,144 804,144 844,0 "/>
+<polyline name="_G7349" class="polylineG" points="547,0 550,0 577,84 580,84 604,159 609,159 "/>
+<polyline name="_G7350" class="polylineG" points="1232,159 1243,159 1282,31 1284,31 1298,0 1302,0 "/>
+<polyline name="_G7351" class="polylineG" points="694,0 712,48 714,48 728,84 730,84 741,112 746,112 "/>
+<polyline name="_G7355" class="polylineG" points="1290,0 1317,84 1319,84 "/>
+<polyline name="_G7358" class="polylineG" points="399,84 401,84 428,0 430,0 "/>
+<polyline name="_G7359" class="polylineG" points="1100,0 1103,0 1131,84 1133,84 1151,144 1153,144 "/>
+<polyline name="_G7360" class="polylineG" points="1229,84 1231,84 1261,0 1263,0 "/>
+<polyline name="_G7364" class="polylineG" points="562,159 569,159 582,133 584,133 599,84 601,84 619,31 623,31 637,0 "/>
+<polyline name="_G7365" class="polylineG" points="967,0 995,84 997,84 1023,159 1025,159 "/>
+<polyline name="_G7366" class="polylineG" points="1212,159 1215,159 1239,84 1241,84 1270,0 "/>
+<polyline name="_G7367" class="polylineG" points="1073,0 1087,31 1092,31 1110,84 1113,84 1136,159 1146,159 "/>
+<polyline name="_G7372" class="polylineG" points="485,159 491,159 501,144 503,144 515,112 517,112 528,84 530,84 548,31 550,31 564,0 566,0 "/>
+<polyline name="_G7374" class="polylineG" points="1084,0 1093,0 1112,48 1114,48 1147,159 1163,159 "/>
+<polyline name="_G7376" class="polylineG" points="938,159 940,159 953,133 955,133 994,0 996,0 "/>
+<polyline name="_G7378" class="polylineG" points="747,0 765,0 783,48 785,48 799,84 801,84 824,159 827,159 "/>
+<polyline name="_G7381" class="polylineG" points="1151,0 1180,84 1182,84 1206,159 1221,159 "/>
+<polyline name="_G7382" class="polylineG" points="522,159 533,159 546,133 548,133 577,31 579,31 593,0 "/>
+<polyline name="_G7383" class="polylineG" points="1245,0 1263,48 1265,48 1279,84 1281,84 1292,112 1294,112 1306,144 1308,144 1318,159 1320,159 "/>
+<polyline name="_G7386" class="polylineG" points="571,159 575,159 585,144 590,144 602,112 604,112 619,67 621,67 635,31 637,31 651,0 653,0 "/>
+<polyline name="_G7388" class="polylineG" points="1049,0 1052,0 1066,31 1071,31 1085,67 1087,67 1096,84 1098,84 1122,159 "/>
+<polyline name="_G7389" class="polylineG" points="583,0 585,0 614,84 616,84 640,159 646,159 "/>
+<polyline name="_G7390" class="polylineG" points="812,159 814,159 831,112 833,112 868,0 870,0 "/>
+<polyline name="_G7391" class="polylineG" points="1098,0 1112,31 1121,31 1135,67 1137,67 1152,112 1154,112 "/>
+<polyline name="_G7393" class="polylineG" points="596,144 599,144 618,84 620,84 634,48 636,48 645,31 647,31 661,0 "/>
+<polyline name="_G7395" class="polylineG" points="446,0 469,67 471,67 480,84 482,84 "/>
+<polyline name="_G7397" class="polylineG" points="1254,84 1256,84 1284,0 "/>
+<polyline name="_G7432" class="polylineG" points="1123,159 1134,159 1157,84 1162,84 1191,0 1193,0 "/>
+<polyline name="_G7434" class="polylineG" points="594,0 598,0 638,133 640,133 653,159 658,159 "/>
+<polyline name="_G7461" class="polylineG" points="663,0 681,48 692,48 706,84 709,84 724,133 727,133 740,159 744,159 "/>
+<polyline name="_G7462" class="polylineG" points="1332,159 1342,159 1387,0 "/>
+<polyline name="_G7492" class="polylineG" points="453,159 458,159 468,144 470,144 478,133 483,133 498,84 500,84 509,67 512,67 538,0 543,0 "/>
+<polyline name="_G7494" class="polylineG" points="1169,0 1173,0 1221,159 1239,159 "/>
+<polyline name="_G7501" class="polylineG" points="409,0 436,84 442,84 459,133 461,133 474,159 478,159 "/>
+<polyline name="_G7502" class="polylineG" points="494,159 502,159 513,144 515,144 533,84 535,84 549,48 551,48 569,0 "/>
+<polyline name="_G7503" class="polylineG" points="477,0 484,0 512,84 514,84 537,159 539,159 "/>
+<polyline name="_G7504" class="polylineG" points="557,159 559,159 582,84 584,84 598,48 600,48 618,0 "/>
+<polyline name="_G7505" class="polylineG" points="535,0 540,0 567,84 569,84 594,159 598,159 "/>
+<polyline name="_G7506" class="polylineG" points="632,159 636,159 649,133 651,133 666,84 668,84 696,0 "/>
+<polyline name="_G7507" class="polylineG" points="598,0 614,0 641,84 644,84 667,159 669,159 "/>
+<polyline name="_G7508" class="polylineG" points="689,159 691,159 708,112 711,112 747,0 "/>
+<polyline name="_G7509" class="polylineG" points="658,0 685,84 687,84 705,144 707,144 718,159 720,159 "/>
+<polyline name="_G7510" class="polylineG" points="744,159 746,159 759,133 761,133 776,84 779,84 807,0 "/>
+<polyline name="_G7511" class="polylineG" points="728,0 775,159 777,159 "/>
+<polyline name="_G7512" class="polylineG" points="801,159 803,159 820,112 825,112 846,48 858,48 877,0 "/>
+<polyline name="_G7514" class="polylineG" points="854,159 859,159 876,112 878,112 889,84 892,84 920,0 "/>
+<polyline name="_G7515" class="polylineG" points="840,0 867,84 869,84 887,144 892,144 902,159 906,159 "/>
+<polyline name="_G7516" class="polylineG" points="917,159 919,159 951,48 953,48 971,0 "/>
+<polyline name="_G7517" class="polylineG" points="896,0 944,159 951,159 "/>
+<polyline name="_G7518" class="polylineG" points="982,159 986,159 999,133 1001,133 1016,84 1018,84 1045,0 "/>
+<polyline name="_G7519" class="polylineG" points="952,0 970,48 972,48 996,133 998,133 1011,159 1015,159 "/>
+<polyline name="_G7520" class="polylineG" points="1042,159 1045,159 1059,133 1061,133 1076,84 1078,84 1092,48 1094,48 1112,0 1114,0 "/>
+<polyline name="_G7521" class="polylineG" points="1003,0 1017,31 1019,31 1037,84 1039,84 1057,144 1062,144 1072,159 1075,159 "/>
+<polyline name="_G7522" class="polylineG" points="1111,159 1113,159 1123,144 1129,144 1147,84 1149,84 1167,31 1180,31 1194,0 "/>
+<polyline name="_G7524" class="polylineG" points="1154,159 1157,159 1170,133 1172,133 1200,31 1203,31 1219,0 1221,0 "/>
+<polyline name="_G7525" class="polylineG" points="1078,0 1106,84 1108,84 1131,159 1136,159 "/>
+<polyline name="_G7527" class="polylineG" points="1220,0 1234,31 1236,31 1261,112 1263,112 1280,159 1284,159 "/>
+<polyline name="_G7528" class="polylineG" points="1292,159 1295,159 1319,84 1322,84 1352,0 "/>
+<polyline name="_G7529" class="polylineG" points="1235,0 1258,67 1264,67 1273,84 1277,84 1300,159 1308,159 "/>
+<polyline name="_G7530" class="polylineG" points="515,159 519,159 532,133 534,133 549,84 551,84 578,0 "/>
+<polyline name="_G7532" class="polylineG" points="577,159 581,159 604,84 606,84 620,48 622,48 640,0 "/>
+<polyline name="_G7533" class="polylineG" points="1013,0 1042,84 1044,84 1068,159 1070,159 "/>
+<polyline name="_G7534" class="polylineG" points="466,159 471,159 494,84 496,84 524,0 "/>
+<polyline name="_G7535" class="polylineG" points="1141,0 1170,84 1172,84 1195,159 1205,159 "/>
+<polyline name="_G7536" class="polylineG" points="1343,159 1352,159 1398,0 "/>
+<polyline name="_G7537" class="polylineG" points="689,0 712,67 714,67 723,84 725,84 750,159 754,159 "/>
+<polyline name="_G7539" class="polylineG" points="833,0 847,31 864,31 878,67 880,67 895,112 897,112 914,159 916,159 "/>
+<polyline name="_G7540" class="polylineG" points="720,159 724,159 737,133 741,133 769,31 775,31 789,0 "/>
+<polyline name="_G7541" class="polylineG" points="349,0 382,112 384,112 396,144 398,144 408,159 410,159 "/>
+<polyline name="_G7542" class="polylineG" points="845,159 849,159 859,144 861,144 879,84 881,84 890,67 892,67 916,0 "/>
+<polyline name="_G7543" class="polylineG" points="425,0 454,84 456,84 480,159 488,159 "/>
+<polyline name="_G7545" class="polylineG" points="947,0 971,67 973,67 994,144 996,144 1007,159 1010,159 "/>
+<polyline name="_G7546" class="polylineG" points="866,159 870,159 883,133 885,133 904,67 906,67 932,0 "/>
+<polyline name="_G7549" class="polylineG" points="490,0 508,48 513,48 527,84 529,84 547,144 549,144 559,159 561,159 "/>
+<polyline name="_G7550" class="polylineG" points="1100,159 1103,159 1120,112 1125,112 1136,84 1142,84 1171,0 "/>
+<polyline name="_G7551" class="polylineG" points="1181,0 1208,84 1210,84 1226,133 1228,133 1241,159 1244,159 "/>
+<polyline name="_G7552" class="polylineG" points="432,159 436,159 446,144 448,144 456,133 458,133 473,84 475,84 502,0 "/>
+<polyline name="_G7553" class="polylineG" points="1271,0 1298,84 1300,84 1323,159 1338,159 "/>
+<polyline name="_G7554" class="polylineG" points="471,159 476,159 490,133 492,133 510,84 513,84 541,0 "/>
+<polyline name="_G7555" class="polylineG" points="1265,0 1288,67 1294,67 1303,84 1308,84 1326,144 1328,144 1338,159 "/>
+<polyline name="_G7556" class="polylineG" points="421,144 432,112 434,112 445,84 447,84 467,31 469,31 483,0 "/>
+<polyline name="_G7557" class="polylineG" points="1168,0 1195,84 1200,84 1211,112 1213,112 1232,159 1234,159 "/>
+<polyline name="_G7558" class="polylineG" points="419,159 429,144 431,144 443,112 445,112 460,67 462,67 472,48 474,48 492,0 "/>
+<polyline name="_G7559" class="polylineG" points="815,0 833,48 839,48 853,84 863,84 889,159 "/>
+<polyline name="_G7560" class="polylineG" points="929,159 954,84 957,84 985,0 "/>
+<polyline name="_G7561" class="polylineG" points="1156,0 1185,84 1187,84 1210,159 1215,159 "/>
+<polyline name="_G7571" class="polylineG" points="968,0 972,0 1000,84 1002,84 1017,133 1019,133 1032,159 1035,159 "/>
+<polyline name="_G7572" class="polylineG" points="594,159 597,159 614,112 616,112 632,67 634,67 644,48 646,48 666,0 669,0 "/>
+<polyline name="_G7576" class="polylineG" points="661,159 664,159 677,133 679,133 694,84 696,84 714,31 716,31 730,0 735,0 "/>
+<polyline name="_G7578" class="polylineG" points="856,0 859,0 878,48 880,48 894,84 896,84 919,159 921,159 "/>
+<polyline name="_G7579" class="polylineG" points="1021,0 1024,0 1052,84 1054,84 1065,112 1067,112 1086,159 1091,159 "/>
+<polyline name="_G7580" class="polylineG" points="511,159 514,159 531,112 533,112 548,67 551,67 574,0 576,0 "/>
+<polyline name="_G7583" class="polylineG" points="877,0 880,0 904,67 906,67 921,112 923,112 940,159 943,159 "/>
+<polyline name="_G7584" class="polylineG" points="1073,159 1075,159 1088,133 1090,133 1105,84 1107,84 1125,31 1139,31 1154,0 1162,0 "/>
+<polyline name="_G7585" class="polylineG" points="1032,0 1035,0 1063,84 1064,84 1082,144 1084,144 1094,159 1096,159 "/>
+<polyline name="_G7586" class="polylineG" points="643,159 645,159 663,112 665,112 676,84 678,84 706,0 708,0 "/>
+<polyline name="_G7589" class="polylineG" points="628,0 633,0 662,84 666,84 677,112 679,112 697,159 703,159 "/>
+<polyline name="_G7590" class="polylineG" points="1068,159 1070,159 1087,112 1090,112 1126,0 1132,0 "/>
+<polyline name="_G7592" class="polylineG" points="899,159 901,159 911,144 914,144 931,84 941,84 950,67 952,67 962,48 963,48 982,0 984,0 "/>
+<polyline name="_G7594" class="polylineG" points="715,0 721,0 749,84 758,84 782,159 787,159 "/>
+<polyline name="_G7596" class="polylineG" points="1149,159 1152,159 1169,112 1171,112 1207,0 1213,0 "/>
+<polyline name="_G7598" class="polylineG" points="779,0 785,0 813,84 816,84 839,159 852,159 "/>
+<polyline name="_G7599" class="polylineG" points="664,0 670,0 697,84 699,84 723,159 725,159 "/>
+<polyline name="_G7631" class="polylineG" points="1091,0 1118,84 1127,84 "/>
+<polyline name="_G7633" class="polylineG" points="1172,84 1175,84 1203,0 "/>
+<polyline name="_G7792" class="polylineG" points="1024,159 1026,159 1043,112 1045,112 1061,67 1063,67 1077,31 1079,31 1093,0 1109,0 "/>
+<polyline name="_G7794" class="polylineG" points="707,0 711,0 738,84 741,84 767,159 772,159 "/>
+<polyline name="201016|23|25_G9301" class="polylineG peak" points="1252,0 1266,31 1268,31 1287,84 1289,84 1300,112 1311,112 1328,159 "/>
+<polyline name="_D377" class="polylineD" points="466,0 490,67 508,67 517,84 522,84 547,159 549,159 "/>
+<polyline name="_D378" class="polylineD" points="1141,159 1144,159 1168,84 1170,84 1199,0 "/>
+<polyline name="_D381" class="polylineD" points="885,0 903,48 914,48 928,84 935,84 951,133 953,133 960,144 966,144 976,159 979,159 "/>
+<polyline name="_D382" class="polylineD" points="756,159 758,159 775,112 777,112 798,48 807,48 826,0 "/>
+<polyline name="w7126_D916" class="polylineD" points="342,159 345,159 395,0 398,0 "/>
+<polyline name="w5671_D918" class="polylineD" points="1204,0 1209,0 1268,159 1270,159 "/>
+<polyline name="201011-12|16-19|1106-09|20-22_D931" class="polylineD" points="1200,0 1258,159 1260,159 "/>
+<polyline name="201012-13|17-20|1121-23_D933" class="polylineD" points="354,159 360,159 410,0 "/>
+<polyline name="w5671_D935" class="polylineD" points="1205,0 1263,159 1265,159 "/>
+<polyline name="w7126_D937" class="polylineD" points="359,159 365,159 415,0 "/>
+<polyline name="w5671_D941" class="polylineD" points="1195,0 1252,159 1254,159 "/>
+<polyline name="w7126_D942" class="polylineD" points="364,159 370,159 420,0 "/>
+<polyline name="_D2212" class="polylineD" points="407,84 415,67 422,67 436,31 440,31 455,0 462,0 "/>
+<polyline name="201104-08_D2212+0" class="polylineD" points="407,84 415,67 422,67 436,31 440,31 455,0 462,0 "/>
+<polyline name="_D2281" class="polylineD" points="526,0 529,0 554,67 563,67 571,84 574,84 585,112 590,112 609,159 614,159 "/>
+<polyline name="_D2282" class="polylineD" points="1198,159 1201,159 1213,133 1227,133 1236,112 1238,112 1253,67 1255,67 1280,0 1285,0 "/>
+<polyline name="_D2283" class="polylineD" points="684,0 712,84 714,84 725,112 727,112 745,159 749,159 "/>
+<polyline name="_D2284" class="polylineD" points="1175,159 1179,159 1191,133 1196,133 1212,84 1214,84 1244,0 "/>
+<polyline name="_D2285" class="polylineD" points="543,0 557,31 564,31 582,84 586,84 605,144 607,144 617,159 620,159 "/>
+<polyline name="_D2286" class="polylineD" points="1263,159 1268,159 1277,144 1281,144 1300,84 1302,84 1332,0 "/>
+<polyline name="_D2287" class="polylineD" points="420,0 438,48 444,48 458,84 461,84 486,159 493,159 "/>
+<polyline name="_D2288" class="polylineD" points="1299,159 1301,159 1318,112 1319,112 1356,0 "/>
+<polyline name="_D3062" class="polylineD" points="1321,0 1325,0 1355,84 "/>
+<polyline name="_D3101" class="polylineD" points="901,0 920,48 928,48 950,112 957,112 966,133 973,133 987,159 990,159 "/>
+<polyline name="_D3102" class="polylineD" points="778,159 781,159 805,84 807,84 815,67 827,67 854,0 "/>
+<polyline name="_D3103" class="polylineD" points="957,0 971,31 973,31 998,112 1000,112 1018,159 1020,159 "/>
+<polyline name="_D3104" class="polylineD" points="817,159 819,159 831,133 841,133 857,84 864,84 872,67 879,67 889,48 891,48 900,31 909,31 924,0 "/>
+<polyline name="_D3107" class="polylineD" points="580,0 604,67 610,67 618,84 627,84 638,112 659,112 677,159 685,159 "/>
+<polyline name="_D3108" class="polylineD" points="1286,159 1290,159 1314,84 1317,84 1347,0 "/>
+<polyline name="_D3125" class="polylineD" points="625,0 628,0 657,84 660,84 676,133 678,133 691,159 695,159 "/>
+<polyline name="_D3126" class="polylineD" points="1038,159 1050,159 1059,144 1061,144 1081,84 1083,84 1091,67 1094,67 1122,0 1128,0 "/>
+<polyline name="_D3131" class="polylineD" points="455,0 469,31 471,31 490,84 492,84 517,159 521,159 "/>
+<polyline name="_D3133" class="polylineD" points="1160,159 1162,159 1171,144 1181,144 1200,84 1204,84 1234,0 "/>
+<polyline name="_D3135" class="polylineD" points="637,0 641,0 666,67 681,67 689,84 692,84 708,133 718,133 732,159 735,159 "/>
+<polyline name="_D3137" class="polylineD" points="986,159 1001,159 1018,112 1020,112 1031,84 1033,84 1062,0 1066,0 "/>
+<polyline name="_D3141" class="polylineD" points="793,0 799,0 828,84 831,84 849,144 850,144 861,159 867,159 "/>
+<polyline name="_D3143" class="polylineD" points="890,159 896,159 908,133 910,133 925,84 927,84 957,0 961,0 "/>
+<polyline name="_D3145" class="polylineD" points="399,0 427,84 429,84 448,144 450,144 460,159 463,159 "/>
+<polyline name="_D3147" class="polylineD" points="1243,159 1250,159 1267,112 1277,112 1288,84 1291,84 1320,0 "/>
+<polyline name="_D3201" class="polylineD" points="498,0 513,31 519,31 538,84 541,84 568,159 571,159 "/>
+<polyline name="_D3202" class="polylineD" points="1217,159 1220,159 1235,133 1247,133 1263,84 1268,84 1276,67 1281,67 1307,0 "/>
+<polyline name="_D3205" class="polylineD" points="575,0 607,84 609,84 636,159 640,159 "/>
+<polyline name="_D3206" class="polylineD" points="1185,159 1191,159 1216,84 1219,84 1251,0 "/>
+<polyline name="_D3291" class="polylineD" points="735,0 763,84 765,84 784,144 786,144 796,159 798,159 "/>
+<polyline name="_D3293" class="polylineD" points="1029,159 1031,159 1043,133 1045,133 1061,84 1063,84 1076,48 1078,48 1087,31 1102,31 1117,0 "/>
+<polyline name="_D3323" class="polylineD" points="1146,0 1175,84 1177,84 1202,159 1210,159 "/>
+<polyline name="_D3324" class="polylineD" points="622,159 626,159 653,84 661,84 669,67 676,67 701,0 "/>
+<polyline name="_D5456" class="polylineD" points="905,159 913,159 1012,0 1018,0 "/>
+<polyline name="201013-1111|13-22_D5458" class="polylineD" points="656,0 662,0 763,159 766,159 "/>
+<polyline name="_D5462" class="polylineD" points="825,159 832,159 926,0 932,0 "/>
+<polyline name="_D5464" class="polylineD" points="731,0 743,0 846,159 850,159 "/>
+</svg>
