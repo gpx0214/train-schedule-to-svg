@@ -538,6 +538,7 @@ def hash_no(s):
              ('S', 70000),
              ('L', 80000), ('A', 80000), ('N', 80000),
              ('P', 10000), ('Q', 20000), ('W', 30000),
+             ('I', 50000), 
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     d = dict(items)
     train_class = d[s[0]] if s[0] in d else 0
@@ -552,6 +553,7 @@ def unhash_no(n):
              ('S', 70000),
              ('L', 80000), ('A', 80000), ('N', 80000),
              ('P', 10000), ('Q', 20000), ('W', 30000),
+             ('I', 50000), 
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     head = ["", "Z", "T", "K", "G", "D", "C", "S", "L"]
     if n > 90000:
@@ -2700,7 +2702,7 @@ lines = [
 c = readcsv('js/time.csv')
 for line in lines:
     fni = u'test/%s里程.txt' % (line[0])
-    fn = u'test/200701%s.svg' % (line[0])
+    fn = u'test/201011%s.svg' % (line[0])
     restr = line[1]
     m = openMilage(fni)
     buf,_ = csvToSvg(m, c, restr, station)
