@@ -498,7 +498,7 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
         jqss = {}
     for row in s:
         row.append(jqss.get(row[1], ""))
-        #row.append(row[1].encode('gbk').encode('hex').decode('latin-1'))
+        # row.append(row[1].encode('gbk').encode('hex').decode('latin-1'))
         row.append(row[1].encode('gbk').encode('base64')[:-1].decode('latin-1'))
     return s
 
@@ -538,7 +538,7 @@ def hash_no(s):
              ('S', 70000),
              ('L', 80000), ('A', 80000), ('N', 80000),
              ('P', 10000), ('Q', 20000), ('W', 30000),
-             ('I', 50000), 
+             ('I', 50000),
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     d = dict(items)
     train_class = d[s[0]] if s[0] in d else 0
@@ -553,7 +553,7 @@ def unhash_no(n):
              ('S', 70000),
              ('L', 80000), ('A', 80000), ('N', 80000),
              ('P', 10000), ('Q', 20000), ('W', 30000),
-             ('I', 50000), 
+             ('I', 50000),
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     head = ["", "Z", "T", "K", "G", "D", "C", "S", "L"]
     if n > 90000:
@@ -1689,7 +1689,7 @@ def getdetail(tele, no, date):
                 j['data']['stopTime'][0]['stopDate'],
             ]
             if 'trainsetTypeInfo' in j['data']:
-                #ret.append(j['data']['trainsetTypeInfo']['trainsetType'])
+                # ret.append(j['data']['trainsetTypeInfo']['trainsetType'])
                 ret.append(re.sub(r'\D', '', j['data']['trainsetTypeInfo']['capacity']))
                 if 'trainsetTypeName' in j['data']['trainsetTypeInfo']:
                     ret.append(j['data']['trainsetTypeInfo']['trainsetTypeName'])
@@ -1761,7 +1761,7 @@ def tryzero(s, no, date, l=6):
         date = date_add_ymd(dmin, add)
 
 
-def getcompilelist(no, cache = 1):
+def getcompilelist(no, cache=1):
     if len(no) < 12:
         return []
     name = 'list/list_' + no + '.json'
@@ -2263,9 +2263,7 @@ def left7(c, base_week):
 def cycle7(c, base_week):
     model = '71234567'
     ret = ''
-    c <<= base_week
-    c |= c >> 7
-    c &= 0x7f
+    c = left7(c, base_week)
     if c == 0b01000001:
         return '67'
     if c == 0b01100011:
@@ -2527,7 +2525,7 @@ if __name__ == '__main__':
     samecity_arr = []
     samecity_map = {}
     import math
-    #get data less than ex-2sd
+    # get data less than ex-2sd
     for name in citys:
         t1 = telecode(name, station)
         if len(t1) == 0:
@@ -2535,23 +2533,23 @@ if __name__ == '__main__':
         if name in samecity_map:
             continue
         rets = []
-        for i in range(-1, 29): #-8...32
+        for i in range(-1, 29):  # -8...32
             date = date_add(now, i)
-            c, samecity, ret = getczxx(t1, date, cache = 2)
+            c, samecity, ret = getczxx(t1, date, cache=2)
             rets.append(ret)
             if len(samecity) > 1:
                 samecity_arr.append(samecity)
                 for ii in samecity:
                     samecity_map[ii] = name
         n = len(rets)
-        ex = sum(rets) #/n
-        ex2 = sum([x*x for x in rets]) #/n
-        sd = round(math.sqrt((ex2*n - ex * ex)) /n)
-        level = round(ex/n) - 2*sd # sorted(rets)[len(rets)//2]*8//10
+        ex = sum(rets)  # /n
+        ex2 = sum([x*x for x in rets])  # /n
+        sd = round(math.sqrt((ex2*n - ex * ex)) / n)
+        level = round(ex/n) - 2*sd  # sorted(rets)[len(rets)//2]*8//10
         for i in range(len(rets)):
             if rets[i] < level:
                 print(t1, date_add(now, i-1), rets[i], level)
-                c, samecity, ret = getczxx(t1, date_add(now, i-1), cache = 0)
+                c, samecity, ret = getczxx(t1, date_add(now, i-1), cache=0)
     #
     for i in range(-datediff(now, base_date), 32):
         date = date_add(now, i)
@@ -2568,7 +2566,7 @@ if __name__ == '__main__':
                 continue
             if i > 30 and name not in freq:
                 continue
-            fn = 'ticket/%s_%s.json'%(date, t1)
+            fn = 'ticket/%s_%s.json' % (date, t1)
             mdate = '1970-01-01'
             if os.path.exists(fn):
                 mdate = time.strftime("%Y-%m-%d", time.localtime(os.path.getmtime(fn)))
@@ -2588,7 +2586,7 @@ if __name__ == '__main__':
                     cache = 0
             if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
                 cache = 0
-            if (0 <= i) and datediff(now, mdate) >= 19: #20
+            if (0 <= i) and datediff(now, mdate) >= 19:  # 20
                 cache = 0
             for retry in range(5):
                 c, samecity, ret = getczxx(t1, date, cache)
