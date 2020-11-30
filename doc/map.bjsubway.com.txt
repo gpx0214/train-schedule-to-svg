@@ -1,0 +1,32 @@
+#北京地铁线路图
+http://map.bjsubway.com:8080/subwaymap2/public/
+https://map.bjsubway.com/
+
+http://map.bjsubway.com:8080/subwaymap2/public/subwaymap/beijing.xml
+https://map.bjsubway.com/subwaymap/beijing.xml?v=7
+线路信息 站间用时 公里数
+
+http://map.bjsubway.com:8080/subwaymap2/public/subwaymap/interchange.xml
+https://map.bjsubway.com/subwaymap/interchange.xml
+换乘信息 线路间换乘时间 
+
+http://map.bjsubway.com:8080/subwaymap2/public/subwaymap/stations.xml
+https://map.bjsubway.com/subwaymap/stations.xml?v=2
+站点信息
+
+http://map.bjsubway.com:8080/subwaymap2/public/api/searchstartend?start=%E5%8C%97%E4%BA%AC%E5%8D%97%E7%AB%99&end=%E5%8C%97%E4%BA%AC%E8%A5%BF%E7%AB%99
+https://map.bjsubway.com/searchstartend?start=%E5%8C%97%E4%BA%AC%E5%8D%97%E7%AB%99&end=%E5%8C%97%E4%BA%AC%E8%A5%BF%E7%AB%99&startacc=150996783&endacc=150995224&time=
+两站查询
+
+https://www.bjsubway.com/station/zjgls/
+http://www.mtr.bj.cn/service/line/distable/line-1.html
+站间距离
+
+https://www.bjsubway.com/e/action/ListInfo/?classid=39&ph=1
+http://www.mtr.bj.cn/service/line/timetable/line-4.html
+首末车时间
+
+https://www.bjsubway.com/station/xltcx/
+var s = document.body.innerHTML.match(/<a href="\/station\/xltcx\/line(\w+)\/.*.html\?sk=1\">(.*)<\/a>/g).join("\n")
+s.replace(/<a href="\/station\/xltcx\/line(\w+)\/(.*).html\?sk=1\">(.*)<\/a>/g,"<a href=\"https:\/\/www.bjsubway.com\/station\/xltcx\/line$1\/$2.html\?sk=1\" target=\"_blank\">$1 $3<\/a><br />").replace(/s7 /g,"7 ")
+时刻表
