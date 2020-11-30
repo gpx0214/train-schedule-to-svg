@@ -195,18 +195,19 @@ polyline {
 <text x="0" y="444">原平 444</text>
 <line class="station" x1="0" y1="444" x2="1440" y2="444" />
 <polyline name="201012_2462" class="polyline2" points="118,444 122,444 "/>
-<polyline name="201013-1123_2462+0" class="polyline2" points="118,444 122,444 "/>
-<polyline name="201107-08_2604" class="polyline2" points="240,0 281,0 "/>
-<polyline name="w671201012-1102|14-23_2604+0" class="polyline2" points="240,0 281,0 "/>
+<polyline name="201013-1231_2462+0" class="polyline2" points="118,444 122,444 "/>
 <polyline name="_6437" class="polyline6" points="1110,35 1112,35 1122,44 1124,44 1134,53 1136,53 1142,56 1144,56 1152,60 1154,60 1167,73 1169,73 1177,79 1179,79 1189,87 1191,87 1205,98 1207,98 1215,103 1217,103 1229,112 1231,112 1244,121 1246,121 1255,127 1257,127 1267,134 1270,134 1278,139 1280,139 1290,147 1292,147 1303,155 1305,155 1317,163 1319,163 1331,171 1333,171 1343,179 1345,179 1355,185 1357,185 1375,197 1377,197 1389,203 1391,203 1402,210 1406,210 1422,220 1424,220 1440,228 "/>
 <polyline name="_6437+1" class="polyline6" points="0,228 1,229 3,229 18,241 20,241 29,248 46,248 55,256 "/>
 <polyline name="_6438" class="polyline6" points="339,256 351,248 352,248 363,241 365,241 380,229 382,229 395,220 397,220 407,210 415,210 424,203 426,203 435,197 437,197 452,185 454,185 463,179 465,179 475,171 476,171 487,163 489,163 499,155 501,155 511,147 513,147 523,139 525,139 534,134 536,134 546,127 553,127 561,121 563,121 574,112 576,112 587,103 588,103 596,98 598,98 612,87 614,87 624,79 626,79 634,73 636,73 650,60 652,60 660,56 662,56 667,53 669,53 680,44 682,44 693,35 695,35 "/>
 <polyline name="_8817" class="polyline8" points="550,263 599,304 601,304 610,312 611,312 621,321 622,321 645,337 647,337 681,365 683,365 693,374 695,374 713,396 715,396 727,408 729,408 780,444 790,444 "/>
 <polyline name="_8818" class="polyline8" points="614,444 629,444 672,408 673,408 685,396 688,396 719,374 722,374 732,365 735,365 767,337 771,337 791,321 792,321 805,312 806,312 817,304 818,304 872,263 "/>
-<polyline name="201012-1109_Z282" class="polylineZ" points="622,0 667,0 "/>
-<polyline name="201106-23_Z282+0" class="polylineZ" points="622,0 667,0 "/>
+<polyline name="201012-1105_Z282" class="polylineZ" points="622,0 667,0 "/>
+<polyline name="201106-1231_Z282+0" class="polylineZ" points="622,0 667,0 "/>
 <polyline name="201012-1101_K55" class="polylineK" points="145,0 168,0 "/>
-<polyline name="201102-23_K55+0" class="polylineK" points="145,0 168,0 "/>
+<polyline name="201102-1231_K55+0" class="polylineK" points="145,0 168,0 "/>
+<polyline name="201011-20_K215" class="polylineK" points="788,0 "/>
+<polyline name="201021-1228_K215+0" class="polylineK" points="788,0 "/>
+<polyline name="201229-30_K215+0" class="polylineK" points="788,0 "/>
 <polyline name="_K601" class="polylineK" points="1341,0 1440,94 "/>
 <polyline name="_K601+1" class="polylineK" points="0,94 41,134 43,134 189,263 212,263 277,337 282,337 307,365 312,365 337,396 342,396 386,444 395,444 "/>
 <polyline name="_K602" class="polylineK" points="1418,444 1426,444 1440,426 "/>
@@ -216,10 +217,11 @@ polyline {
 <polyline name="_K604" class="polylineK" points="1271,444 1276,444 1315,396 1318,396 1343,365 1346,365 1370,337 1374,337 1440,264 "/>
 <polyline name="_K604+1" class="polylineK" points="0,264 1,263 24,263 83,210 87,210 178,134 181,134 333,0 "/>
 <polyline name="201011_K671" class="polylineK" points="1267,444 1273,444 "/>
-<polyline name="201012-1122_K671+0" class="polylineK" points="1267,444 1273,444 "/>
-<polyline name="!201027-1101_K960" class="polylineK" points="139,0 174,0 699,444 705,444 "/>
-<polyline name="_K962" class="polylineK" points="1150,444 1167,444 1440,221 "/>
-<polyline name="_K962+1" class="polylineK" points="0,221 272,0 297,0 "/>
+<polyline name="201012-1230_K671+0" class="polylineK" points="1267,444 1273,444 "/>
+<polyline name="201012-26|1102-13|1212-21|30-31_K960" class="polylineK" points="139,0 174,0 699,444 705,444 "/>
+<polyline name="!201115-1204_K962" class="polylineK" points="1150,444 1167,444 "/>
+<polyline name="!201116-1205_K962+0" class="polylineK" points="272,0 297,0 "/>
 <polyline name="201011-12_K7716" class="polylineK" points="992,0 1025,0 "/>
-<polyline name="201014-1123_K7716+0" class="polylineK" points="132,0 186,0 "/>
+<polyline name="201014-1228_K7716+0" class="polylineK" points="132,0 186,0 "/>
+<polyline name="201228-30_K7716+0" class="polylineK" points="992,0 1025,0 "/>
 </svg>

@@ -138,8 +138,8 @@ polyline {
 <line class="station" x1="0" y1="65" x2="1440" y2="65" />
 <polyline name="_C5551" class="polylineC" points="375,0 408,59 "/>
 <polyline name="_C5552" class="polylineC" points="429,59 434,57 436,57 457,18 459,18 463,15 "/>
-<polyline name="201011-19|1104-09_C5553" class="polylineC" points="494,8 500,15 502,15 523,57 525,57 530,59 "/>
-<polyline name="201020-1122_C5553+0" class="polylineC" points="502,15 523,57 525,57 530,59 "/>
+<polyline name="201011-19_C5553" class="polylineC" points="494,8 500,15 502,15 523,57 525,57 530,59 "/>
+<polyline name="201020-1230_C5553+0" class="polylineC" points="502,15 523,57 525,57 530,59 "/>
 <polyline name="_C5554" class="polylineC" points="561,59 566,57 568,57 581,36 584,36 597,15 599,15 605,8 "/>
 <polyline name="_C5555" class="polylineC" points="615,8 621,15 623,15 648,59 "/>
 <polyline name="_C5556" class="polylineC" points="661,59 666,57 668,57 681,36 683,36 696,15 "/>
@@ -155,7 +155,7 @@ polyline {
 <polyline name="_C5566" class="polylineC" points="1269,59 1274,57 1276,57 1289,36 1291,36 1303,15 1306,15 1320,0 "/>
 <polyline name="_C6051" class="polylineC" points="399,0 416,15 418,15 441,48 "/>
 <polyline name="201011-18_C6052" class="polylineC" points="376,48 398,15 400,15 406,8 "/>
-<polyline name="201020-26|28|30-1102|04-22_C6052+0" class="polylineC" points="376,48 398,15 "/>
+<polyline name="201020-26|28|30-1102|04-1230_C6052+0" class="polylineC" points="376,48 398,15 "/>
 <polyline name="!201019|27|29|1103_C6053" class="polylineC" points="428,15 451,48 "/>
 <polyline name="_C6054" class="polylineC" points="418,48 425,43 427,43 439,27 441,27 452,15 "/>
 <polyline name="_C6055" class="polylineC" points="484,15 503,43 505,43 513,48 "/>
