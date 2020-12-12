@@ -1828,7 +1828,7 @@ def getcompilelist(no, cache=1):
 
 '''
 import time
-c = readcsv('detail.csv')
+c = readcsv('js/train_detail.csv')
 for i in range(0, len(c), 1):
     if len(c[i]) < 7:
         continue
@@ -2668,7 +2668,7 @@ lines = [
 [u'京沪高速线', r'(?!G7[012356]\d{1,3})[G]\d{1,4}|(?!D7\d{1,3})[D]\d{1,4}'],
 [u'京广高速线', r'[GDC]\d{1,4}'],
 [u'沪昆高速线', r'[GDC]\d{1,4}'],
-[u'京包高速线', r'[GDC]\d{1,4}'],
+[u'京包高速线', r'[GDC]\d{1,4}|S\d{1,4}'],
 [u'京沪线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}|D7\d{1,3}'],
 [u'京广线', r'[ZTKPQWY]\d{1,4}|C7[01]\d{2}|D75\d{2}|D6[67]\d{2}'],
 [u'京九线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
@@ -3279,7 +3279,7 @@ for name in citys:
             print(mt, date, t1)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 
-for t1 in ['GZQ','SZQ']:
-    for i in range(0,1):
+for t1 in ['CDW','CQW']:
+    for i in range(0,29):
         c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 '''
