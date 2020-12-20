@@ -14,6 +14,7 @@ import re
 import json
 import time
 import datetime
+import base64
 # import math
 # import random
 
@@ -499,7 +500,7 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     for row in s:
         row.append(jqss.get(row[1], ""))
         # row.append(row[1].encode('gbk').encode('hex').decode('latin-1'))
-        row.append(row[1].encode('gbk').encode('base64')[:-1].decode('latin-1'))
+        row.append(base64.b64encode(row[1].encode('gbk')).decode('latin-1'))
     return s
 
 
@@ -527,7 +528,7 @@ def hash_tele(s):
 
 
 def unhash_tele(n):
-    return chr(n//26 % 26+65) + chr(n % 26+65) + chr(n//26//26+65)
+    return chr(n/26 % 26+65) + chr(n % 26+65) + chr(n/26/26+65)
 
 
 # train_map
