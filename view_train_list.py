@@ -66,7 +66,7 @@ def writebyte(f1, b):
     fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
     with open(fn, 'wb') as f:
         if f.tell() == 0:
-            f.write('\xef\xbb\xbf')
+            f.write(b'\xef\xbb\xbf')
         f.write(b)
 
 
@@ -528,7 +528,7 @@ def hash_tele(s):
 
 
 def unhash_tele(n):
-    return chr(n/26 % 26+65) + chr(n % 26+65) + chr(n/26/26+65)
+    return chr(n//26 % 26+65) + chr(n % 26+65) + chr(n//26//26+65)
 
 
 # train_map
@@ -2708,7 +2708,7 @@ for line in lines:
     print('%10d %s' % (len(buf), fn))
     with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
         if f.tell() == 0:
-            f.write('\xef\xbb\xbf')
+            f.write(b'\xef\xbb\xbf')
         f.write(buf.encode('utf-8'))
 
 '''
