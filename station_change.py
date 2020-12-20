@@ -32,7 +32,4 @@ for fi in range(len(fns)):
                        (fdate, unhash_tele(i), lastmap[i], curmap[i]))
     lastmap = copy.deepcopy(curmap)
 
-with open('station_change.txt', 'wb') as f:
-    if f.tell() == 0:
-        f.write('\xef\xbb\xbf')
-    f.write(buffer.encode('utf-8'))
+writebyte('station_change.txt', buffer.encode('utf-8'))
