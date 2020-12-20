@@ -527,7 +527,7 @@ def hash_tele(s):
 
 
 def unhash_tele(n):
-    return chr(n/26 % 26+65) + chr(n % 26+65) + chr(n/26/26+65)
+    return chr(n//26 % 26+65) + chr(n % 26+65) + chr(n//26//26+65)
 
 
 # train_map
