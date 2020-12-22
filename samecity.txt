@@ -355,7 +355,7 @@ def sortbynum(x,y):
 same_city = []
 for row in rows:
     row = row.split(u',')
-    row = sorted(row, sortbynum)
+    row = sorted(row, sortbynum) #py2
     for i in range(len(row)):
         if sum([1 if row[i] in col else 0 for col in row]) >= 2:
             center = row.pop(i)
@@ -373,7 +373,7 @@ def sortbytotalnum(x,y):
         return -1
     return 0
 
-same_city = sorted(same_city, sortbytotalnum)
+same_city = sorted(same_city, sortbytotalnum) #py2
 
 for r in same_city:
     print(",".join(r))

@@ -52,7 +52,10 @@ def readbyte(fn):
     '''
     read bytes skip UTF-8 BOM
     '''
-    with open(fn, 'rb') as f:  # py2
+    # f = open(fn, 'r',encoding = 'utf8'); #py3
+    # f = open(fn, 'r'); #py2
+    data = ''
+    with open(fn, 'rb') as f: # py2 py3
         if f.read(3) != b'\xef\xbb\xbf':
             f.seek(0, 0)
         data = f.read()
@@ -61,10 +64,25 @@ def readbyte(fn):
 
 def writebyte(f1, b):
     '''
+    write bytes without UTF-8 BOM
+    '''
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
+    except:
+        fn = f1
+    with open(fn, 'wb') as f: # use wb on win, or get more \r \r\n
+        f.write(b)
+
+
+def writebytebom(f1, b):
+    '''
     write bytes with UTF-8 BOM
     '''
-    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
-    with open(fn, 'wb') as f:
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
+    except:
+        fn = f1
+    with open(fn, 'wb') as f: # use wb on win, or get more \r \r\n
         if f.tell() == 0:
             f.write(b'\xef\xbb\xbf')
         f.write(b)
@@ -468,11 +486,11 @@ def cmpby0_7_i2_i5_i3_m4(a1, a2):
 
 # station_name.js
 def getStation(fn='js/station_name.js', fn1='js/qss.js'):
-    # f = open(fn, 'r',encoding = 'utf8'); #py3
-    with open(fn, 'rb') as f:  # py2
-        s = f.read().decode('utf-8')
-    a = re.findall(r'\'\@([^\']+)\'', s, re.I | re.M)[0]
-    s = a.split('@')
+    s = re.findall(
+        r'\'\@([^\']+)\'',
+        readbyte(fn).decode('utf-8'),
+        re.I | re.M
+    )[0].split('@')
     for i in range(len(s)):
         s[i] = s[i].split('|')
     print('read %d stations in %s' % (len(s), fn))
@@ -490,15 +508,16 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     s.append([u'', u'车墩', u'MIH', u'chedun', u'cd', u'-1'])
     s.append([u'', u'羊木', u'AMJ', u'yangmu', u'ym', u'-1'])
     try:
-        with open(fn1, 'rb') as f:  # py2
-            qss = f.read().decode('utf-8')
-        qss = re.findall(r'{.*}', qss, re.I | re.M | re.S)[0]
-        jqss = json.loads(qss)
-        print('read %d qss in %s' % (len(jqss), fn1))
+        qss = json.loads(re.findall(
+            r'{.*}', 
+            readbyte(fn1).decode('utf-8'), 
+            re.I | re.M | re.S
+        )[0])
+        print('read %d qss in %s' % (len(qss), fn1))
     except:
-        jqss = {}
+        qss = {}
     for row in s:
-        row.append(jqss.get(row[1], ""))
+        row.append(qss.get(row[1], ""))
         # row.append(row[1].encode('gbk').encode('hex').decode('latin-1'))
         row.append(base64.b64encode(row[1].encode('gbk')).decode('latin-1'))
     return s
@@ -543,7 +562,7 @@ def hash_no(s):
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     d = dict(items)
     train_class = d[s[0]] if s[0] in d else 0
-    n = int(re.sub(r'\D+', '', s))
+    n = int(re.sub(r'\D+', '', str(s)))
     return train_class + n
 
 
@@ -745,8 +764,7 @@ def getsearch12306(kw, date, cache=1):
         print('key data not exist ' + kw)
         return [], -1
     if search['status'] == True and len(search['data']):
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(name, resp.content)
         print('save  %-3s %3d %5s-%5s' % (
             kw, len(search['data']),
             search['data'][0]['station_train_code'],
@@ -920,13 +938,8 @@ def getSch12306Online(t1, t2, train_no, date):
         print('ValueError %s %s' % (train_no, date))
         return []
     name = 'sch/' + train_no + '.json'
-    try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
-    except:
-        fn = name
     if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(name, resp.content)
         print('%s %s %s %2d' % (train_no, t1, t2, len(sch['data']['data'])))
         return sch['data']['data']
     else:
@@ -1366,7 +1379,7 @@ polyline {
                 flag = 1
         if flag and len(r.findall(arr[i][0][0])) > 0:
             num += 1
-            arr[i] = sorted(arr[i], cmpby0_7_i2_i5_i3_m4)
+            arr[i] = sorted(arr[i], cmpby0_7_i2_i5_i3_m4) #py2
             buf += csvToPolyline(arr[i], m, station)
     #
     buf += ('</svg>')
@@ -1486,13 +1499,8 @@ def getczxxOnline(t1, date):
         print('ValueError %s %s' % (t1, date))
         return [], [], -1
     name = 'ticket/' + date + '_' + t1 + '.json'
-    try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
-    except:
-        fn = name
     if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(name, resp.content)
         print('%s %s %4d' % (t1, date, len(j['data']['data'])))
         return j['data']['data'], j['data']['sameStations'], len(j['data']['data'])
     else:
@@ -1554,13 +1562,8 @@ def getLeftTicket(t1, t2, date):
         print('ValueError %s %s %s' % (t1, t2, date))
         return []
     name = 'ticket/' + date + '_' + t1 + '_' + t2 + '.json'
-    try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
-    except:
-        fn = name
     if ticket['status'] == True and ticket['httpstatus'] == 200 and len(ticket['data']['result']):
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(name, resp.content)
         print('%s %s %s %d' % (t1, t2, date, len(ticket['data']['result'])))
         return ticket['data']['result']
     else:
@@ -1642,18 +1645,13 @@ def getstation(tele, date):
         return [], -1
     if 'data' in j:
         print('wifi_station %s %s %d' % (tele, date, len(j['data'])))
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(name, resp.content)
         return j['data'], 0
     return [], 0
 
 
 def getdetail(tele, no, date):
     name = 'detail/detail_' + no + '.json'
-    try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
-    except:
-        fn = name
     code = re.sub(r'^0+', "", no[2:10])
     if code[0] in 'GDC':
         code = 'T'
@@ -1678,8 +1676,7 @@ def getdetail(tele, no, date):
         print('ValueError %s %s' % (date, no))
         return date, date, -1
     if 'data' in j:
-        with open('detail/detail_' + no + '.json', 'wb') as f:
-            f.write(resp.content)
+        writebyte('detail/detail_' + no + '.json', resp.content)
         #print('%s %s %s %d' % (no, len(j['data']['stopTime'])))
         if 'stopTime' in j['data'] and len(j['data']['stopTime']) > 0:
             ret = [
@@ -1771,10 +1768,8 @@ def getcompilelist(no, cache=1):
     except:
         fn = name
     if os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read()
         try:
-            j = json.loads(data)
+            j = json.loads(readbyte(fn))
             if 'data' in j:
                 ret = [
                     no,
@@ -1810,8 +1805,7 @@ def getcompilelist(no, cache=1):
         return []  # ,-1
     time.sleep(0.1)
     if 'data' in j:
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(name, resp.content)
         ret = [
             no,
         ]
@@ -1906,8 +1900,7 @@ def getequip(no, date):
         print('ValueError %s' % (no))
         return ret, -1
     if 'data' in j:
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(name, resp.content)
         ret = [
             no,
             j['data'][0]['trainsetType'],
@@ -1954,9 +1947,7 @@ def getpreseq(code, date):
         print('ValueError %s' % (code))
         return date, date, -1
     if 'data' in j:
-        with open('preseq/preseq_' + date + '_' + code + '.json', 'wb') as f:
-            f.write(resp.content)
-            j['data']
+        writebyte('preseq/preseq_' + date + '_' + code + '.json', resp.content)
         print(j['data'])
         return j['data']
     else:
@@ -2057,8 +2048,7 @@ def getcdinfo(date, s, cache=2):
         # for r in ret:
         # print(type(r))
         # print((','.join(ret)).decode('utf-8'))
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(name, resp.content)
         return ret, 0
     # except:
     else:
@@ -2133,12 +2123,7 @@ def gtzwd(date, s):
     except:
         print(body)
     name = 'gtzwd/gt_' + date + '_' + s + '.json'
-    try:
-        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
-    except:
-        fn = name
-    with open(fn, 'wb') as f:
-        f.write(resp.content)
+    writebyte(name, resp.content)
     return j
 
 
@@ -2647,7 +2632,7 @@ if __name__ == '__main__':
     print(num)
     #
     buf = trainlistStr(train_arr, base_date, size, station)
-    writebyte('js/train.csv', buf)
+    writebytebom('js/train.csv', buf)
     #
     #
     '''
@@ -2706,11 +2691,7 @@ for line in lines:
     m = openMilage(fni)
     buf,_ = csvToSvg(m, c, restr, station)
     print('%10d %s' % (len(buf), fn))
-    with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
-        if f.tell() == 0:
-            f.write(b'\xef\xbb\xbf')
-        f.write(buf.encode('utf-8'))
-
+    writebytebom(fn, buf.encode('utf-8'))
 '''
 
 r'''
@@ -2746,7 +2727,7 @@ for obj in j:
 
 print(buf.decode('utf-8'));
 
-writebyte('XJA.txt', buf)
+writebytebom('XJA.txt', buf)
 '''
 
 '''
@@ -2783,10 +2764,10 @@ size = datediff('2019-11-12','2017-11-20') + 1
 print('base_date %s size %d' % (base_date, size))
 train_arr = mapToArr(train_map)
 buf = trainlistStr(train_arr, base_date, size, station)
-writebyte('train_list1.txt', buf)
+writebytebom('train_list1.txt', buf)
 
-writebyte('train_arr_json.txt', json.dumps(train_arr))
-writebyte('train_map_json.txt', b = json.dumps(train_map))
+writebytebom('train_arr_json.txt', json.dumps(train_arr).encode('utf-8'))
+writebytebom('train_map_json.txt', b = json.dumps(train_map).encode('utf-8'))
 
 [1116, 
     0,    0,    0,    0,    0,    0,    0,
@@ -2937,8 +2918,7 @@ def getsearch(kw, cache=1):
         print('ValueError ' + kw)
         return [], -1
     if len(search):
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(fn, resp.content)
         print('save  %-3s %2d' % (
             kw, len(search)
         ))
@@ -2976,8 +2956,7 @@ def getsearch2(kw, cache=1):
         print('ValueError ' + kw)
         return [], -1
     if 'data' in j and len(j['data']):
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(fn, resp.content)
         print('save  %-3s %2d' % (
             kw, len(j['data'])
         ))
@@ -3015,8 +2994,7 @@ def getAllFz(kw, cache=1):
         print('ValueError ' + kw)
         return [], -1
     if len(j):
-        with open(fn, 'wb') as f:
-            f.write(resp.content)
+        writebyte(fn, resp.content)
         print('save  %-3s %2d' % (
             kw, len(j)
         ))
@@ -3166,7 +3144,7 @@ for i in range(ord('9'), ord('0'), -1):
 dfsSearchAllFz(map, st)
 #dfsSearchAll123(map, st)
 
-writebyte('dbm3_map_json.txt', b=json.dumps(map))
+writebytebom('dbm3_map_json.txt', b=json.dumps(map).encode('utf-8'))
 
 ret = []
 for v in map:
