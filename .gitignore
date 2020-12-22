@@ -23,4 +23,5 @@
 /*.dll
 curl/*
 .git/*
-.vscode/*
+.vscode
+__pycache__
