@@ -329,4 +329,17 @@ polyline {
 <polyline name="_D6968" class="polylineD" points="588,467 591,467 600,459 608,459 646,333 "/>
 <polyline name="_D6969" class="polylineD" points="1120,333 1158,459 1163,459 1172,467 1175,467 "/>
 <polyline name="_D6970" class="polylineD" points="796,467 799,467 808,459 813,459 851,333 853,333 "/>
+<polyline name="_S501" class="polylineS" points="418,0 430,11 432,11 "/>
+<polyline name="_S502" class="polylineS" points="735,11 737,11 750,0 "/>
+<polyline name="_S503" class="polylineS" points="860,0 872,11 874,11 "/>
+<polyline name="_S504" class="polylineS" points="1177,11 1179,11 1192,0 "/>
+<polyline name="_S511" class="polylineS" points="604,0 616,11 618,11 "/>
+<polyline name="_S512" class="polylineS" points="501,11 504,11 518,0 "/>
+<polyline name="_S513" class="polylineS" points="1096,0 1108,11 1110,11 "/>
+<polyline name="_S514" class="polylineS" points="1063,11 1065,11 1079,0 "/>
+<polyline name="_S515" class="polylineS" points="392,0 404,11 406,11 "/>
+<polyline name="201011-14_S516" class="polylineS" points="686,11 689,11 703,0 "/>
+<polyline name="201015-1230_S516+0" class="polylineS" points="689,11 691,11 705,0 "/>
+<polyline name="_S517" class="polylineS" points="983,0 995,11 997,11 "/>
+<polyline name="_S518" class="polylineS" points="1196,11 1198,11 1212,0 "/>
 </svg>
