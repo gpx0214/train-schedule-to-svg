@@ -656,10 +656,7 @@ def trainlistStr(train_arr, base_date, size, station=None):
 
 # train_list.js
 def openTrainList(fn='js/train_list.js'):
-    with open(fn, 'rb') as f:
-        _ = f.read(16)
-        data = f.read().decode('utf-8')
-    return json.loads(data)
+    return json.loads(readbyte(fn)[16:])
 
 
 def add_train_list(train_map, fn0='js/train_list.js', base_date=None):
@@ -678,10 +675,7 @@ def add_train_list(train_map, fn0='js/train_list.js', base_date=None):
 
     '''
     print('add_train_list() %s' % (fn0))
-    with open(fn0, 'r') as f:
-        # with open(fn0, 'r', encoding='utf-8') as f: #py3
-        _ = f.read(16)
-        data = f.read()
+    data = readbyte(fn0)[16:] #.decode('utf-8')
     #
     slice_mark = sorted(mark_json_slice(data))
     # print(slice_mark)
@@ -727,10 +721,8 @@ def getsearch12306(kw, date, cache=1):
     except:
         fn = name
     if cache and os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read().decode('utf-8')
         try:
-            search = json.loads(data)
+            search = json.loads(readbyte(fn))
             if search['status'] == True and len(search['data']):
                 print('read  %-3s %3d %5s-%5s' % (
                     kw, len(search['data']),
@@ -861,10 +853,8 @@ def processS(a, date, station):
     except:
         fn = name
     if os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read().decode('utf-8')
         try:
-            sch = json.loads(data)
+            sch = json.loads(readbyte(fn))
             if sch['status'] == True and sch['httpstatus'] == 200 \
                     and len(sch['data']['data']):
                 return sch['data']['data']
@@ -908,10 +898,8 @@ def getSch12306Local(train_no):
     except:
         fn = name
     if os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read().decode('utf-8')
         try:
-            sch = json.loads(data)
+            sch = json.loads(readbyte(fn))
             if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
                 return sch['data']['data']
         except ValueError:
@@ -1136,11 +1124,7 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
 
 # line
 def openMilage(fn):
-    with open(fn, 'rb') as f:  # py2
-        if f.read(3) != b'\xef\xbb\xbf':
-            f.seek(0, 0)
-        data = f.read().decode('utf-8')
-    m = data.split('\n')
+    m = readbyte(fn).split('\n')
     ret = []
     for i in range(len(m)):
         sp = m[i].replace('\r', '').split(' ')
@@ -1468,10 +1452,8 @@ def getczxxLocal(t1, date):
     except:
         fn = name
     if os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read().decode('utf-8')
         try:
-            j = json.loads(data)
+            j = json.loads(readbyte(fn))
             if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
                 # print('%s %s %4d local' % (t1, date, len(j['data']['data'])))
                 return j['data']['data'], j['data']['sameStations'], len(j['data']['data'])
@@ -1860,10 +1842,8 @@ def getequip(no, date):
         u'',
     ]
     if os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read()
         try:
-            j = json.loads(data)
+            j = json.loads(readbyte(fn))
             if 'data' in j:
                 ret = [
                     no,
@@ -1970,10 +1950,8 @@ def getcdinfo(date, s, cache=2):
     except:
         fn = name
     if os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read()
         try:
-            j = json.loads(data)
+            j = json.loads(readbyte(fn))
             ret = [
                 s.encode('utf-8'),
                 '%s(%d)' % (
@@ -2707,10 +2685,7 @@ for obj in j:
     # getSch12306(obj['FST'].encode('utf-8'), obj['EST'].encode('utf-8'), obj['TRNO'].encode('utf-8'), date)
     train_code = obj['STCODE'].encode('utf-8')
     # getSchT(obj['STCODE'].encode('utf-8'), date)
-    with open('sch/'+ train_code +'_T.json','rb') as f:
-        f.read(3);
-        data = f.read().decode('utf-8');
-    s = json.loads(data)
+    s = json.loads(readbyte('sch/'+ train_code +'_T.json'))
     day = 0;
     last = 0;
     time_list = [];
@@ -2897,9 +2872,7 @@ import requests
 def getsearch(kw, cache=1):
     fn = ''
     if cache and os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read().decode('utf-8')
-        search = json.loads(data)
+        search = json.loads(readbyte(fn))
         return search, len(search)
     #
     url = "http://dynamic.12306.cn/yjcx/doPickJZM?param=" + kw + "&type=1&czlx=0"
@@ -2931,10 +2904,8 @@ def getsearch(kw, cache=1):
 def getsearch2(kw, cache=1):
     fn = 'hyfw/hyfw_%s.json' % kw
     if cache and os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read().decode('utf-8')
         try:
-            j = json.loads(data)
+            j = json.loads(readbyte(fn))
             if 'data' in j and len(j['data']):
                 return j['data'], len(j['data'])
         except:
@@ -2969,10 +2940,8 @@ def getsearch2(kw, cache=1):
 def getAllFz(kw, cache=1):
     fn = 'hyfw/getAllFz_%s.json' % kw
     if cache and os.path.exists(fn):
-        with open(fn, 'rb') as f:
-            data = f.read().decode('utf-8')
         try:
-            j = json.loads(data)
+            j = json.loads(readbyte(fn))
             if len(j):
                 return j, len(j)
         except:
@@ -3258,7 +3227,7 @@ for name in citys:
             print(mt, date, t1)
             c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 
-for t1 in ['CDW','CQW']:
-    for i in range(0,29):
+for t1 in ['BJP']:
+    for i in range(1,29):
         c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 '''
