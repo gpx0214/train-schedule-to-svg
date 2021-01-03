@@ -2402,8 +2402,11 @@ def compress_bin_vector(date_bin, base_date, size):
 
 if __name__ == '__main__':
     station = getStation()
-    writecsv("js/station.csv", [[col.encode('utf-8') for col in row] for row in station])
-    writecsv("js/station.min.csv", [[row[x].encode('utf-8') for x in [1,2,6]] for row in station])
+
+    if len(sys.argv) > 1:
+        writecsv("js/station.csv", [[col.encode('utf-8') for col in row] for row in station])
+        writecsv("js/station.min.csv", [[row[x].encode('utf-8') for x in [1,2,6]] for row in station])
+        exit()
 
     maxlen = 90000
     train_map = [[] for i in range(maxlen)]
