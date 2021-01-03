@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-path="/home/ec2-user/"
+path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/"
 
 t0='0'
 if [ -f "${path}js/qss.js" ];then
@@ -57,6 +57,9 @@ echo t1 newer
 yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}js/station_name.js)"`
 cp -p ${path}js/station_name.js ${path}js/station_name_${yymmdd}.js
 gzip -c9 ${path}js/station_name.js > ${path}js/station_name.js.gz
+${path}view_train_list.py station
+gzip -c9 ${path}js/station.csv > ${path}js/station.csv.gz
+gzip -c9 ${path}js/station.min.csv > ${path}js/station.min.csv.gz
 else
 echo t0 newer or same
 fi

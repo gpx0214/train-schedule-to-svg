@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-path="/home/ec2-user/"
+path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/"
 
 t0='0'
 s0='0'
