@@ -44,7 +44,7 @@ def writecsv(f1, ret):
         if f.tell() == 0:
             f.write(b'\xef\xbb\xbf')
         for i in range(len(ret)):
-            f.write(",".join(ret[i]) + '\n')
+            f.write(b','.join(ret[i]) + b'\n')
     return len(ret)
 
 
@@ -585,6 +585,29 @@ def unhash_no(n):
         if train_class == items[i][0]:
             return train_class + str(n-items[i][1])
     return str(n)
+
+
+def hash_no_stat_block(arr, step, maxlen):
+    cnt = 0
+    # step = 100;
+    stat = [0 for i in range(1+(maxlen-1)//step)]
+    for i in range(len(arr)):
+        if arr[i]:
+            stat[i//step] += 1
+            cnt += 1
+    return stat, cnt
+
+
+def print_block(stat):
+    s = ''
+    cnt = 0
+    for i in range(len(stat)):
+        s += (("    " + str(stat[i]))[-4:]
+              + ('' if (i+1) % 10 else '\n')
+              + ('' if (i+1) % 100 else '\n'))
+        if stat[i]:
+            cnt += 1
+    return s, cnt
 
 
 def add_map(train_map, a):
@@ -1406,29 +1429,6 @@ def train_list_train_no_array(t, maxlen):
                     match[0].encode('utf-8')
                 ) - 1] = a['train_no'].encode('utf-8')
     return arr
-
-
-def train_list_stat_block(arr, step, maxlen):
-    cnt = 0
-    # step = 100;
-    stat = [0 for i in range(1+(maxlen-1)//step)]
-    for i in range(len(arr)):
-        if arr[i]:
-            stat[i//step] += 1
-            cnt += 1
-    return stat, cnt
-
-
-def print_block(stat):
-    s = ''
-    cnt = 0
-    for i in range(len(stat)):
-        s += (("    " + str(stat[i]))[-4:]
-              + ('' if (i+1) % 10 else '\n')
-              + ('' if (i+1) % 100 else '\n'))
-        if stat[i]:
-            cnt += 1
-    return s, cnt
 
 
 # czxx
@@ -2434,42 +2434,9 @@ def compress_bin_vector(date_bin, base_date, size):
 
 
 if __name__ == '__main__':
-    try:
-        fn0 = sys.argv[1]
-    except:
-        fn0 = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), 'js/train_list.js')
-    try:
-        fn1 = sys.argv[2]
-    except:
-        fn1 = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), 'js/station_name.js')
-    print('input train_list file:   ' + fn0)
-
-    '''
-    try:
-        # if True:
-        maxlen = 90000
-        t = openTrainList(fn0)
-        arr = train_list_train_no_array(t, maxlen)
-        stat, train_num = train_list_stat_block(arr, 100, maxlen)
-        s, block = print_block(stat)
-        print(str(train_num) + " trains")
-        print(str(block) + " blocks")
-        print(s)
-        print(train_list_class_str(t))
-        station = getStation(fn1)
-        checkAllSch12306(t, station)
-        saveallcsv(t, station)
-        if platform.system() == "Windows":
-            os.system('pause')
-    except Exception, e:
-        print(str(Exception))
-        if platform.system() == "Windows":
-            os.system('pause')
-    '''
-
-    station = getStation(fn1)
+    station = getStation()
+    writecsv("js/station.csv", [[col.encode('utf-8') for col in row] for row in station])
+    writecsv("js/station.min.csv", [[row[x].encode('utf-8') for x in [1,2,6]] for row in station])
 
     maxlen = 90000
     train_map = [[] for i in range(maxlen)]
@@ -2478,6 +2445,7 @@ if __name__ == '__main__':
     base_date = '2020-10-11'
     #end_date = ''
     #
+    #train_list.js
     #base_date, mask, msg = add_train_list(train_map, fn0, '2019-12-30')
     size = 0  # bin_cnt(mask)
     #
@@ -2514,7 +2482,7 @@ if __name__ == '__main__':
             if rets[i] < level:
                 print(t1, date_add(now, i-1), rets[i], level)
                 c, samecity, ret = getczxx(t1, date_add(now, i-1), cache=0)
-    #
+    #czxx
     for i in range(-datediff(now, base_date), 32):
         date = date_add(now, i)
         freq = re.split(
@@ -2583,7 +2551,7 @@ if __name__ == '__main__':
                 samecity_arr.append(samecity)
                 for ii in samecity:
                     samecity_map[ii] = name
-    #
+    #search
     '''for i in range(31, -1, -1):
         # st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
         st = ["D9", "G9", "3", "T", "Z", "K5", "K4", "D4", "G4"]
@@ -2600,8 +2568,13 @@ if __name__ == '__main__':
                 break
             time.sleep(2 << retry)
         print(date, st)'''
-    #
+    #stat
     print('base_date %s size %d' % (base_date, size))
+    stat, train_num = hash_no_stat_block(train_map, 100, maxlen)
+    s, block = print_block(stat)
+    print(str(train_num) + " trains")
+    print(str(block) + " blocks")
+    print(s)
     #
     train_arr = mapToArr(train_map)
     #
@@ -2626,7 +2599,6 @@ r'''
 from view_train_list import *
 
 station = getStation()
-# saveallcsv(t,station)
 
 lines = [
 [u'京沪高速线', r'(?!G7[012356]\d{1,3})[G]\d{1,4}|(?!D7\d{1,3})[D]\d{1,4}'],
@@ -2842,6 +2814,7 @@ all
 '''
 
 '''
+#check_sch_time
 c = getczxx('CDW', date)
 
 
