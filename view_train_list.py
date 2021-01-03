@@ -1049,39 +1049,6 @@ def checkSchdatebintocsv(train_arr, base_date, size, station=None):
     return rows
 
 
-def checkSchdatemasktocsv(train_arr, base_date, size, mask, station=None):
-    '''
-    change train_arr[i]['service_type'] ['total_num']
-    '''
-    rows = []
-    for train in train_arr:
-        if train['date'] & mask == 0:
-            continue
-        for retry in range(3):
-            diff = get_last_one(train['date'], size)
-            if diff > -1:
-                date = date_add(base_date, diff)
-            else:
-                date = base_date
-            sch = processS(train, date, station)
-            if len(sch):
-                break
-            time.sleep(1 << retry)
-        train['total_num'] = len(sch)
-        if len(sch):
-            train['service_type'] = sch[0]['service_type']
-        else:
-            train['service_type'] = ""
-        if (train['station_train_code'] in train['train_no']) == False:
-            continue
-        s = schDateToCsv(sch, train['src'],
-                         train['date'], base_date, size, None)
-        for row in s:
-            if len(row) >= 7:
-                rows.append(row)
-    return rows
-
-
 def schDateToCsv(s, src, date_bin, base_date, size, station=None):
     # buf = ''
     ret = []
@@ -2585,15 +2552,6 @@ if __name__ == '__main__':
     buf = trainlistStr(train_arr, base_date, size, station)
     writebytebom('js/train.csv', buf)
     #
-    #
-    '''
-    for i in range(size):
-        mask = 1 << i
-        date = date_add(base_date, i)
-        ret = checkSchdatemasktocsv(train_arr, base_date, size, mask, station)
-        num = writecsv("delay/sort"+date+".csv", ret)
-        print('%s %6d' % (date, num))
-    '''
 
 r'''
 from view_train_list import *
