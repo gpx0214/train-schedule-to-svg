@@ -517,7 +517,7 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     except:
         qss = {}
     for row in s:
-        row.append(qss.get(row[1], ""))
+        row.append(re.sub(r':00$', '', qss.get(row[1], "")))
         # row.append(row[1].encode('gbk').encode('hex').decode('latin-1'))
         row.append(base64.b64encode(row[1].encode('gbk')).decode('latin-1'))
     return s
