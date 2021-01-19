@@ -2412,7 +2412,7 @@ if __name__ == '__main__':
     train_map = [[] for i in range(maxlen)]
     #
     now = nowdate()
-    base_date = '2020-10-11'
+    base_date = '2021-01-20'
     #end_date = ''
     #
     #train_list.js
@@ -2484,7 +2484,7 @@ if __name__ == '__main__':
                     cache = 0
                 if (5 <= i and i < 14) and datediff(now, mdate) >= 2:
                     cache = 0
-                if (14 <= i) and datediff(now, mdate) >= 5:
+                if (14 <= i) and datediff(now, mdate) >= 3: #5
                     cache = 0
             if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
                 cache = 0
@@ -2541,10 +2541,6 @@ if __name__ == '__main__':
     #stat
     print('base_date %s size %d' % (base_date, size))
     stat, train_num = hash_no_stat_block(train_map, 100, maxlen)
-    s, block = print_block(stat)
-    print(str(train_num) + " trains")
-    print(str(block) + " blocks")
-    print(s)
     #
     train_arr = mapToArr(train_map)
     #
@@ -2555,6 +2551,8 @@ if __name__ == '__main__':
     buf = trainlistStr(train_arr, base_date, size, station)
     writebytebom('js/train.csv', buf)
     #
+    s, block = print_block(stat)
+    writebytebom("stat_map.txt", str(train_num) + " trains" + str(block) + " blocks" + s)
 
 r'''
 from view_train_list import *
@@ -2597,7 +2595,7 @@ lines = [
 c = readcsv('js/time.csv')
 for line in lines:
     fni = u'test/%s里程.txt' % (line[0])
-    fn = u'test/201011%s.svg' % (line[0])
+    fn = u'test/210120%s.svg' % (line[0])
     restr = line[1]
     m = openMilage(fni)
     buf,_ = csvToSvg(m, c, restr, station)
