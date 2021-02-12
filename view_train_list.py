@@ -1114,7 +1114,7 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
 
 # line
 def openMilage(fn):
-    m = readbyte(fn).split('\n')
+    m = readbyte(fn).decode('utf-8').split('\n')
     ret = []
     for i in range(len(m)):
         sp = m[i].replace('\r', '').split(' ')
@@ -1665,6 +1665,8 @@ def trydetail(s, no, date, add=-1):
     correct = 1
     while correct > 0:  # ret >= 0:
         dmin, dmax, ret = getdetail(s, no, date)
+        if ret > 0:
+            getcompilelist(no)
         if ret <= -2:
             return dmin, dmax, ret
         if ret > 0:
@@ -1774,7 +1776,7 @@ def getcompilelist(no, cache=1):
 import time
 c = readcsv('js/train_detail.csv')
 for i in range(0, len(c), 1):
-    if len(c[i]) < 7:
+    if len(c[i]) < 5:
         continue
     name = 'list/list_' + c[i][0] + '.json'
     try:
@@ -2435,7 +2437,7 @@ if __name__ == '__main__':
         if name in samecity_map:
             continue
         rets = []
-        for i in range(-1, 29):  # -8...32
+        for i in range(-1, 15):  # -8...32
             date = date_add(now, i)
             c, samecity, ret = getczxx(t1, date, cache=2)
             rets.append(ret)
@@ -2453,7 +2455,7 @@ if __name__ == '__main__':
                 print(t1, date_add(now, i-1), rets[i], level)
                 c, samecity, ret = getczxx(t1, date_add(now, i-1), cache=0)
     #czxx
-    for i in range(-datediff(now, base_date), 32):
+    for i in range(-datediff(now, base_date), 18): #32
         date = date_add(now, i)
         freq = re.split(
             r'[\s\n,*]+', u'''北京 天津 沈阳 长春 哈尔滨 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都
@@ -2486,7 +2488,7 @@ if __name__ == '__main__':
                     cache = 0
                 if (14 <= i) and datediff(now, mdate) >= 3: #5
                     cache = 0
-            if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
+            if (-8 <= i and i <= 0) and datediff(date, mdate) > 0:
                 cache = 0
             if (0 <= i) and datediff(now, mdate) >= 19:  # 20
                 cache = 0
@@ -2552,7 +2554,7 @@ if __name__ == '__main__':
     writebytebom('js/train.csv', buf)
     #
     s, block = print_block(stat)
-    writebytebom("stat_map.txt", str(train_num) + " trains" + str(block) + " blocks" + s)
+    writebytebom("stat_map.txt", str(train_num) + " trains\n" + str(block) + " blocks\n" + s)
 
 r'''
 from view_train_list import *
@@ -2564,6 +2566,7 @@ lines = [
 [u'京广高速线', r'[GDC]\d{1,4}'],
 [u'沪昆高速线', r'[GDC]\d{1,4}'],
 [u'京包高速线', r'[GDC]\d{1,4}|S\d{1,4}'],
+[u'京哈高速线', r'[G9]\d{2}|G3[67]\d{2}'],
 [u'京沪线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}|D7\d{1,3}'],
 [u'京广线', r'[ZTKPQWY]\d{1,4}|C7[01]\d{2}|D75\d{2}|D6[67]\d{2}'],
 [u'京九线', r'[ZTKPQWY]\d{1,4}|^\d{1,4}'],
@@ -3106,7 +3109,7 @@ from view_train_list import *
 import math
 
 now = nowdate()
-base_date = '2020-07-01'
+base_date = '2021-01-20'
 station = getStation()
 
 samecity_arr = []
