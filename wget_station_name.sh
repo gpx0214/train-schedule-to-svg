@@ -60,6 +60,12 @@ gzip -c9 ${path}js/station_name.js > ${path}js/station_name.js.gz
 ${path}view_train_list.py station
 gzip -c9 ${path}js/station.csv > ${path}js/station.csv.gz
 gzip -c9 ${path}js/station.min.csv > ${path}js/station.min.csv.gz
+${path}github_auto_update.py js/station.csv js/station.min.csv
+${path}micromsg.py update station `date +"%y%m%d %H:%M:%S" -d@${t1}`
+rm -f ${path}js.7z
+7za a -t7z ${path}js.7z ${path}js/ -xr\!*.gz
+${path}micromsg.py js.7z finish `date +"%y%m%d %H:%M:%S" -d "$(stat -c %y ${path}js.7z)"`
+${path}station_change.py
 else
 echo t0 newer or same
 fi
