@@ -562,7 +562,11 @@ def hash_no(s):
              ('V', 1000), ('B', 2000), ('U', 4000), ('X', 5000)]
     d = dict(items)
     train_class = d[s[0]] if s[0] in d else 0
-    n = int(re.sub(r'\D+', '', str(s)))
+    try:
+        n = int(re.sub(r'\D+', '', str(s)))
+    except:
+        print('hash_no error %s', s)
+        n = 0
     return train_class + n
 
 
@@ -2420,6 +2424,7 @@ if __name__ == '__main__':
     #train_list.js
     #base_date, mask, msg = add_train_list(train_map, fn0, '2019-12-30')
     size = 0  # bin_cnt(mask)
+    max_date_diff = 15  # 29 #T+29
     #
     #
     # 97-98主要换乘站 北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都
@@ -2437,7 +2442,7 @@ if __name__ == '__main__':
         if name in samecity_map:
             continue
         rets = []
-        for i in range(-1, 15):  # -8...32
+        for i in range(-1, max_date_diff):  # -8...32
             date = date_add(now, i)
             c, samecity, ret = getczxx(t1, date, cache=2)
             rets.append(ret)
@@ -2455,11 +2460,11 @@ if __name__ == '__main__':
                 print(t1, date_add(now, i-1), rets[i], level)
                 c, samecity, ret = getczxx(t1, date_add(now, i-1), cache=0)
     #czxx
-    for i in range(-datediff(now, base_date), 18): #32
+    for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
         date = date_add(now, i)
-        freq = re.split(
-            r'[\s\n,*]+', u'''北京 天津 沈阳 长春 哈尔滨 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都
-            深圳 昆明 济南 呼和浩特 西宁 乌鲁木齐 大连''')
+        freq = re.split(r'[\s\n,*]+',
+            u'''北京 天津 沈阳 长春 哈尔滨 济南 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都
+            深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
         samecity_arr = []
         samecity_map = {}
         for name in citys:
@@ -2468,7 +2473,7 @@ if __name__ == '__main__':
                 continue
             if name in samecity_map:
                 continue
-            if i > 30 and name not in freq:
+            if i > max_date_diff+1 and name not in freq:
                 continue
             fn = 'ticket/%s_%s.json' % (date, t1)
             mdate = '1970-01-01'
@@ -2477,7 +2482,7 @@ if __name__ == '__main__':
             cache = 1
             if i == 0:
                 cache = 0
-            if datediff(date, mdate) > 29:
+            if datediff(date, mdate) > max_date_diff:
                 cache = 0
             if i < 0:  # min -8
                 cache = 2
@@ -2486,11 +2491,11 @@ if __name__ == '__main__':
                     cache = 0
                 if (5 <= i and i < 14) and datediff(now, mdate) >= 2:
                     cache = 0
-                if (14 <= i) and datediff(now, mdate) >= 3: #5
+                if (14 <= i) and datediff(now, mdate) >= 3:
                     cache = 0
-            if (-8 <= i and i <= 0) and datediff(date, mdate) > 0:
+            if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
                 cache = 0
-            if (0 <= i) and datediff(now, mdate) >= 19:  # 20
+            if (0 <= i) and datediff(now, mdate) >= max_date_diff-10:
                 cache = 0
             for retry in range(5):
                 c, samecity, ret = getczxx(t1, date, cache)
@@ -3124,7 +3129,7 @@ for name in citys:
     if name in samecity_map:
         continue
     rets = []
-    for i in range(-7, 29): #32
+    for i in range(-7, 14): #32
         date = date_add(now, i)
         c, samecity, ret = getczxx(t1, date, cache = 2)
         rets.append(ret)
