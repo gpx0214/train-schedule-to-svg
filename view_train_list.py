@@ -2418,7 +2418,7 @@ if __name__ == '__main__':
     train_map = [[] for i in range(maxlen)]
     #
     now = nowdate()
-    base_date = '2021-01-20'
+    base_date = '2021-04-10'
     #end_date = ''
     #
     #train_list.js
