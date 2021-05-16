@@ -3114,7 +3114,7 @@ from view_train_list import *
 import math
 
 now = nowdate()
-base_date = '2021-01-20'
+base_date = '2021-04-10'
 station = getStation()
 
 samecity_arr = []
