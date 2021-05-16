@@ -6,4 +6,4 @@ ${path}view_train_list.py
 gzip -c9 ${path}js/train.csv > ${path}js/train.csv.gz
 gzip -c9 ${path}js/time.csv > ${path}js/time.csv.gz
 
-${path}getemu.sh >>${path}log/log_getemu.txt
+${path}getemu.sh
