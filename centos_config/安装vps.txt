@@ -112,9 +112,11 @@ make install
 #libgd
 yum -y install libimagequant libimagequant-devel
 
-wget https://github.com/libgd/libgd/releases/download/gd-2.2.5/libgd-2.2.5.tar.gz
-tar zxf libgd-2.2.5.tar.gz
-cd libgd-2.2.5
+yum -y install libavif libavif-devel libheif libheif-devel libraqm libraqm-devel libtiff libtiff-devel
+
+wget https://github.com/libgd/libgd/releases/download/gd-2.3.2/libgd-2.3.2.tar.gz
+tar zxf libgd-2.3.2.tar.gz
+cd libgd-2.3.2
 ./configure --x-includes=/usr/include/imagequant/
 checking build system type... x86_64-pc-linux-gnu
 checking host system type... x86_64-pc-linux-gnu
@@ -283,17 +285,36 @@ config.status: creating src/config.h
 config.status: executing depfiles commands
 config.status: executing libtool commands
 
+gd使用源码编译新版 去掉yum版本 支持webp
+yum remove gd gd-devel
+
 
 #源码安装nginx
-yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel GeoIP GeoIP-devel GeoIP-data gd gd-devel libvpx libvpx-devel libwebp libwebp-devel libwebp-tools libXpm libxslt libxslt-devel perl-ExtUtils-Embed
+yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel GeoIP GeoIP-devel GeoIP-data gd gd-devel libvpx libvpx-devel libwebp libwebp-devel libwebp-tools libXpm libxml2 libxml2-devel libxslt libxslt-devel perl-ExtUtils-Embed
 
 git clone https://github.com/arut/nginx-rtmp-module.git
 
-wget http://nginx.org/download/nginx-1.18.0.tar.gz
-tar -zxvf nginx-1.18.0.tar.gz
-cd nginx-1.18.0
+pcre
+http://pcre.org
+https://ftp.pcre.org/pub/pcre/
 
-#nginx1.14.0 1.18.0编译选项
+zlib
+http://www.zlib.net/
+
+openssl
+https://www.openssl.org/source/
+
+wget --no-check-certificate https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz
+wget http://www.zlib.net/zlib-1.2.11.tar.gz
+wget https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+
+编译选项后加上 --with-pcre=../pcre-8.44 --with-zlib=../zlib-1.2.11 --with-openssl=../openssl-1.1.1k
+
+wget http://nginx.org/download/nginx-1.20.0.tar.gz
+tar -zxvf nginx-1.20.0.tar.gz
+cd nginx-1.20.0
+
+#nginx1.14.0 1.18.0 1.20.0编译选项
 ./configure --help
 
   --help                             print this message
@@ -424,6 +445,7 @@ cd nginx-1.18.0
   --without-stream_split_clients_module
                                      disable ngx_stream_split_clients_module
   --without-stream_return_module     disable ngx_stream_return_module
+  --without-stream_set_module        disable ngx_stream_set_module
   --without-stream_upstream_hash_module
                                      disable ngx_stream_upstream_hash_module
   --without-stream_upstream_least_conn_module
@@ -471,7 +493,8 @@ cd nginx-1.18.0
 
 
 
-./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_v2_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_geoip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module
+#指定pcre zlib openssl源码目录
+./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_v2_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_geoip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module --with-pcre=../pcre-8.44 --with-zlib=../zlib-1.2.11 --with-openssl=../openssl-1.1.1k
 checking for OS
  + Linux 5.8.1-1.el7.elrepo.x86_64 x86_64
 checking for C compiler ... found
