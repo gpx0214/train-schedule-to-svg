@@ -1604,6 +1604,14 @@ def getstation(tele, date):
 
 
 def getdetail(tele, no, date):
+    '''
+    dmin dmax yyyymmdd
+    ret
+    >0 station num
+    -1 error
+    -2 over_limit
+    -3 unknown
+    '''
     name = 'detail/detail_' + no + '.json'
     code = re.sub(r'^0+', "", no[2:10])
     if code[0] in 'GDC':
@@ -1693,6 +1701,30 @@ def trydetail(s, no, date, add=-1):
     return dmin, dmax, ans
 
 
+def trycompile(s, no, l=6):
+    errcnt = 0
+    for c in '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'[:l]:
+        compile = getcompilelist((no[:-1] + '%s') % (c))
+        if len(compile):
+            errcnt = 0
+        else:
+            errcnt +=1
+        #if errcnt > 4:
+            #break
+        name = 'detail/detail_' + (no[:-1] + '%s') % (c)  + '.json'
+        try:
+            fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+        except:
+            fn = name
+        if os.path.exists(fn):
+            continue
+        if len(compile) > 3:
+            dmin, dmax, ret = getdetail(s, (no[:-1] + '%s') % (c), compile[3])
+            if ret > 0:
+                continue
+            getdetail(s, (no[:-1] + '%s') % (c), compile[4])
+
+
 def tryzero(s, no, date, l=6):
     dmin = date
     dmax = date
@@ -1734,6 +1766,8 @@ def getcompilelist(no, cache=1):
                     [str(x['limit1'] + x['limit2']) for x in j['data']]
                 ))
                 ret.append('|'.join(list(set([x['seatFeature'] for x in j['data']]))) )
+                ret.append(j['data'][0]['startDate'])
+                ret.append(j['data'][0]['stopDate'])
                 #print(' '.join(ret))
                 return ret
         except:
@@ -1769,6 +1803,8 @@ def getcompilelist(no, cache=1):
             [str(x['limit1'] + x['limit2']) for x in j['data']]
         ))
         ret.append('|'.join(list(set([x['seatFeature'] for x in j['data']]))) )
+        ret.append(j['data'][0]['startDate'])
+        ret.append(j['data'][0]['stopDate'])
         print(' '.join(ret))
         return ret
     else:
@@ -2418,7 +2454,7 @@ if __name__ == '__main__':
     train_map = [[] for i in range(maxlen)]
     #
     now = nowdate()
-    base_date = '2021-04-10'
+    base_date = '2021-06-25'
     #end_date = ''
     #
     #train_list.js
@@ -2429,6 +2465,19 @@ if __name__ == '__main__':
     #
     # 97-98主要换乘站 北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都
     # 京哈线及东北地区 京沪线及华东地区 京九线 京广线及中南地区 陇海线及西南、西北地区 宝成线及西南地区 侯月、京原、京包、南北同蒲
+    #1986年铁道部铁路局列表：
+    # （1）哈尔滨铁路局，下属铁路分局7个：01哈尔滨、04齐齐哈尔、03牡丹江、02佳木斯、05海拉尔、04加格达奇、05伊图里河铁路分局。
+    # （2）沈阳铁路局，下属铁路分局11个：12沈阳、13大连、12丹东、11长春、18吉林、19通化、20图们、16通辽、11白城、15锦州、15阜新铁路分局。
+    # （3）北京铁路局，下属铁路分局6个：24北京、25天津、26石家庄、28大同、27太原、27临汾铁路分局。
+    # （4）呼和浩特铁路局，下属铁路分局2个：33包头、36集宁铁路分局。
+    # （5）郑州铁路局，下属铁路分局8个：38郑州、38新乡、39武汉、42襄樊、40洛阳、41西安、41宝鸡、43安康铁路分局。
+    # （6）济南铁路局，下属铁路分局3个：47济南、48徐州、49青岛铁路分局。
+    # （7）上海铁路局，下属铁路分局7个：55上海、54南京、53蚌埠、56杭州、57鹰潭、57南昌、58福州铁路分局。
+    # （8）广州铁路局，下属铁路分局4个：63广州、62衡阳、62长沙、64怀化铁路分局。另有65广深铁路公司和6b海南铁路办事处。66 67广梅汕 69深圳西
+    # （9）柳州铁路局，下属铁路分局2个：71柳州、71南宁铁路分局。
+    # （10）成都铁路局，下属铁路分局6个：76成都、77重庆、78贵阳、76西昌、80昆明、开远铁路分局。
+    # （11）兰州铁路局，下属铁路分局4个：85兰州、86武威、88西宁、87银川铁路分局。
+    # （12）乌鲁木齐铁路局，下属铁路分局2个：93乌鲁木齐、92哈密铁路分局。 94南疆临管处、91北疆公司 95
 
     citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
     samecity_arr = []
@@ -3114,7 +3163,7 @@ from view_train_list import *
 import math
 
 now = nowdate()
-base_date = '2021-04-10'
+base_date = '2021-06-25'
 station = getStation()
 
 samecity_arr = []
