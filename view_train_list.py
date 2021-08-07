@@ -2444,11 +2444,16 @@ def compress_bin_vector(date_bin, base_date, size):
 
 if __name__ == '__main__':
     station = getStation()
+    totalcache = 1
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and sys.argv[1] == 'station':
         writecsv("js/station.csv", [[col.encode('utf-8') for col in row] for row in station])
         writecsv("js/station.min.csv", [[row[x].encode('utf-8') for x in [1,2,6]] for row in station])
         exit()
+
+    if len(sys.argv) > 1 and sys.argv[1] == 'cache':
+        print('set totalcache=2')
+        totalcache = 2
 
     maxlen = 90000
     train_map = [[] for i in range(maxlen)]
@@ -2484,30 +2489,31 @@ if __name__ == '__main__':
     samecity_map = {}
     import math
     # get data less than ex-2sd
-    for name in citys:
-        t1 = telecode(name, station)
-        if len(t1) == 0:
-            continue
-        if name in samecity_map:
-            continue
-        rets = []
-        for i in range(-1, max_date_diff):  # -8...32
-            date = date_add(now, i)
-            c, samecity, ret = getczxx(t1, date, cache=2)
-            rets.append(ret)
-            if len(samecity) > 1:
-                samecity_arr.append(samecity)
-                for ii in samecity:
-                    samecity_map[ii] = name
-        n = len(rets)
-        ex = sum(rets)  # /n
-        ex2 = sum([x*x for x in rets])  # /n
-        sd = round(math.sqrt((ex2*n - ex * ex)) / n)
-        level = round(ex/n) - 2*sd  # sorted(rets)[len(rets)//2]*8//10
-        for i in range(len(rets)):
-            if rets[i] < level:
-                print(t1, date_add(now, i-1), rets[i], level)
-                c, samecity, ret = getczxx(t1, date_add(now, i-1), cache=0)
+    if totalcache < 2:
+        for name in citys:
+            t1 = telecode(name, station)
+            if len(t1) == 0:
+                continue
+            if name in samecity_map:
+                continue
+            rets = []
+            for i in range(-1, max_date_diff):  # -8...32
+                date = date_add(now, i)
+                c, samecity, ret = getczxx(t1, date, cache=2)
+                rets.append(ret)
+                if len(samecity) > 1:
+                    samecity_arr.append(samecity)
+                    for ii in samecity:
+                        samecity_map[ii] = name
+            n = len(rets)
+            ex = sum(rets)  # /n
+            ex2 = sum([x*x for x in rets])  # /n
+            sd = round(math.sqrt((ex2*n - ex * ex)) / n)
+            level = round(ex/n) - 2*sd  # sorted(rets)[len(rets)//2]*8//10
+            for i in range(len(rets)):
+                if rets[i] < level:
+                    print(t1, date_add(now, i-1), rets[i], level)
+                    c, samecity, ret = getczxx(t1, date_add(now, i-1), cache=0)
     #czxx
     for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
         date = date_add(now, i)
@@ -2546,6 +2552,8 @@ if __name__ == '__main__':
                 cache = 0
             if (0 <= i) and datediff(now, mdate) >= max_date_diff-10:
                 cache = 0
+            if totalcache >= 2:
+                cache = 2
             for retry in range(5):
                 c, samecity, ret = getczxx(t1, date, cache)
                 if ret > -1:
