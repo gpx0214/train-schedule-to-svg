@@ -509,8 +509,8 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     s.append([u'', u'羊木', u'AMJ', u'yangmu', u'ym', u'-1'])
     try:
         qss = json.loads(re.findall(
-            r'{.*}', 
-            readbyte(fn1).decode('utf-8'), 
+            r'{.*}',
+            readbyte(fn1).decode('utf-8'),
             re.I | re.M | re.S
         )[0])
         print('read %d qss in %s' % (len(qss), fn1))
@@ -626,6 +626,9 @@ def add_map(train_map, a):
     16 ticketleft
     '''
     key = hash_no(a['station_train_code']) - 1
+    if key >= len(train_map):
+        print('out of index limit train_map %s' % (a['station_train_code']))
+        return
     found = 0
     for train in train_map[key]:
         if train['train_no'] == a['train_no']:
@@ -665,7 +668,7 @@ def trainlistStr(train_arr, base_date, size, station=None):
         val, status = compress_bin_vector(train['date'], base_date, size)
         stat[status] += 1
         #
-        buf += '%s,%s,%s,%s,%d,%s,%d,%s\n' % (
+        buf += '%s,%s,%s,%s,%d,%s,%s\n' % (
             train['train_no'].encode('utf-8'),
             t1,
             t2,
@@ -673,8 +676,8 @@ def trainlistStr(train_arr, base_date, size, station=None):
             train['total_num'] if 'total_num' in train else 0,
             ('0' if train['service_type'] ==
              '0' else '') if 'service_type' in train else '',
-            train['src'],
             val
+            # train['src'],
         )
     #
     print(stat)
@@ -702,7 +705,7 @@ def add_train_list(train_map, fn0='js/train_list.js', base_date=None):
 
     '''
     print('add_train_list() %s' % (fn0))
-    data = readbyte(fn0)[16:] #.decode('utf-8')
+    data = readbyte(fn0)[16:]  # .decode('utf-8')
     #
     slice_mark = sorted(mark_json_slice(data))
     # print(slice_mark)
@@ -1088,8 +1091,8 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
                 str(day),
                 s[i]['arrive_time'].encode('utf-8'),
                 '0',
-                str(src),
                 val
+                # str(src),
             ])
         #
         if getmin(s[i]['start_time']) > -1 and i < len(s)-1:
@@ -1109,8 +1112,8 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
                 str(day),
                 s[i]['start_time'].encode('utf-8'),
                 '1',
-                str(src),
                 val
+                # str(src),
             ])
     # return buf
     return ret
@@ -1708,10 +1711,10 @@ def trycompile(s, no, l=6):
         if len(compile):
             errcnt = 0
         else:
-            errcnt +=1
+            errcnt += 1
         #if errcnt > 4:
             #break
-        name = 'detail/detail_' + (no[:-1] + '%s') % (c)  + '.json'
+        name = 'detail/detail_' + (no[:-1] + '%s') % (c) + '.json'
         try:
             fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
         except:
@@ -2139,8 +2142,8 @@ def mark_json_slice(data):
         c = data[index]
         if c == "{":
             # if layer == 1:
-                # print("%s %d"%(data[index],index))
-                # kv = 0
+            # print("%s %d"%(data[index],index))
+            # kv = 0
             layer += 1
         elif c == "[":
             layer += 1
@@ -2470,7 +2473,7 @@ if __name__ == '__main__':
     #
     # 97-98主要换乘站 北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都
     # 京哈线及东北地区 京沪线及华东地区 京九线 京广线及中南地区 陇海线及西南、西北地区 宝成线及西南地区 侯月、京原、京包、南北同蒲
-    #1986年铁道部铁路局列表：
+    # 1986年铁道部铁路局列表：
     # （1）哈尔滨铁路局，下属铁路分局7个：01哈尔滨、04齐齐哈尔、03牡丹江、02佳木斯、05海拉尔、04加格达奇、05伊图里河铁路分局。
     # （2）沈阳铁路局，下属铁路分局11个：12沈阳、13大连、12丹东、11长春、18吉林、19通化、20图们、16通辽、11白城、15锦州、15阜新铁路分局。
     # （3）北京铁路局，下属铁路分局6个：24北京、25天津、26石家庄、28大同、27太原、27临汾铁路分局。
@@ -2518,7 +2521,7 @@ if __name__ == '__main__':
     for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
         date = date_add(now, i)
         freq = re.split(r'[\s\n,*]+',
-            u'''北京 天津 沈阳 长春 哈尔滨 济南 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都
+                        u'''北京 天津 沈阳 长春 哈尔滨 济南 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都
             深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
         samecity_arr = []
         samecity_map = {}
