@@ -19,12 +19,12 @@ c = readcsv('js/train.csv')
 idx = 0
 # for i in range(idx, len(c), 1):
 for i in range(idx, len(c), 1):
-    if len(c[i]) < 7:
+    if len(c[i]) < 6:
         continue
     if c[i][3] not in c[i][0]:
         idx = i
         continue
-    if is_a_day(c[i][7], yyyymmdd):
+    if is_a_day(c[i][6], yyyymmdd):
         train_map[hash_no(re.sub(r'^0+', '', c[i][0][5:-2]))].append(c[i])
         #print(c[i][0])
 
