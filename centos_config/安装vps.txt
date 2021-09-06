@@ -28,6 +28,7 @@ service rsyslog restart
 
 yum -y install epel-release
 yum -y install lrzsz python-pip wget mtr vim zip unzip p7zip git
+yum -y install bind-utils # dig
 
 安装pip
 yum -y install python-pip
