@@ -53,3 +53,4 @@ fi
 ${path}view_train_list.py ${path}js/train_list.js
 gzip -c9 ${path}js/train.csv > ${path}js/train.csv.gz
 gzip -c9 ${path}js/time.csv > ${path}js/time.csv.gz
+gzip -c9 ${path}js/time.min.csv > ${path}js/time.min.csv.gz
