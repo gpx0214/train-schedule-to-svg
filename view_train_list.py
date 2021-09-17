@@ -47,6 +47,21 @@ def writecsv(f1, ret):
     return len(ret)
 
 
+def writemincsv(f1, ret):
+    if len(ret) == 0:
+        return 0
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
+    except:
+        fn = f1
+    with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+        if f.tell() == 0:
+            f.write(b'\xef\xbb\xbf')
+        for i in range(len(ret)):
+            f.write(re.sub(r',+$', r'', b','.join(ret[i]) + b'\n'))
+    return len(ret)
+
+
 def readbyte(fn):
     '''
     read bytes skip UTF-8 BOM
@@ -624,9 +639,10 @@ def add_map(train_map, a):
     8 czxx
     16 ticketleft
     '''
-    key = hash_no(a['station_train_code']) - 1
+    key = hash_no(re.sub(r'^0+', "", a['train_no'][2:10])) - 1
     if key >= len(train_map):
-        print('out of index limit train_map %s' % (a['station_train_code']))
+        print('out of index limit train_map %s' % (re.sub(r'^0+', "", a['train_no'][2:10])))
+        key = len(train_map) - 1
         return
     found = 0
     for train in train_map[key]:
@@ -645,8 +661,7 @@ def mapToArr(train_map):
     '''
     train_arr = []
     for key in range(len(train_map)):
-        for train in train_map[key]:
-            train_arr.append(train)
+        train_arr.extend(train_map[key])
     return train_arr
 
 
@@ -1045,8 +1060,8 @@ def checkSchdatebintocsv(train_arr, base_date, size, station=None):
             train['service_type'] = sch[0]['service_type']
         else:
             train['service_type'] = ""
-        if (train['station_train_code'] in train['train_no']) == False:
-            continue
+        #if (train['station_train_code'] in train['train_no']) == False:
+            #continue
         s = schDateToCsv(sch, train['src'], train['date'], base_date, size, station)
         for row in s:
             if len(row) >= 7:
@@ -1136,8 +1151,8 @@ def checkSchdatebintocsvmin(train_arr, base_date, size, station=None):
             train['service_type'] = sch[0]['service_type']
         else:
             train['service_type'] = ""
-        if (train['station_train_code'] in train['train_no']) == False:
-            continue
+        #if (train['station_train_code'] in train['train_no']) == False:
+            #continue
         s = schDateToCsvMin(sch, train['src'], train['date'], base_date, size, station)
         rows.extend(s)
     return rows
@@ -2612,7 +2627,7 @@ if __name__ == '__main__':
     for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
         date = date_add(now, i)
         freq = re.split(r'[\s\n,*]+',
-                        u'''北京 天津 沈阳 长春 哈尔滨 济南 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都
+            u'''北京 天津 沈阳 长春 哈尔滨 济南 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都
             深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
         samecity_arr = []
         samecity_map = {}
@@ -2703,7 +2718,7 @@ if __name__ == '__main__':
     train_arr = mapToArr(train_map)
     #
     ret = checkSchdatebintocsvmin(train_arr, base_date, size, station)
-    num = writecsv("js/time.min.csv", ret)
+    num = writemincsv("js/time.min.csv", ret)
     print(num)
     #
     ret = checkSchdatebintocsv(train_arr, base_date, size, station)
@@ -3324,5 +3339,9 @@ for name in citys:
 
 for t1 in ['BJP']:
     for i in range(1,29):
+        c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
+
+for t1 in ['BJP','JNK','NJH','SHH']:
+    for i in range(-1,1):
         c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 '''
