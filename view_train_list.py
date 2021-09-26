@@ -2627,7 +2627,7 @@ if __name__ == '__main__':
     for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
         date = date_add(now, i)
         freq = re.split(r'[\s\n,*]+',
-            u'''北京 天津 沈阳 长春 哈尔滨 济南 徐州 南京 上海 杭州 石家庄 郑州 武昌 长沙 株洲 广州 贵阳 西安 兰州 成都
+            u'''北京 上海 广州 天津 沈阳 长春 哈尔滨 济南 徐州 南京 杭州 石家庄 郑州 武昌 长沙 株洲 贵阳 西安 兰州 成都
             深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
         samecity_arr = []
         samecity_map = {}
