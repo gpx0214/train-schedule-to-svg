@@ -1712,7 +1712,7 @@ def getstation(tele, date):
     return [], 0
 
 
-def getdetail(tele, no, date):
+def getdetail(tele, no, date, cache=1):
     '''
     dmin dmax yyyymmdd
     ret
@@ -1722,6 +1722,17 @@ def getdetail(tele, no, date):
     -3 unknown
     '''
     name = 'detail/detail_' + no + '.json'
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if cache > 0 and os.path.exists(fn):
+        try:
+            j = json.loads(readbyte(fn))
+            if 'data' in j:
+                return j['data']['stopTime'][0]['startDate'], j['data']['stopTime'][0]['stopDate'], len(j['data']['stopTime'])
+        except:
+            print('read wifi_station %s %s error' % (tele, date))
     code = re.sub(r'^0+', "", no[2:10])
     if code[0] in 'GDC':
         code = 'T'
@@ -1746,7 +1757,7 @@ def getdetail(tele, no, date):
         print('ValueError %s %s' % (date, no))
         return date, date, -1
     if 'data' in j:
-        writebyte('detail/detail_' + no + '.json', resp.content)
+        writebyte(name, resp.content)
         #print('%s %s %s %d' % (no, len(j['data']['stopTime'])))
         if 'stopTime' in j['data'] and len(j['data']['stopTime']) > 0:
             ret = [
@@ -2627,7 +2638,7 @@ if __name__ == '__main__':
     for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
         date = date_add(now, i)
         freq = re.split(r'[\s\n,*]+',
-            u'''北京 上海 广州 天津 沈阳 长春 哈尔滨 济南 徐州 南京 杭州 石家庄 郑州 武昌 长沙 株洲 贵阳 西安 兰州 成都
+            u'''北京 上海 广州 天津 沈阳 长春 哈尔滨 济南 徐州 南京 杭州 石家庄 郑州 武昌 长沙 株洲 贵阳 西安 兰州 成都 重庆
             深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
         samecity_arr = []
         samecity_map = {}
@@ -2637,7 +2648,7 @@ if __name__ == '__main__':
                 continue
             if name in samecity_map:
                 continue
-            if i > max_date_diff+1 and name not in freq:
+            if i > max_date_diff and name not in freq:
                 continue
             fn = 'ticket/%s_%s.json' % (date, t1)
             mdate = '1970-01-01'
