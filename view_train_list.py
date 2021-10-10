@@ -2579,7 +2579,7 @@ if __name__ == '__main__':
     train_map = [[] for i in range(maxlen)]
     #
     now = nowdate()
-    base_date = '2021-06-25'
+    base_date = '2021-10-11'
     #end_date = ''
     #
     #train_list.js
@@ -3295,7 +3295,7 @@ from view_train_list import *
 import math
 
 now = nowdate()
-base_date = '2021-06-25'
+base_date = '2021-10-11'
 station = getStation()
 
 samecity_arr = []
