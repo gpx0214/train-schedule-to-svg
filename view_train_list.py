@@ -2604,36 +2604,38 @@ if __name__ == '__main__':
     # （11）兰州铁路局，下属铁路分局4个：85兰州、86武威、88西宁、87银川铁路分局。
     # （12）乌鲁木齐铁路局，下属铁路分局2个：93乌鲁木齐、92哈密铁路分局。 94南疆临管处、91北疆公司 95
 
-    citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
-    samecity_arr = []
-    samecity_map = {}
-    import math
-    # get data less than ex-2sd
-    if totalcache < 2:
-        for name in citys:
-            t1 = telecode(name, station)
-            if len(t1) == 0:
-                continue
-            if name in samecity_map:
-                continue
-            rets = []
-            for i in range(-1, max_date_diff):  # -8...32
-                date = date_add(now, i)
-                c, samecity, ret = getczxx(t1, date, cache=2)
-                rets.append(ret)
-                if len(samecity) > 1:
-                    samecity_arr.append(samecity)
-                    for ii in samecity:
-                        samecity_map[ii] = name
-            n = len(rets)
-            ex = sum(rets)  # /n
-            ex2 = sum([x*x for x in rets])  # /n
-            sd = round(math.sqrt((ex2*n - ex * ex)) / n)
-            level = round(ex/n) - 2*sd  # sorted(rets)[len(rets)//2]*8//10
-            for i in range(len(rets)):
-                if rets[i] < level:
-                    print(t1, date_add(now, i-1), rets[i], level)
-                    c, samecity, ret = getczxx(t1, date_add(now, i-1), cache=0)
+    if True:
+        citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
+        samecity_arr = []
+        samecity_map = {}
+        import math
+        # get data less than ex-2sd
+        if totalcache < 2:
+            for name in citys:
+                t1 = telecode(name, station)
+                if len(t1) == 0:
+                    continue
+                if name in samecity_map:
+                    continue
+                rets = []
+                for i in range(-1, max_date_diff):  # -8...32
+                    date = date_add(now, i)
+                    c, samecity, ret = getczxx(t1, date, cache=2)
+                    rets.append(ret)
+                    if len(samecity) > 1:
+                        samecity_arr.append(samecity)
+                        for ii in samecity:
+                            samecity_map[ii] = name
+                n = len(rets)
+                ex = sum(rets)  # /n
+                ex2 = sum([x*x for x in rets])  # /n
+                sd = round(math.sqrt((ex2*n - ex * ex)) / n)
+                level = round(ex/n) - 2*sd  # sorted(rets)[len(rets)//2]*8//10
+                for i in range(len(rets)):
+                    if rets[i] < level:
+                        print(t1, date_add(now, i-1), rets[i], level)
+                        c, samecity, ret = getczxx(
+                            t1, date_add(now, i-1), cache=0)
     #czxx
     for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
         date = date_add(now, i)
