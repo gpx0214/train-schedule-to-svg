@@ -19,8 +19,11 @@ c = readcsv('js/train.csv')
 idx = 0
 # for i in range(idx, len(c), 1):
 for i in range(idx, len(c), 1):
-    if len(c[i]) < 6:
+    if len(c[i]) < 5:
         continue
+    if len(c[i]) < 7:
+        c[i].append('')
+        c[i].append('')
     if c[i][3] not in c[i][0]:
         idx = i
         continue

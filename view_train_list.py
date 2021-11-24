@@ -665,9 +665,9 @@ def mapToArr(train_map):
     return train_arr
 
 
-def trainlistStr(train_arr, base_date, size, station=None):
+def trainlistCsv(train_arr, base_date, size, station=None):
     stat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    buf = ''
+    ret = []
     for train in train_arr:
         t1 = ''
         t2 = ''
@@ -682,20 +682,19 @@ def trainlistStr(train_arr, base_date, size, station=None):
         val, status = compress_bin_vector(train['date'], base_date, size)
         stat[status] += 1
         #
-        buf += '%s,%s,%s,%s,%d,%s,%s\n' % (
+        ret.append([
             train['train_no'].encode('utf-8'),
             t1,
             t2,
             train['station_train_code'].encode('utf-8'),
-            train['total_num'] if 'total_num' in train else 0,
-            ('0' if train['service_type'] ==
-             '0' else '') if 'service_type' in train else '',
-            val
+            str(train['total_num'] if 'total_num' in train else 0),
+            '0' if 'service_type' in train and train['service_type'] == '0' else '',
+            val,
             # train['src'],
-        )
+        ])
     #
     print(stat)
-    return buf
+    return ret
 
 
 # train_list.js
@@ -2182,6 +2181,9 @@ def ccrgtcsv(name, date):
     for i in range(idx, len(c), 1):
         if len(c[i]) <= 3 or c[i][3] in map:
             continue
+        if len(c[i]) < 7:
+            c[i].append('')
+            c[i].append('')
         if not is_a_day(c[i][6], yyyymmdd):
             continue
         if c[i][3][0] in 'GDCS':
@@ -2737,8 +2739,8 @@ if __name__ == '__main__':
     num = writecsv("js/time.csv", ret)
     print(num)
     #
-    buf = trainlistStr(train_arr, base_date, size, station)
-    writebytebom('js/train.csv', buf)
+    ret = trainlistCsv(train_arr, base_date, size, station)
+    writemincsv('js/train.csv', ret)
     #
     s, block = print_block(stat)
     writebytebom("stat_map.txt", '%d trains\n%d blocks\n%s' % (train_num,block,s))
