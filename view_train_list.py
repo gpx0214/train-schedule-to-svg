@@ -39,7 +39,7 @@ def writecsv(f1, ret):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
     except:
         fn = f1
-    with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+    with open(fn, "wb") as f: # use wb on win, or get more \r \r\n
         if f.tell() == 0:
             f.write(b'\xef\xbb\xbf')
         for i in range(len(ret)):
@@ -54,7 +54,7 @@ def writemincsv(f1, ret):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
     except:
         fn = f1
-    with open(fn, "wb") as f:  # use wb on win, or get more \r \r\n
+    with open(fn, "wb") as f: # use wb on win, or get more \r \r\n
         if f.tell() == 0:
             f.write(b'\xef\xbb\xbf')
         for i in range(len(ret)):
@@ -2604,43 +2604,42 @@ if __name__ == '__main__':
     # （11）兰州铁路局，下属铁路分局4个：85兰州、86武威、88西宁、87银川铁路分局。
     # （12）乌鲁木齐铁路局，下属铁路分局2个：93乌鲁木齐、92哈密铁路分局。 94南疆临管处、91北疆公司 95
 
-    if True:
-        citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
-        samecity_arr = []
-        samecity_map = {}
-        import math
-        # get data less than ex-2sd
-        if totalcache < 2:
-            for name in citys:
-                t1 = telecode(name, station)
-                if len(t1) == 0:
-                    continue
-                if name in samecity_map:
-                    continue
-                rets = []
-                for i in range(-1, max_date_diff):  # -8...32
-                    date = date_add(now, i)
-                    c, samecity, ret = getczxx(t1, date, cache=2)
-                    rets.append(ret)
-                    if len(samecity) > 1:
-                        samecity_arr.append(samecity)
-                        for ii in samecity:
-                            samecity_map[ii] = name
-                n = len(rets)
-                ex = sum(rets)  # /n
-                ex2 = sum([x*x for x in rets])  # /n
-                sd = round(math.sqrt((ex2*n - ex * ex)) / n)
-                level = round(ex/n) - 2*sd  # sorted(rets)[len(rets)//2]*8//10
-                for i in range(len(rets)):
-                    if rets[i] < level:
-                        print(t1, date_add(now, i-1), rets[i], level)
-                        c, samecity, ret = getczxx(
-                            t1, date_add(now, i-1), cache=0)
+    citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
+    samecity_arr = []
+    samecity_map = {}
+    import math
+    # get data less than ex-2sd
+    if totalcache < 2 and now != base_date:
+        for name in citys:
+            t1 = telecode(name, station)
+            if len(t1) == 0:
+                continue
+            if name in samecity_map:
+                continue
+            rets = []
+            for i in range(-1, max_date_diff):  # -8...32
+                date = date_add(now, i)
+                c, samecity, ret = getczxx(t1, date, cache=2)
+                rets.append(ret)
+                if len(samecity) > 1:
+                    samecity_arr.append(samecity)
+                    for ii in samecity:
+                        samecity_map[ii] = name
+            n = len(rets)
+            ex = sum(rets)  # /n
+            ex2 = sum([x*x for x in rets])  # /n
+            sd = round(math.sqrt((ex2*n - ex * ex)) / n)
+            level = round(ex/n) - 2*sd  # sorted(rets)[len(rets)//2]*8//10
+            for i in range(len(rets)):
+                if rets[i] < level:
+                    print(t1, date_add(now, i-1), rets[i], level)
+                    c, samecity, ret = getczxx(
+                        t1, date_add(now, i-1), cache=0)
     #czxx
     for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
         date = date_add(now, i)
         freq = re.split(r'[\s\n,*]+',
-            u'''北京 上海 广州 天津 沈阳 长春 哈尔滨 济南 徐州 南京 杭州 石家庄 郑州 武昌 长沙 株洲 贵阳 西安 兰州 成都 重庆
+                        u'''北京 上海 广州 天津 沈阳 长春 哈尔滨 济南 徐州 南京 杭州 石家庄 郑州 武昌 长沙 株洲 贵阳 西安 兰州 成都 重庆
             深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
         samecity_arr = []
         samecity_map = {}
@@ -2742,7 +2741,7 @@ if __name__ == '__main__':
     writebytebom('js/train.csv', buf)
     #
     s, block = print_block(stat)
-    writebytebom("stat_map.txt", str(train_num) + " trains\n" + str(block) + " blocks\n" + s)
+    writebytebom("stat_map.txt", '%d trains\n%d blocks\n%s' % (train_num,block,s))
 
 r'''
 from view_train_list import *
