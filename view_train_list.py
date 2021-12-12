@@ -148,6 +148,10 @@ def date_add(date, diff):
 
 
 def date_add_ymd(s, diff):
+    if len(s) == 6:
+        s = '20' + s
+    if diff == 0:
+        return s
     ymd = re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", s)
     return re.sub(r'(\d\d\d\d)-(\d\d)-(\d\d)', r"\1\2\3", date_add(ymd, diff))
 
