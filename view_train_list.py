@@ -525,6 +525,7 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     s.append([u'nsb', u'南山北', u'NBQ', u'nanshanbei', u'nsb', u'-1'])
     s.append([u'', u'车墩', u'MIH', u'chedun', u'cd', u'-1'])
     s.append([u'', u'羊木', u'AMJ', u'yangmu', u'ym', u'-1'])
+    s.append([u'', u'马海', u'MHO', u'mahai', u'mh', u'-1'])
     try:
         qss = json.loads(re.findall(
             r'{.*}',
@@ -1736,6 +1737,8 @@ def getdetail(tele, no, date, cache=1):
                 return j['data']['stopTime'][0]['startDate'], j['data']['stopTime'][0]['stopDate'], len(j['data']['stopTime'])
         except:
             print('read wifi_station %s %s error' % (tele, date))
+    if cache >= 2:
+        return date, date, -1
     code = re.sub(r'^0+', "", no[2:10])
     if code[0] in 'GDC':
         code = 'T'
@@ -1799,7 +1802,7 @@ def trydetail(s, no, date, add=-1):
     ret = 0
     correct = 1
     while correct > 0:  # ret >= 0:
-        dmin, dmax, ret = getdetail(s, no, date)
+        dmin, dmax, ret = getdetail(s, no, date, cache=0)
         if ret > 0:
             getcompilelist(no)
         if ret <= -2:
@@ -1842,10 +1845,10 @@ def trycompile(s, no, l=6):
         if os.path.exists(fn):
             continue
         if len(compile) > 3:
-            dmin, dmax, ret = getdetail(s, (no[:-1] + '%s') % (c), compile[3])
+            dmin, dmax, ret = getdetail(s, (no[:-1] + '%s') % (c), compile[3], cache=0)
             if ret > 0:
                 continue
-            getdetail(s, (no[:-1] + '%s') % (c), compile[4])
+            getdetail(s, (no[:-1] + '%s') % (c), compile[4], cache=0)
 
 
 def tryzero(s, no, date, l=6):
