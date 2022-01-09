@@ -122,7 +122,6 @@ TAB:桃山
 TBB:通北
 TEB:太平镇
 THB:汤旺河
-TJB:同江
 TLB:铁力
 TYB:汤原
 VAB:哈尔滨西
@@ -176,7 +175,6 @@ ZGB:赵光
 ZOB:周家
 ZUB:朱家沟
 ZWB:张维屯
-AQC:阿巴嘎旗
 BAC:巴彦高勒
 BDC:包头东
 BEC:白云鄂博
@@ -194,7 +192,6 @@ DOC:东胜
 DYC:东胜西
 EEC:鄂尔多斯
 EJC:额济纳
-FDC:包头 东
 FNC:白音华南
 FZC:丰镇
 GMC:公庙子
@@ -203,15 +200,12 @@ HGC:化德
 HHC:呼和浩特
 JAC:集宁南
 JPC:经棚
-KDC:昆都仑召
 KLC:开鲁
 LHC:临河
 LRC:林东
 LXC:林西
 NDC:呼和浩特东
 OGC:桑根达来
-ONC:苏尼特左旗
-QNC:旗下营南
 QXC:旗下营
 RLC:二连
 SHC:赛汗塔拉
@@ -220,7 +214,6 @@ SXC:商都
 TGC:土贵乌拉
 TRC:土牧尔台
 WLC:乌兰哈达
-WPC:乌兰察布
 WQC:乌拉特前旗
 WSC:乌拉山
 WVC:乌海
@@ -232,7 +225,6 @@ XWC:西乌旗
 XZC:西小召
 YAC:姚安
 ZDC:卓资东
-ZEC:准格尔
 ZLC:哲里木
 ZRC:朱日和
 ZXC:正镶白旗
@@ -248,7 +240,7 @@ BTD:八角台
 CDD:朝阳地
 CFD:赤峰
 CID:赤峰西
-CYD:朝阳南
+CYD:朝阳
 DBD:大巴
 DHD:大虎山
 DLD:大林
@@ -260,21 +252,19 @@ DSD:大青沟
 DXD:东辛庄
 DZD:大营子
 EPD:新窝铺
-FXD:阜新南
+FXD:阜新
 GBD:沟帮子
 GQD:甘旗卡
 GSD:高山子
 GXD:嘎什甸子
 GYD:公营子
 GZD:高桥镇
-HGD:高花
 HLD:葫芦岛
 HPD:葫芦岛北
 HUD:黄花筒
 HWD:霍林郭勒
 JBD:金宝屯
 JFD:建昌
-JHD:近海
 JID:凌海
 JOD:锦州南
 JYD:金杖子
@@ -298,7 +288,6 @@ OYD:三义井
 PBD:盘锦北
 PND:平庄南
 POD:泡子
-PUD:盘山
 PVD:盘锦
 PZD:平庄
 QHD:清河门
@@ -321,7 +310,6 @@ SRD:三十家
 SSD:沙后所
 SUD:上园
 SZD:绥中
-TAD:台安南
 TID:台安
 TLD:通辽
 TMD:吐列毛杜
@@ -343,45 +331,27 @@ XYD:小河沿
 XZD:汐子
 YAD:杨树岭
 YBD:叶柏寿
-YED:敖汉
+YED:羊场
 YLD:余粮堡
 YUD:元宝山
 YXD:义县
 YZD:杨杖子
 ZAD:治安
 ZGD:章古台
-ZHD:珠斯花
 ZJD:双辽
 ZLD:扎鲁特
 ZOD:周家屯
 ZWD:彰武
-ASE:安顺西
-BBE:八步
 BDE:巴中东
-CSE:长寿湖
-CTE:朝天
 CXE:苍溪
-DJE:垫江
-DNE:大方南
-FQE:法启
-GAE:贵安
-GLE:关岭
-JBE:江油北
-JME:剑门关
-LPE:梁平南
 LZE:阆中
 NBE:南部
 NCE:南充北
 NYE:纳雍
-PAE:盘州
-PBE:平坝南
 PCE:平昌
-PUE:普安县
-QCE:青川
 SQE:石桥
 STE:石梯
 WSE:武胜
-WZE:万州北
 ZJE:织金北
 ZKE:曾口
 ADF:安阳东
@@ -411,7 +381,6 @@ JFF:嘉峰
 JLF:贾鲁河
 JOF:焦作
 JYF:济源
-KBF:开封北
 KFF:开封
 LAF:鲁山
 LBF:灵宝
@@ -421,11 +390,9 @@ LKF:兰考
 LLF:洛阳龙门
 LNF:临颍
 LPF:灵宝西
-LUF:兰考南
 LYF:洛阳
 MCF:渑池
 MDF:弥渡
-MIF:民权北
 MNF:渑池南
 MQF:民权
 MZF:孟庄
@@ -435,7 +402,6 @@ NFF:南阳
 NLF:宁陵县
 NXF:内乡
 NYF:南阳寨
-PYF:濮阳
 QYF:沁阳
 ROF:汝州
 RYF:汝阳
@@ -474,8 +440,6 @@ CDG:茶陵
 CNG:茶陵南
 CRG:崇仁
 DAG:德安
-DCG:都昌
-DDG:德兴东
 DNG:定南
 DWG:德兴
 DXG:东乡
@@ -499,7 +463,6 @@ HKG:湖口
 HNG:衡南
 JBG:江边村
 JCG:景德镇
-JDG:景德镇北
 JGG:井冈山
 JJG:九江
 JUG:进贤
@@ -516,11 +479,9 @@ NFG:南丰
 NXG:南昌西
 PBG:萍乡北
 PXG:萍乡
-PYG:鄱阳
 PZG:彭泽
 RCG:瑞昌
 RJG:瑞金
-RXG:瑞昌西
 SRG:上饶
 THG:泰和
 UNG:龙南
@@ -672,14 +633,11 @@ OVH:歙县
 OWH:当涂东
 OXH:宿州
 PJH:邳州
-PLH:淮北北
-PRH:砀山南
 PUH:繁昌西
 PYH:缙云西
 QEH:衢州
 QGH:青龙山
 QIH:祁门
-QSH:萧县北
 QUH:永康南
 QVH:青田
 QWH:天柱山
@@ -687,7 +645,6 @@ QYH:戚墅堰
 RAH:瑞安
 RBH:如皋
 RFH:永康
-RGH:永城北
 RIH:如东
 RNH:金华南
 RUH:丹徒
@@ -703,7 +660,7 @@ SNH:上海南
 SOH:绍兴
 SQH:水家湖
 SRH:宿州东
-SSH:绍兴东
+SSH:上虞北
 SXH:上海西
 SZH:苏州
 TCH:桐乡
@@ -744,7 +701,6 @@ XPH:仙林
 YGH:雁荡山
 YLH:扬州
 YUH:宜兴
-YVH:颍上
 YWH:义乌
 YYH:余姚
 ZDH:诸暨
@@ -754,7 +710,6 @@ ZQH:庄桥
 DPI:大埔
 AJJ:艾家村
 AMJ:羊木
-AOJ:姚渡
 BJJ:白芨沟
 BNJ:白银市
 BXJ:白银西
@@ -765,12 +720,10 @@ CQJ:长庆桥
 CWJ:褚家湾
 CZJ:长征
 DBJ:大坝
-DCJ:东岔
 DFJ:大武口
 DGJ:打柴沟
 DHJ:敦煌
 DKJ:大磴沟
-DNJ:定西北
 DRJ:东湾
 DSJ:定西
 DTJ:大战场
@@ -788,7 +741,6 @@ GTJ:高台
 GUJ:固原
 GZJ:瓜州
 HCJ:黑冲滩
-HDJ:哈达铺
 HGJ:黄羊滩
 HJJ:贺家店
 HKJ:河口南
@@ -797,8 +749,6 @@ HSJ:红寺堡
 HTJ:红岘台
 HXJ:韩府湾
 HYJ:黄羊镇
-INJ:陇南
-IZJ:榆中
 JAJ:泾川
 JBJ:嘉峪关南
 JCJ:金昌
@@ -825,11 +775,8 @@ LWJ:绿化
 LXJ:陇西
 LZJ:兰州
 MBJ:民乐
-MXJ:岷县
 MZJ:庙庄
-NDJ:宁东南
 NHJ:南河川
-NOJ:宁东
 NQJ:暖泉
 OBJ:石坝
 OEJ:三营
@@ -843,8 +790,6 @@ PPJ:平原堡
 PXJ:坡底下
 PYJ:彭阳
 QEJ:清水北
-QGJ:秦安
-QIJ:清水县
 QQJ:石嘴山
 QSJ:庆阳山
 QTJ:青铜峡
@@ -863,11 +808,9 @@ SXJ:石峡子
 SYJ:三阳川
 TAJ:通安驿
 TCJ:土门子
-TIJ:天水南
 TNJ:谭家井
 TQJ:土桥子
 TSJ:天水
-TWJ:通渭
 TXJ:同心
 TYJ:太阳山
 TZJ:天祝
@@ -878,7 +821,6 @@ VNJ:中宁
 VSJ:红砂岘
 VTJ:呼鲁斯太
 WCJ:吴家川
-WEJ:渭源
 WJJ:王家湾
 WNJ:渭南镇
 WSJ:武山
@@ -905,12 +847,10 @@ YYJ:鸳鸯镇
 YZJ:营盘水
 ZDJ:中宁东
 ZEJ:张掖西
-ZIJ:张家川
 ZJJ:中川机场
 ZNJ:中宁南
 ZUJ:朱家窑
 ZWJ:中卫
-ZXJ:漳县
 ZYJ:张掖
 AQK:源迁
 AZK:燕家庄
@@ -918,7 +858,6 @@ BIK:滨州
 BXK:博兴
 CEK:城阳
 CLK:昌乐
-COK:兰陵北
 CVK:常庄
 CXK:曹县
 CYK:磁窑
@@ -961,7 +900,6 @@ OSK:泗水
 PAK:平度
 PIK:平邑
 PSK:坪上
-PUK:平原东
 PYK:平原
 QAK:曲阜东
 QDK:青岛
@@ -1001,7 +939,6 @@ YIK:阳谷
 YLK:烟台南
 YNK:沂南
 YPK:郓城
-YSK:禹城东
 YUK:沂水
 YVK:阳信
 YZK:兖州
@@ -1009,7 +946,6 @@ ZBK:淄博
 ZEK:枣庄
 ZFK:枣庄西
 ZIK:邹城
-ZNK:枣庄东
 ZQK:诸城
 ZTK:章丘
 ATL:安图
@@ -1047,7 +983,6 @@ JNL:九台南
 JOL:蛟河西
 JSL:吉舒
 JTL:九台
-JUL:建安
 JYL:靖宇
 KQL:口前
 LDL:鹿道
@@ -1074,7 +1009,6 @@ SHL:山河屯
 SIL:水洞
 SJL:松江河
 SLL:舒兰
-SML:双吉
 SOL:石岭
 SRL:石人
 SSL:松树镇
@@ -1100,14 +1034,11 @@ XRL:仙人桥
 YAL:阳岔
 YJL:延吉
 YSL:烟筒山
-YTL:伊通
 YXL:延吉西
 YYL:鸭园
 ZAL:咋子
 ABM:羊堡
 AEM:羊者窝
-AUM:玉舍
-AXM:玉溪
 AZM:阿南庄
 BBM:白鸡坡
 BGM:柏果
@@ -1117,7 +1048,7 @@ BPM:白沙坡
 BUM:白水镇
 CAM:岔江
 CCM:长冲
-COM:楚雄南
+COM:楚雄
 CPM:长坡岭
 CWM:车转湾
 DBM:大田边
@@ -1131,22 +1062,18 @@ EAM:新安
 EJM:小得江
 EKM:西街口
 EXM:祥云
-FBM:富源北
 FEM:发耳
-FNM:富宁
 FYM:富源
 GEM:革居
 GFM:高楼房
 GNM:广南卫
 GPM:广通北
-GXM:广南县
 HBM:河口北
 HEM:红果
 HFM:红江
 HIM:黑井
 HJM:花家庄
 HQM:鹤庆
-HYM:黄瓜园
 HZM:花棚子
 JMM:金马村
 JOM:江所田
@@ -1154,7 +1081,6 @@ JSM:建水
 KAM:昆阳
 KMM:昆明
 KNM:王家营西
-KOM:昆明南
 KPM:茅草坪
 KXM:昆明西
 LBM:龙塘坝
@@ -1170,7 +1096,6 @@ LUM:乐善村
 LVM:鲁番
 MBM:蒙自北
 MGM:马龙
-MLM:弥勒
 MOM:茂舍祖
 MZM:蒙自
 PAM:盘关
@@ -1178,10 +1103,7 @@ PBM:屏边
 PGM:平关
 PHM:平河口
 PTM:平田
-PZM:普者黑
-QBM:曲靖北
 QDM:七甸
-QIM:曲江
 QJM:曲靖
 SBM:松河
 SEM:师宗
@@ -1190,10 +1112,7 @@ SHM:施家嘴
 SLM:石林
 SMM:三家寨
 SNM:师庄
-SQM:沙桥
-SVM:嵩明
 SXM:上西铺
-SYM:石林西
 TAM:通海
 THM:棠海
 TIM:塔石嘴
@@ -1221,14 +1140,13 @@ YSM:宜良北
 YUM:月亮田
 YVM:宜耐
 YWM:羊尾哨
-YXM:玉溪西
+YXM:玉溪
 YYM:永丰营
 ZFM:照福铺
 ZLM:泽润里
 ZZM:中寨
 ALN:安陆
 BNN:巴东
-BSN:白沙铺
 CBN:赤壁
 CIN:赤壁北
 CON:蔡山
@@ -1240,12 +1158,9 @@ EFN:鄂州东
 ENN:息县
 ERN:项城
 ESN:恩施
-FLN:枫林
 GCN:谷城
-GDN:孝感东
 GNN:葛店南
 GSN:广水
-GUN:光山
 GXN:固始
 HAN:宜昌东
 HCN:汉川
@@ -1258,15 +1173,11 @@ HSN:黄石
 HUN:花园
 HVN:淮滨
 HWN:红安
-IHN:后湖
-IYN:槐荫
 JBN:荆州
 JCN:京山
 JMN:荆门
 JRN:建始
-JTN:金银潭
 JUN:界首市
-JYN:太和北
 KAN:黄冈东
 KCN:潢川
 KGN:黄冈
@@ -1283,15 +1194,12 @@ MBN:麻城北
 MCN:麻城
 MDN:明港东
 MGN:明港
-MHN:毛陈
-MJN:闵集
 MSN:庙山
 NDN:南湖东
 OSN:黄石东
 OYN:信阳东
 PAN:普安
 PEN:平顶山
-PNN:盘龙城
 QJN:潜江
 QRN:蕲春
 QSN:确山
@@ -1302,9 +1210,7 @@ SON:遂平
 SQN:沈丘
 SWN:商城
 SZN:随州
-TEN:天河街
 THN:汤逊湖
-TJN:天河机场
 TMN:天门
 TNN:天门南
 TTN:土地堂东
@@ -1342,8 +1248,6 @@ ZMN:纸坊东
 ZSN:左岭
 ZTN:钟祥
 ZYN:枣阳
-ADO:安多
-CVO:茶卡
 DHO:德令哈
 DTO:大通西
 GRO:格尔木
@@ -1441,7 +1345,6 @@ GMP:高碑店东
 GNP:高邑西
 GSP:孤山口
 GTP:官厅
-GUP:藁城南
 GVP:官高
 GYP:古冶
 HBP:怀柔北
@@ -1449,21 +1352,16 @@ HCP:黄村
 HDP:邯郸
 HGP:汉沽
 HHP:虎什哈
-HKP:黄土店
 HPP:邯郸东
 HRP:怀柔
 HSP:衡水
 HXP:河间西
 HYP:韩麻营
-IHP:衡水北
-IJP:辛集南
 ILP:八达岭
-IXP:沙岭子西
-JEP:景州
 JFP:井店
 JHP:静海
 JJP:井陉
-JKP:蓟州
+JKP:蓟县
 JMP:军粮城北
 JNP:井南
 JOP:甲山
@@ -1532,7 +1430,6 @@ SRP:石景山南
 SUP:胜芳
 SVP:三合庄
 SWP:上万
-SXP:石家庄东
 SYP:肃宁
 TAP:通州西
 TBP:天津北
@@ -1540,7 +1437,6 @@ TGP:塘沽
 TIP:天津南
 TJP:天津
 TNP:唐山南
-TOP:通州
 TSP:唐山
 TXP:天津西
 TYP:塔崖驿
@@ -1554,7 +1450,6 @@ UNP:滦河沿
 UPP:滦平
 USP:流水沟
 UTP:潞城
-UUP:临城
 UXP:滦县
 VAP:北京北
 VBP:昌平北
@@ -1606,13 +1501,10 @@ ZXP:涿州
 ZYP:紫荆关
 ACQ:老城镇
 AEQ:益阳
-AHQ:四会
 AOQ:永州
-ARQ:三水北
 BFQ:白马井
 BJQ:深圳东
 BLQ:碧江
-BNQ:麓谷
 BTQ:坂田
 BWQ:博鳌
 CBQ:潮汕
@@ -1634,7 +1526,6 @@ EAQ:小榄
 EDQ:湘潭北
 EEQ:信宜
 EFQ:新会
-EGQ:西平西
 EHQ:新化
 EJQ:新化南
 EMQ:溆浦南
@@ -1644,21 +1535,10 @@ EWQ:新晃西
 FAQ:怀集
 FBQ:广宁
 FCQ:肇庆东
-FFQ:谷山
-FGQ:八方山
 FIQ:邵东
 FJQ:凤凰机场
-FKQ:观沙岭
-FLQ:开福寺
-FMQ:树木岭
-FNQ:香樟路
-FOQ:佛山西
-FPQ:常平南
-FQQ:常平东
 FSQ:佛山
 FUQ:丰顺
-FVQ:湘府路
-FWQ:洞井
 FZQ:福山镇
 GBQ:广州北
 GGQ:广州东
@@ -1677,7 +1557,6 @@ IBQ:北滘
 ICQ:郴州西
 IFQ:深圳坪山
 IIQ:英德西
-ILQ:乐昌东
 IMQ:光明城
 INQ:韶山南
 IOQ:深圳北
@@ -1685,39 +1564,18 @@ IPQ:始兴
 IRQ:丹霞山
 IUQ:虎门
 IXQ:云浮东
-IYQ:东城南
 IZQ:广州南
 JEQ:靖州
 JIQ:吉首
-JPQ:尖山
 JRQ:揭阳
-JUQ:三  亚
-JWQ:江门东
+JWQ:江门
 KAQ:怀化南
-KBQ:沥林北
-KCQ:芙蓉南
 KDQ:惠东
-KEQ:海  口东
-KFQ:龙丰
 KGQ:临高南
-KHQ:惠环
-KIQ:暮云
-KJQ:九郎山
-KKQ:仲恺
 KLQ:黄流
 KMQ:鲘门
 KNQ:惠州南
-KOQ:大朗镇
-KPQ:银瓶
-KQQ:田心东
-KRQ:大丰
-KSQ:狮山
 KTQ:葵潭
-KUQ:松山湖北
-KVQ:株洲南
-KWQ:昭山
-KXQ:荷塘
-KZQ:云山
 LAQ:涟源
 LCQ:乐昌
 LDQ:娄底
@@ -1726,12 +1584,11 @@ LIQ:陵水
 LKQ:路口铺
 LLQ:陆丰
 LPQ:耒阳西
-LTQ:寮步
 LUQ:龙川
 LWQ:临澧
 LXQ:临湘
 LYQ:耒阳
-MDQ:茂名
+MDQ:茂名东
 MFQ:明珠
 MHQ:美兰
 MKQ:梅江
@@ -1742,18 +1599,12 @@ MQQ:汨罗东
 MUQ:猛洞河
 MVQ:麻阳
 MZQ:松桃
-NAQ:云东海
 NBQ:南山北
 NCQ:南雄
 NDQ:南江口
 NFQ:双峰北
-NGQ:板塘
-NKQ:小金口
 NNQ:南朗
 NOQ:南头
-NQQ:先锋
-NSQ:狮山北
-NVQ:鼎湖山
 NXQ:宁乡
 NZQ:福田
 OGQ:汕尾
@@ -1766,10 +1617,8 @@ OVQ:邵阳北
 PDQ:唐家湾
 PEQ:普宁
 PFQ:尖峰
-PHQ:平湖
 PKQ:安化
 PSQ:坪石
-PYQ:金月湾
 QBQ:清远
 QMQ:祁东
 QRQ:祁东北
@@ -1781,11 +1630,9 @@ QYQ:琼海
 QZQ:棋子湾
 RDQ:铜仁
 RNQ:三水南
-RRQ:道滘
 RTQ:东莞
 RUQ:容桂
 RVQ:饶平
-RXQ:长沙西
 SEQ:三亚
 SGQ:韶关东
 SJQ:三水
@@ -1805,7 +1652,6 @@ UFQ:东方
 UKQ:醴陵东
 UOQ:娄底南
 UQQ:乐东
-UWQ:鼎湖东
 VAQ:和平
 VCQ:华城
 VFQ:石门县北
@@ -1815,11 +1661,8 @@ VSQ:汉寿
 VTQ:会同
 VUQ:海口
 VXQ:惠州西
-WDQ:西湖东
 WEQ:文昌
 WNQ:万宁
-WWQ:大旺
-WZQ:端州
 XGQ:新兴县
 XJQ:徐闻
 XLQ:新晃
@@ -1838,7 +1681,6 @@ ZHQ:珠海
 ZIQ:珠海北
 ZOQ:樟木头
 ZPQ:芷江
-ZRQ:樟木头东
 ZSQ:中山
 ZVQ:肇庆
 ZWQ:湛江西
@@ -1847,7 +1689,6 @@ AER:阿克陶
 AKR:阿拉山口
 ASR:阿克苏
 ATR:阿图什
-AUR:阿勒泰
 BCR:巴楚
 BLR:布列开
 BOR:博乐
@@ -1873,7 +1714,6 @@ MUR:墨玉
 NIR:尼勒克
 PSR:皮山
 SCR:莎车
-SER:霍城
 SMR:鄯善北
 SSR:鄯善
 SUR:疏勒
@@ -1885,7 +1725,6 @@ THR:吐哈
 VSR:和什托洛盖
 VTR:和田
 VUR:和硕
-WAR:乌鲁木齐
 WMR:乌鲁木齐南
 WVR:五五
 WXR:乌西
@@ -1929,7 +1768,7 @@ MQS:闽清
 MYS:麦园
 NBS:南平北
 NES:宁德
-NHS:南华北
+NHS:南华
 NJS:南靖
 NNS:南平南
 NPS:南平
@@ -2025,7 +1864,7 @@ GQT:广宁寺
 GRT:工农湖
 GST:灌水
 GXT:盖州
-GZT:大连西
+GZT:革镇堡
 HAT:寒岭
 HCT:海城
 HHT:浑河
@@ -2072,7 +1911,6 @@ NXT:牛心台
 NZT:南杂木
 OCT:松原北
 OJT:三井子
-OYT:双阳
 PKT:皮口南
 PLT:普兰店
 PNT:偏岭
@@ -2124,7 +1962,6 @@ TVT:洮南
 TYT:通远堡
 UDT:刘家店
 UJT:两家
-VAT:查干湖
 VYT:松原
 WBT:五龙背
 WCT:五叉沟
@@ -2165,8 +2002,6 @@ ZLT:镇赉
 ZUT:庄河北
 ZVT:镇西
 ZWT:世博园
-CSU:常山
-KHU:开化
 ABV:运城北
 AJV:永济北
 ATV:安塘
@@ -2272,6 +2107,7 @@ ARW:安德
 ASW:安顺
 AWW:岳池
 BPW:北碚
+BSW:白沙
 CDW:成都
 CNW:成都南
 COW:长寿北
@@ -2289,7 +2125,6 @@ EMW:峨眉
 ENW:西昌南
 ETW:秀山
 EWW:新都东
-FAW:复盛
 FEW:涪陵北
 FHW:百宜
 FIW:南江
@@ -2328,7 +2163,6 @@ JJW:江津
 JOW:简阳南
 JYW:简阳
 KAW:开江
-KEW:贵阳东
 KFW:龙里北
 KIW:贵定县
 KJW:都匀东
@@ -2366,7 +2200,6 @@ PRW:攀枝花
 PSW:彭山
 PTW:葡萄菁
 PWW:郫县
-PYW:安靖
 QEW:青莲
 QFW:青白江东
 QHW:三穗
@@ -2420,14 +2253,14 @@ ZBW:曾家坪子
 ZDW:昭通
 ZGW:自贡
 ZHW:昭化
-ZIW:遵义西
+ZIW:遵义
 ZUW:镇远
+ZXW:朱杨溪
 ZYW:资阳
 ZZW:资中
 AAX:昂昂溪
 ADX:安达
 AHX:阿里河
-ARX:阿尔山北
 ASX:阿龙山
 BKX:博克图
 BLX:巴林
@@ -2507,7 +2340,6 @@ YEX:伊图里河
 YJX:银浪
 YKX:牙克石
 YLX:伊拉哈
-YMX:伊敏
 YSX:榆树屯
 YUX:烟筒屯
 ZHX:中和
@@ -2527,7 +2359,6 @@ BJY:宝鸡
 BSY:白水江
 BXY:彬县
 CAY:西安南
-CBY:城固北
 CGY:城固
 CJY:蔡家坡
 CUY:澄城
@@ -2536,17 +2367,14 @@ DGY:丹凤
 DNY:大荔
 DZY:大竹园
 EAY:西安北
-EGY:阿房宫
 EKY:小河镇
 FDY:富县东
 FEY:富县
-FUY:佛坪
 FXY:凤县
 FZY:凤州
 GAY:高滩
 GEY:甘泉北
 GQY:甘泉
-GZY:虢镇
 HAY:合阳
 HCY:韩城
 HDY:华山北
@@ -2556,9 +2384,7 @@ HQY:汉阴
 HSY:华山
 HTY:合阳北
 HYY:徽县
-JEY:锦界
 JIY:靖边
-KXY:鄠邑
 LDY:两当
 LGY:礼泉
 LXY:陇县
@@ -2567,7 +2393,6 @@ MBY:毛坝
 MEY:米脂
 MGY:毛坝关
 MVY:勉县
-NOY:宁强南
 ODY:绥德
 OLY:商洛
 OMY:神木
@@ -2608,7 +2433,6 @@ YLY:元龙
 YNY:阎良
 YSY:杨陵
 YWY:延安
-YXY:洋县西
 YYY:砚川
 YZY:燕子砭
 ZEY:镇安
@@ -2620,7 +2444,6 @@ ZSY:柞水
 ZVY:紫阳
 ZZY:子洲
 AUZ:安龙
-BBZ:博白
 BHZ:北海
 BIZ:百色
 BOZ:北流
@@ -2661,7 +2484,7 @@ LVZ:濑湍
 LZZ:柳州
 MHZ:马皇
 MLZ:茅岭
-MMZ:茂名西
+MMZ:茂名
 NCZ:宁村
 NDZ:南丹
 NFZ:南宁东
@@ -2696,7 +2519,6 @@ UBZ:来宾
 UCZ:来宾北
 UKZ:宾阳
 ULZ:那罗
-UQZ:柳江
 UWZ:零陵
 VCZ:罗城
 WBZ:梧州南
@@ -2716,6 +2538,202 @@ YTZ:牙屯堡
 ZAZ:钟山西
 ZJZ:湛江
 ZSZ:钟山
+js\station_name_161030before.js + TJB:同江
+js\station_name_161030before.js + AQC:阿巴嘎旗
+js\station_name_161030before.js + ONC:苏尼特左旗
+js\station_name_161030before.js + ASE:安顺西
+js\station_name_161030before.js + BBE:八步
+js\station_name_161030before.js + CSE:长寿湖
+js\station_name_161030before.js + DJE:垫江
+js\station_name_161030before.js + DNE:大方南
+js\station_name_161030before.js + FQE:法启
+js\station_name_161030before.js + GAE:贵安
+js\station_name_161030before.js + GLE:关岭
+js\station_name_161030before.js + LPE:梁平南
+js\station_name_161030before.js + PAE:盘州
+js\station_name_161030before.js + PBE:平坝南
+js\station_name_161030before.js + PUE:普安县
+js\station_name_161030before.js + WZE:万州北
+js\station_name_161030before.js + KBF:开封北
+js\station_name_161030before.js + LUF:兰考南
+js\station_name_161030before.js + MIF:民权北
+js\station_name_161030before.js + PYF:濮阳
+js\station_name_161030before.js + PRH:砀山南
+js\station_name_161030before.js + QSH:萧县北
+js\station_name_161030before.js + RGH:永城北
+js\station_name_161030before.js + NDJ:宁东南
+js\station_name_161030before.js + NOJ:宁东
+js\station_name_161030before.js + COK:兰陵北
+js\station_name_161030before.js + ZNK:枣庄东
+js\station_name_161030before.js + SML:双吉
+js\station_name_161030before.js + AUM:玉舍
+js\station_name_161030before.js + HYM:黄瓜园
+js\station_name_161030before.js + QIM:曲江
+js\station_name_161030before.js + SQM:沙桥
+js\station_name_161030before.js + GUN:光山
+js\station_name_161030before.js + CVO:茶卡
+js\station_name_161030before.js + UUP:临城
+js\station_name_161030before.js + AHQ:四会
+js\station_name_161030before.js + ARQ:三水北
+js\station_name_161030before.js + FQQ:常平东
+js\station_name_161030before.js + JUQ:三  亚
+js\station_name_161030before.js + KBQ:沥林北
+js\station_name_161030before.js + KEQ:海  口东
+js\station_name_161030before.js + KFQ:龙丰
+js\station_name_161030before.js + KHQ:惠环
+js\station_name_161030before.js + KKQ:仲恺
+js\station_name_161030before.js + KPQ:银瓶
+js\station_name_161030before.js + KSQ:狮山
+js\station_name_161030before.js + KZQ:云山
+js\station_name_161030before.js   MDQ:茂名东->茂名
+js\station_name_161030before.js + NAQ:云东海
+js\station_name_161030before.js + NKQ:小金口
+js\station_name_161030before.js + NSQ:狮山北
+js\station_name_161030before.js + NVQ:鼎湖山
+js\station_name_161030before.js + PHQ:平湖
+js\station_name_161030before.js + PYQ:金月湾
+js\station_name_161030before.js + UWQ:鼎湖东
+js\station_name_161030before.js + WDQ:西湖东
+js\station_name_161030before.js + WWQ:大旺
+js\station_name_161030before.js + WZQ:端州
+js\station_name_161030before.js + ZRQ:樟木头东
+js\station_name_161030before.js + WAR:乌鲁木齐
+js\station_name_161030before.js + ARX:阿尔山北
+js\station_name_161030before.js + YMX:伊敏
+js\station_name_161030before.js + GZY:虢镇
+js\station_name_161030before.js + BBZ:博白
+js\station_name_161030before.js   MMZ:茂名->茂名西
+js\station_name_170305before.js + FDC:包头 东
+js\station_name_170305before.js + KDC:昆独仑召
+js\station_name_170305before.js   FXD:阜新->阜新南
+js\station_name_170305before.js   SSH:上虞北->绍兴东
+js\station_name_170305before.js + AOJ:姚渡
+js\station_name_170305before.js + HDJ:哈达铺
+js\station_name_170305before.js + INJ:陇南
+js\station_name_170305before.js + MXJ:岷县
+js\station_name_170305before.js + WEJ:渭源
+js\station_name_170305before.js + ZXJ:漳县
+js\station_name_170305before.js + AXM:玉溪
+js\station_name_170305before.js + FBM:富源北
+js\station_name_170305before.js + FNM:富宁
+js\station_name_170305before.js + GXM:广南县
+js\station_name_170305before.js + KOM:昆明南
+js\station_name_170305before.js + MLM:弥勒
+js\station_name_170305before.js + PZM:普者黑
+js\station_name_170305before.js + QBM:曲靖北
+js\station_name_170305before.js + SVM:嵩明
+js\station_name_170305before.js + SYM:石林西
+js\station_name_170305before.js   YXM:玉溪->玉溪西
+js\station_name_170305before.js + GDN:孝感东
+js\station_name_170305before.js + IHN:后湖
+js\station_name_170305before.js + IYN:槐荫
+js\station_name_170305before.js + JTN:金银潭
+js\station_name_170305before.js + MHN:毛陈
+js\station_name_170305before.js + MJN:闵集
+js\station_name_170305before.js + PNN:盘龙城
+js\station_name_170305before.js + TEN:天河街
+js\station_name_170305before.js + TJN:天河机场
+js\station_name_170305before.js   JKP:蓟县->蓟州
+js\station_name_170305before.js + FMQ:树木岭
+js\station_name_170305before.js + FNQ:香樟路
+js\station_name_170305before.js + FVQ:湘府路
+js\station_name_170305before.js + FWQ:洞井
+js\station_name_170305before.js + KCQ:芙蓉南
+js\station_name_170305before.js + KIQ:暮云
+js\station_name_170305before.js + KJQ:九郎山
+js\station_name_170305before.js + KQQ:田心东
+js\station_name_170305before.js + KRQ:大丰
+js\station_name_170305before.js + KVQ:株洲南
+js\station_name_170305before.js + KWQ:昭山
+js\station_name_170305before.js + KXQ:荷塘
+js\station_name_170305before.js + NGQ:板塘
+js\station_name_170305before.js + NQQ:先锋
+js\station_name_170305before.js + FAW:复盛
+js\station_name_170305before.js + UQZ:柳江
+js\station_name_170331before.js   JWQ:江门->江门东
+180112   KDC:昆独仑召->昆都仑召
+180112 + QNC:旗下营南
+180112 + WPC:乌兰察布
+180112 + ZEC:准格尔
+180112   CYD:朝阳->朝阳南
+180112 + HGD:高花
+180112 + JHD:近海
+180112 + PUD:盘山
+180112 + TAD:台安南
+180112   YED:羊场->敖汉
+180112 + ZHD:珠斯花
+180112 + CTE:朝天
+180112 + JBE:江油北
+180112 + JME:剑门关
+180112 + QCE:青川
+180112 + DCG:都昌
+180112 + DDG:德兴东
+180112 + JDG:景德镇北
+180112 + PYG:鄱阳
+180112 + RXG:瑞昌西
+180112 + PLH:淮北北
+180112 + YVH:颍上
+180112 + DCJ:东岔
+180112 + DNJ:定西北
+180112 + IZJ:榆中
+180112 + QGJ:秦安
+180112 + QIJ:清水县
+180112 + TIJ:天水南
+180112 + TWJ:通渭
+180112 + ZIJ:张家川
+180112 + PUK:平原东
+180112 + YSK:禹城东
+180112 + JUL:建安
+180112 + YTL:伊通
+180112   COM:楚雄->楚雄南
+180112 + BSN:白沙铺
+180112 + FLN:枫林
+180112 + JYN:太和北
+180112 + ADO:安多
+180112 + GUP:藁城南
+180112 + HKP:黄土店
+180112 + IHP:衡水北
+180112 + IJP:辛集南
+180112 + IXP:沙岭子西
+180112 + JEP:景州
+180112 + SXP:石家庄东
+180112 + TOP:通州
+180112 + BNQ:麓谷
+180112 + EGQ:西平西
+180112 + FFQ:谷山
+180112 + FGQ:八方山
+180112 + FKQ:观沙岭
+180112 + FLQ:开福寺
+180112 + FOQ:佛山西
+180112 + FPQ:常平南
+180112 + ILQ:乐昌东
+180112 + IYQ:东城南
+180112 + JPQ:尖山
+180112 + KOQ:大朗镇
+180112 + KUQ:松山湖北
+180112 + LTQ:寮步
+180112 + RRQ:道滘
+180112 + RXQ:长沙西
+180112 + AUR:阿勒泰
+180112 + SER:霍城
+180112   NHS:南华->南华北
+180112   GZT:革镇堡->大连西
+180112 + OYT:双阳
+180112 + VAT:查干湖
+180112 + CSU:常山
+180112 + KHU:开化
+180112 - BSW:白沙
+180112 + KEW:贵阳东
+180112 + PYW:安靖
+180112   ZIW:遵义->遵义西
+180112 - ZXW:朱杨溪
+180112 + CBY:城固北
+180112 + EGY:阿房宫
+180112 + FUY:佛坪
+180112 + JEY:锦界
+180112 + KXY:鄠邑
+180112 + NOY:宁强南
+180112 + YXY:洋县西
 180411 + RSC:东胜东
 180411 + GDE:赶水东
 180411 + LNE:珞璜南
@@ -3235,3 +3253,105 @@ ZSZ:钟山
 210627 + LXE:泸县
 210627 + NDE:内江东
 210627 + ZGE:自贡
+210629   XOY:咸阳秦都->咸阳西
+210630   GSS:冠豸山->冠豸山南
+210729   HSY:华山->孟塬
+210801 + BWT:巴图营
+210801 + JFT:锦州北
+210801 + UNT:凌海南
+210805 + QJK:青岛机场
+210911 + FPY:富平
+210911 + TCY:铜川东
+210911 + YOY:耀州
+210911 + ZLY:庄里
+210915 + CXY:常兴
+210915 + HGY:华山
+210915 + HXY:华县
+210915 + LIY:临潼
+210915 + WLY:卧龙寺
+210916   BER:博尔塔拉->博乐
+210916   BOR:博乐->博乐东
+210916   SXR:沙湾县->沙湾市
+210929 + NIG:宁都
+210929 + SDG:石城东
+210929 + YYG:于都北
+210929 + NHM:南华北
+210929   KKQ:仲恺->陈江南
+210929 + AYS:杨源
+210929 + GPS:冠豸山
+210929 + JQS:建宁南
+210929   NHS:南华北->宁化
+210929 + QLS:清流
+210929 + SSS:水茜
+211105 - YCG:宜春西
+211105 + BAI:哈  尔  滨
+211105 + BBI:牡  丹  江
+211105 + BCI:佳  木  斯
+211105 + XNM:小湾东
+211109 + ZIY:治江
+211117   EVH:余杭->临平南
+211117   OLH:绅坊->乐清东
+211120   CXY:常兴->眉县东
+211120   HXY:华县->华州
+211127 + WAI:重  庆北
+211127 + JEJ:山丹马场
+211202 + AGM:野象谷
+211202 + AJM:元江
+211202 + ENM:西双版纳
+211202 + EVM:峨山
+211202 + GVM:橄榄坝
+211202 + HDM:化念
+211202 + MHM:磨憨
+211202 + MJM:墨江
+211202 + MWM:勐腊
+211202 + NEM:宁洱
+211202 + PEM:普洱
+211204 + FCA:凤凰古城
+211204 + FRA:芙蓉镇
+211204 + GXA:古丈西
+211204 + JDA:吉首东
+211204 + MYA:麻阳西
+211204 + JAB:鸡西西
+211204 + KNB:桦南东
+211204 + LRB:林口南
+211204 + OXB:双鸭山西
+211204 + QXB:七台河西
+211208 + LBG:龙南东
+211208 + XFG:信丰西
+211209 + BLA:博罗北
+211209 + DNA:东莞南
+211209 + HEA:河源东
+211209 + HPA:和平北
+211209 + HUA:惠州北
+211209 + HYA:河源北
+211209 + LCA:龙川西
+211209 + ZKA:仲恺
+211209 + DIG:定南南
+211223 + DPJ:东风南
+211223 + JIJ:金塔
+211223 + KLJ:河东里
+211223 + SRJ:肃州
+211223 + CUL:长白山
+211223 + YQL:永庆
+211224 + KDK:菏泽东
+211224 + MIK:济宁北
+211224 + MNK:济宁东
+211224 + MXK:嘉祥北
+211224 + MYK:巨野北
+211224 + QQK:曲阜南
+211224 + VOK:庄寨
+211229 + AIU:安庆西
+211229 + HDU:黄梅东
+211229 + QSU:潜山
+211229 + SSU:宿松东
+211229 + TAU:太湖南
+220105 + KOP:崇礼
+220107 + AOR:阿拉尔
+220107 + AWR:阿瓦提
+220107 + SEU:嵊州北
+220107 + SKU:嵊州新昌
+220107 + SVU:上虞南
+220107 + TEU:台州
+220107 + TIU:天台山
+220108 + DXE:德昌西
+220108 + XCE:西昌西
