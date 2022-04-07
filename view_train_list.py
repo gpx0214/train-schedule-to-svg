@@ -1532,6 +1532,9 @@ def getczxx(t1, date, cache=1):
     return data, samestations, num
 
 
+def getczxxFileName(t1, date):
+    return 'ticket/' + date + '_' + t1 + '.json'
+
 def getczxxLocal(t1, date):
     name = 'ticket/' + date + '_' + t1 + '.json'
     try:
@@ -2591,7 +2594,7 @@ if __name__ == '__main__':
     train_map = [[] for i in range(maxlen)]
     #
     now = nowdate()
-    base_date = '2022-01-10'
+    base_date = '2022-04-08'
     #end_date = ''
     #
     #train_list.js
@@ -3308,7 +3311,7 @@ from view_train_list import *
 import math
 
 now = nowdate()
-base_date = '2022-01-10'
+base_date = '2022-04-08'
 station = getStation()
 
 samecity_arr = []
