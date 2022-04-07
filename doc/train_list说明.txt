@@ -5,6 +5,7 @@ wget -P --no-check-certificate -O /var/ftp/station_name.js https://kyfw.12306.cn
 
 7za a -t7z js.7z js/ -xr\!*.gz
 7za a -t7z sch.7z sch/
+7za a -t7z ticket.7z ticket/
 7za a -t7z delay.7z delay/
 
 \cp -p 1.txt 2.txt
