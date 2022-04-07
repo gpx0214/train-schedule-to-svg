@@ -389,6 +389,9 @@ func detailcsv(d TrainDetail) [][]string {
 		RunTimeStr := ""
 		if i > 0 {
 			RunTime := getminhhmm(st.ArriveTime) - getminhhmm(lastStartTime) + (st.DayDifference-lastDayDiff)*1440
+			if st.OneStationCrossDay {
+				RunTime -= 1440
+			}
 			RunTimeStr = strconv.Itoa(RunTime)
 		}
 
