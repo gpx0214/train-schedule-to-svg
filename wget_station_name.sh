@@ -26,7 +26,9 @@ if ((${t1} > ${t0}));then
 echo t1 newer
 yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}js/qss.js)"`
 cp -p ${path}js/qss.js ${path}js/qss_${yymmdd}.js
-gzip -c9 ${path}js/qss.js > ${path}js/qss.js.gz
+#gzip -c9 ${path}js/qss.js > ${path}js/qss.js.gz
+rm -f ${path}js/qss.js.gz
+7za a -tgzip -mx9 ${path}js/qss.js.gz ${path}js/qss.js >/dev/null
 else
 echo t0 newer or same
 fi
@@ -56,10 +58,16 @@ if ((${t1} > ${t0}));then
 echo t1 newer
 yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}js/station_name.js)"`
 cp -p ${path}js/station_name.js ${path}js/station_name_${yymmdd}.js
-gzip -c9 ${path}js/station_name.js > ${path}js/station_name.js.gz
+#gzip -c9 ${path}js/station_name.js > ${path}js/station_name.js.gz
+rm -f ${path}js/station_name.js.gz
+7za a -tgzip -mx9 ${path}js/station_name.js.gz ${path}js/station_name.js >/dev/null
 ${path}view_train_list.py station
-gzip -c9 ${path}js/station.csv > ${path}js/station.csv.gz
-gzip -c9 ${path}js/station.min.csv > ${path}js/station.min.csv.gz
+#gzip -c9 ${path}js/station.csv > ${path}js/station.csv.gz
+#gzip -c9 ${path}js/station.min.csv > ${path}js/station.min.csv.gz
+rm -f ${path}js/station.csv.gz
+7za a -tgzip -mx9 ${path}js/station.csv.gz ${path}js/station.csv >/dev/null
+rm -f ${path}js/station.min.csv.gz
+7za a -tgzip -mx9 ${path}js/station.min.csv.gz ${path}js/station.min.csv >/dev/null
 ${path}github_auto_update.py js/station.csv js/station.min.csv
 ${path}micromsg.py update station `date +"%y%m%d %H:%M:%S" -d@${t1}`
 rm -f ${path}js.7z
