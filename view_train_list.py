@@ -147,6 +147,14 @@ def date_add(date, diff):
     return '%04d-%02d-%02d' % (y, m, d)
 
 
+def date_ymd(s):
+    return re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", s)
+
+
+def date_yyyymmdd(s):
+    return re.sub(r'(\d\d\d\d)-(\d\d)-(\d\d)', r"\1\2\3", s)
+
+
 def date_add_ymd(s, diff):
     if len(s) == 6:
         s = '20' + s
@@ -210,6 +218,44 @@ def datediff(date1, date0):
 
 def nowdate():
     return datetime.datetime.now().strftime('%Y-%m-%d')
+
+
+def basedate(now):
+    graphdate_rev = [
+'19970401',
+'19981001',
+'20001021',
+'20011021',
+'20040418',
+'20070418',
+'20081221',
+'20090401', '20090701', '20091111', # '20091226',
+'20100426', # '20100701',
+'20110111', '20110701', '20110828', '20111212',
+'20120701', '20121221', # '20120401',
+'20130701', '20131228', 
+'20140701', '20141210', 
+'20150320', '20150701', # '20150520',
+'20160110', '20160515', '20160910', '20161101', 
+'20170105', '20170416', '20170701', '20170921',
+'20171228', '20180410', '20180701', '20180921', #    '20180201', '20180404', 
+'20190105', '20190410', '20190710', '20191011', #    '20191230', 
+#    '20190121', '20190404', '20190430', '20190606', '20190912', '20190930', 
+'20200110', '20200410', '20200701', '20201011', #    '20200430',
+'20210120', '20210410', '20210625', '20211011',
+'20220110', '20220408'
+][::-1]
+    if not now:
+        now = nowdate()
+    for d in graphdate_rev:
+        date = date_ymd(d)
+        if datediff(now, date) >= 0:
+            return date_ymd(d)
+    return date_ymd(graphdate_rev[0])
+
+
+def base_yymmdd(now=''):
+    return date_yyyymmdd(basedate(now))[2:]
 
 
 def weekday(date):
@@ -1533,10 +1579,11 @@ def getczxx(t1, date, cache=1):
 
 
 def getczxxFileName(t1, date):
-    return 'ticket/' + date + '_' + t1 + '.json'
+    return 'ticket%s/%s_%s.json' % (base_yymmdd(date), date, t1)
+
 
 def getczxxLocal(t1, date):
-    name = 'ticket/' + date + '_' + t1 + '.json'
+    name = getczxxFileName(t1, date)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -1570,7 +1617,7 @@ def getczxxOnline(t1, date):
     except ValueError:
         print('ValueError %s %s' % (t1, date))
         return [], [], -1
-    name = 'ticket/' + date + '_' + t1 + '.json'
+    name = getczxxFileName(t1, date)
     if j['status'] == True and j['httpstatus'] == 200 and len(j['data']['data']):
         writebyte(name, resp.content)
         print('%s %s %4d' % (t1, date, len(j['data']['data'])))
@@ -1633,7 +1680,7 @@ def getLeftTicket(t1, t2, date):
     except ValueError:
         print('ValueError %s %s %s' % (t1, t2, date))
         return []
-    name = 'ticket/' + date + '_' + t1 + '_' + t2 + '.json'
+    name = 'ticket/%s_%s_%s.json' % (date, t1, t2)
     if ticket['status'] == True and ticket['httpstatus'] == 200 and len(ticket['data']['result']):
         writebyte(name, resp.content)
         print('%s %s %s %d' % (t1, t2, date, len(ticket['data']['result'])))
@@ -2177,7 +2224,7 @@ def getcdinfo(date, s, cache=2):
 
 
 def ccrgtcsv(name, date):
-    #name = 'js/train.csv'
+    #name = 'js/train%s.csv'%(base_yymmdd())
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -2578,6 +2625,10 @@ def compress_bin_vector(date_bin, base_date, size):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] == 'basedate':
+        print(base_yymmdd())
+        exit()
+
     station = getStation()
     totalcache = 1
 
@@ -2594,7 +2645,7 @@ if __name__ == '__main__':
     train_map = [[] for i in range(maxlen)]
     #
     now = nowdate()
-    base_date = '2022-04-08'
+    base_date = basedate('')
     #end_date = ''
     #
     #train_list.js
@@ -2666,7 +2717,7 @@ if __name__ == '__main__':
                 continue
             if i > max_date_diff and name not in freq:
                 continue
-            fn = 'ticket/%s_%s.json' % (date, t1)
+            fn = getczxxFileName(t1, date)
             mdate = '1970-01-01'
             if os.path.exists(fn):
                 mdate = time.strftime("%Y-%m-%d", time.localtime(os.path.getmtime(fn)))
@@ -2745,15 +2796,15 @@ if __name__ == '__main__':
     train_arr = mapToArr(train_map)
     #
     ret = checkSchdatebintocsvmin(train_arr, base_date, size, station)
-    num = writemincsv("js/time.min.csv", ret)
+    num = writemincsv('js/time%s.min.csv'%(base_yymmdd()), ret)
     print(num)
     #
     ret = checkSchdatebintocsv(train_arr, base_date, size, station)
-    num = writecsv("js/time.csv", ret)
+    num = writecsv('js/time%s.csv'%(base_yymmdd()), ret)
     print(num)
     #
     ret = trainlistCsv(train_arr, base_date, size, station)
-    writemincsv('js/train.csv', ret)
+    writemincsv('js/train%s.csv'%(base_yymmdd()), ret)
     #
     s, block = print_block(stat)
     writebytebom("stat_map.txt", '%d trains\n%d blocks\n%s' % (train_num,block,s))
@@ -2797,7 +2848,7 @@ lines = [
 [u'成灌线', r'[C]\d{1,4}|G2\d{2}']
 ]
 
-c = readcsv('js/time.csv')
+c = readcsv('js/time%s.csv'%(base_yymmdd()))
 for line in lines:
     fni = u'test/%s里程.txt' % (line[0])
     fn = u'test/210120%s.svg' % (line[0])
@@ -3311,7 +3362,7 @@ from view_train_list import *
 import math
 
 now = nowdate()
-base_date = '2022-04-08'
+base_date = basedate('')
 station = getStation()
 
 samecity_arr = []
@@ -3356,7 +3407,7 @@ for name in citys:
         continue
     for i in range(-7, -1): #32
         date = date_add(now, i)
-        fn = 'ticket/%s_%s.json'%(date, t1)
+        fn = getczxxFileName(t1, date)
         if not os.path.exists(fn):
             continue
         mt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(fn)))
@@ -3369,6 +3420,6 @@ for t1 in ['BJP']:
         c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 
 for t1 in ['BJP','JNK','NJH','SHH']:
-    for i in range(-1,1):
+    for i in range(10,14):
         c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
 '''

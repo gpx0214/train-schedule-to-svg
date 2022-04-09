@@ -15,7 +15,7 @@ maxlen = 90000
 train_map = [[] for i in range(maxlen)]
 seq_map = [0 for i in range(maxlen)]
 
-c = readcsv('js/train.csv')
+c = readcsv('js/train%s.csv'%(base_yymmdd()))
 idx = 0
 # for i in range(idx, len(c), 1):
 for i in range(idx, len(c), 1):

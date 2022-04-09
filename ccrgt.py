@@ -12,7 +12,7 @@ try:
 except:
     date = nowdate()
 
-name = 'js/train.csv'
+name = 'js/train%s.csv'%(base_yymmdd())
 ret = ccrgtcsv(name, date)
 
 yyyymmdd = re.sub(
