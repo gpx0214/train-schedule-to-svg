@@ -243,7 +243,7 @@ def basedate(now):
 #    '20190121', '20190404', '20190430', '20190606', '20190912', '20190930', 
 '20200110', '20200410', '20200701', '20201011', #    '20200430',
 '20210120', '20210410', '20210625', '20211011',
-'20220110', '20220408'
+'20220110', '20220408', '20220620',
 ][::-1]
     if not now:
         now = nowdate()
@@ -558,7 +558,7 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     for i in range(len(s)):
         s[i] = s[i].split('|')
     print('read %d stations in %s' % (len(s), fn))
-    #s.append([u"dxc", u"大兴机场", u"IWP", u"daxingjichang", u"dxjc", u"-1"])
+    s.append([u"fta", u"北京丰台", u"FTP", u"beijingfengtai", u"bjft", u"-1"])
     s.append([u"tsn", u"唐山南", u"TNP", u"tangshannan", u"tsn", u"-1"])
     s.append([u"gye", u"古冶", u"GYP", u"guye", u"gy", u"-1"])
     s.append([u"", u"香港红磡", u"JQO", u"xiangganghongkan", u"xghk", u"-1"])
@@ -808,33 +808,40 @@ def add_train_list(train_map, fn0='js/train_list.js', base_date=None):
         msg += ss + '\n'
     return base_date, mask, msg
 
-
 # 181103 new 12306 search/v1
 def getsearch12306(kw, date, cache=1):
     yyyymmdd = date.replace("-", "")
-    name = 'search/' + yyyymmdd + '_' + kw + '.json'
+    name = 'search%s/%s_%s.json' % (base_yymmdd(date), yyyymmdd, kw)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
+    if cache == 0 and os.path.exists(fn) and os.path.getmtime(fn):
+        cache = 1
     if cache and os.path.exists(fn):
         try:
             search = json.loads(readbyte(fn))
-            if search['status'] == True and len(search['data']):
-                print('read  %-3s %3d %5s-%5s' % (
+            if search['status'] == True and len(search['data']) and cache<2:
+                print('read  %-3s %3d %5s-%5s %8s' % (
                     kw, len(search['data']),
                     search['data'][0]['station_train_code'],
-                    search['data'][-1]['station_train_code'])
+                    search['data'][-1]['station_train_code'],
+                    yyyymmdd
+                    )
                 )
                 return search['data'], len(search['data'])
         except ValueError:
             print('ValueError ' + kw)
+    if cache >= 2:
+        return [], 0
     #
     url = "https://search.12306.cn/search/v1/train/search?keyword=" + \
         kw + "&date=" + yyyymmdd
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36",
+        "Referer": "https://kyfw.12306.cn/",
+    }
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
@@ -845,7 +852,8 @@ def getsearch12306(kw, date, cache=1):
         search = json.loads(body)
     except ValueError:
         print('ValueError ' + kw)
-        return [], -1
+        time.sleep(5)
+        return [], -2
     if not isinstance(search, dict):
         print('search is %s %s' % (type(search), kw))
         return [], -1
@@ -854,11 +862,14 @@ def getsearch12306(kw, date, cache=1):
         return [], -1
     if search['status'] == True and len(search['data']):
         writebyte(name, resp.content)
-        print('save  %-3s %3d %5s-%5s' % (
+        print('save  %-3s %3d %5s-%5s %8s' % (
             kw, len(search['data']),
             search['data'][0]['station_train_code'],
-            search['data'][-1]['station_train_code'])
+            search['data'][-1]['station_train_code'],
+            yyyymmdd
+            )
         )
+        time.sleep(1)
         return search['data'], len(search['data'])
     else:
         print('empty %-3s' % (kw))
@@ -871,26 +882,42 @@ def searchAll12306(train_map, base_date, date, st, cache=1):
     add to train_map
     '''
     #st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+    size = 0
     dead = []
+    cnt = 0
     while(len(st)):
         kw = st.pop()
         jump = 0
-        if kw == "Y" or kw == "":
-            jump = 1
+        if kw == "": # kw == "Y" or 
+            jump = 1 # direct push stack 0-9
         max_depth = 3
         res = []
+        ret = 0
         if not jump:
+            cnt += 1
             for retry in range(2):
                 res, ret = getsearch12306(kw, date, cache)
                 if ret >= 0:
                     break
+                if ret == -2:
+                    # time.sleep(300)
+                    break
                 time.sleep(2 << retry)
+        if cache < 2 and cnt % 15 == 0: # TODO
+            time.sleep(60)
         if ret == -1:
             dead.append(kw)
             continue
+        if ret == -2:
+            dead.append(kw)
+            dead.extend(st)
+            return dead, size
         max_index = -1
         for i in range(len(res)):
-            res[i]['date'] = 1 << datediff(date, base_date)
+            diff = datediff(date, base_date)
+            if diff >= size:
+                size = diff + 1
+            res[i]['date'] = 1 << diff
             res[i]['src'] = 2
             add_map(train_map, res[i])
             if res[i]['station_train_code'].startswith(kw):
@@ -907,9 +934,11 @@ def searchAll12306(train_map, base_date, date, st, cache=1):
             k = kw + str(i)
             if re.sub(r'\D+', '', k).startswith('0'):
                 continue
-            if k in max_str or k > max_str or len(re.sub(r'\D+', '', max_str)) < 4:
-                st.append(k)
-    return dead
+            #if k in max_str or k > max_str or len(re.sub(r'\D+', '', max_str)) < 4: #顺序
+                #st.append(k)
+            #if len(re.sub(r'\D+', '', max_str)) < 4: 
+            st.append(k) #乱序 除了0开头都进
+    return dead, size
 
 
 def atos(a):
@@ -1010,7 +1039,7 @@ def getSch12306Online(t1, t2, train_no, date):
         "&from_station_telecode=" + t1 + "&to_station_telecode=" + t2 + \
         "&depart_date=" + date
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=30)
     except:
@@ -1601,11 +1630,12 @@ def getczxxLocal(t1, date):
 
 
 def getczxxOnline(t1, date):
-    url = "https://kyfw.12306.cn/otn/czxx/query?train_start_date=" + date + \
+    # url = "https://kyfw.12306.cn/otn/czxx/query?train_start_date=" + date + \
+    url = "https://www.12306.cn/kfzmpt/czxx/query?train_start_date=" + date + \
         "&train_station_name=" + "" + \
         "&train_station_code=" + t1 + "&randCode="
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=55)
     except:
@@ -1625,6 +1655,131 @@ def getczxxOnline(t1, date):
     else:
         print('data error %s %s' % (t1, date))
         return [], [], 0
+
+
+def add_station(base_date, now, max_date_diff, size, totalcache=1):
+    '''
+    czxx
+    '''
+    # 97-98主要换乘站 北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都
+    # 京哈线及东北地区 京沪线及华东地区 京九线 京广线及中南地区 陇海线及西南、西北地区 宝成线及西南地区 侯月、京原、京包、南北同蒲
+    # 1986年铁道部铁路局列表：
+    # （1）哈尔滨铁路局，下属铁路分局7个：01哈尔滨、04齐齐哈尔、03牡丹江、02佳木斯、05海拉尔、04加格达奇、05伊图里河铁路分局。
+    # （2）沈阳铁路局，下属铁路分局11个：12沈阳、13大连、12丹东、11长春、18吉林、19通化、20图们、16通辽、11白城、15锦州、15阜新铁路分局。
+    # （3）北京铁路局，下属铁路分局6个：24北京、25天津、26石家庄、28大同、27太原、27临汾铁路分局。
+    # （4）呼和浩特铁路局，下属铁路分局2个：33包头、36集宁铁路分局。
+    # （5）郑州铁路局，下属铁路分局8个：38郑州、38新乡、39武汉、42襄樊、40洛阳、41西安、41宝鸡、43安康铁路分局。
+    # （6）济南铁路局，下属铁路分局3个：47济南、48徐州、49青岛铁路分局。
+    # （7）上海铁路局，下属铁路分局7个：55上海、54南京、53蚌埠、56杭州、57鹰潭、57南昌、58福州铁路分局。
+    # （8）广州铁路局，下属铁路分局4个：63广州、62衡阳、62长沙、64怀化铁路分局。另有65广深铁路公司和6b海南铁路办事处。66 67广梅汕 69深圳西
+    # （9）柳州铁路局，下属铁路分局2个：71柳州、71南宁铁路分局。
+    # （10）成都铁路局，下属铁路分局6个：76成都、77重庆、78贵阳、76西昌、80昆明、开远铁路分局。
+    # （11）兰州铁路局，下属铁路分局4个：85兰州、86武威、88西宁、87银川铁路分局。
+    # （12）乌鲁木齐铁路局，下属铁路分局2个：93乌鲁木齐、92哈密铁路分局。 94南疆临管处、91北疆公司 95
+
+    citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
+    samecity_arr = []
+    samecity_map = {}
+    import math
+    # get data less than ex-2sd
+    if False and totalcache < 2 and now != base_date: # TODO
+        for name in citys:
+            t1 = telecode(name, station)
+            if len(t1) == 0:
+                continue
+            if name in samecity_map:
+                continue
+            rets = []
+            for i in range(-1, max_date_diff):  # -8...32
+                date = date_add(now, i)
+                c, samecity, ret = getczxx(t1, date, cache=2)
+                rets.append(ret)
+                if len(samecity) > 1:
+                    samecity_arr.append(samecity)
+                    for ii in samecity:
+                        samecity_map[ii] = name
+            n = len(rets)
+            ex = sum(rets)  # /n
+            ex2 = sum([x*x for x in rets])  # /n
+            sd = round(math.sqrt((ex2*n - ex * ex)) / n)
+            level = round(ex/n) - 2*sd  # sorted(rets)[len(rets)//2]*8//10
+            for i in range(len(rets)):
+                if rets[i] < level:
+                    print(t1, date_add(now, i-1), rets[i], level)
+                    c, samecity, ret = getczxx(
+                        t1, date_add(now, i-1), cache=0)
+    #
+    for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
+        date = date_add(now, i)
+        freq = re.split(r'[\s\n,*]+',
+                        u'''北京 上海 广州 天津 沈阳 长春 哈尔滨 济南 徐州 南京 杭州 石家庄 郑州 武昌 长沙 株洲 贵阳 西安 兰州 成都 重庆
+            深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
+        samecity_arr = []
+        samecity_map = {}
+        for name in citys:
+            t1 = telecode(name, station)
+            if len(t1) == 0:
+                continue
+            if name in samecity_map:
+                continue
+            if i > max_date_diff and name not in freq:
+                continue
+            fn = getczxxFileName(t1, date)
+            mdate = '1970-01-01'
+            if os.path.exists(fn):
+                mdate = time.strftime("%Y-%m-%d", time.localtime(os.path.getmtime(fn)))
+            cache = 1
+            if i == 0:
+                cache = 0
+            if datediff(date, mdate) > max_date_diff:
+                cache = 0
+            if i < 0:  # min -8  #
+                cache = 2
+            if name in freq:
+                if (0 <= i and i < 5):
+                    cache = 0
+                if (5 <= i and i < 14) and datediff(now, mdate) >= 2:
+                    cache = 0
+                if (14 <= i) and datediff(now, mdate) >= 3:
+                    cache = 0
+            if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
+                cache = 0
+            if (0 <= i) and datediff(now, mdate) >= max_date_diff-10:
+                cache = 0
+            if totalcache >= 2:
+                cache = 2
+            for retry in range(5):
+                c, samecity, ret = getczxx(t1, date, cache)
+                if ret > -1:
+                    break
+                time.sleep(1 << retry)
+            if ret == -1:
+                c, samecity, ret = getczxx(t1, date, cache=2)
+            for t in c:
+                diff = datediff(re.sub(
+                    r'(\d\d\d\d)(\d\d)(\d\d)',
+                    r'\1-\2-\3',
+                    t['start_train_date']),
+                    base_date
+                )
+                if diff < 0:
+                    continue
+                if diff >= size:
+                    size = diff + 1
+                s = {}
+                s['station_train_code'] = t['station_train_code']
+                s['from_station'] = t['start_station_name']
+                s['to_station'] = t['end_station_name']
+                s['train_no'] = t['train_no']
+                s['total_num'] = 0
+                s['date'] = 1 << diff
+                s['src'] = 8
+                add_map(train_map, s)
+            if len(samecity) > 1:
+                samecity_arr.append(samecity)
+                for ii in samecity:
+                    samecity_map[ii] = name
+    return size
 
 
 def findschstation(sch, station_name):  # TODO
@@ -1668,7 +1823,7 @@ def getLeftTicket(t1, t2, date):
         "&leftTicketDTO.from_station=" + t1 + \
         "&leftTicketDTO.to_station=" + t2 + "&purpose_codes=ADULT"
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=50)
     except:
@@ -1933,7 +2088,7 @@ def getcompilelist(no, cache=1):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    if os.path.exists(fn):
+    if cache > 0 and os.path.exists(fn):
         try:
             j = json.loads(readbyte(fn))
             if 'data' in j:
@@ -1981,7 +2136,7 @@ def getcompilelist(no, cache=1):
             [re.sub(r'\s', '', x['coachType']) for x in j['data']],
             [str(x['limit1'] + x['limit2']) for x in j['data']]
         ))
-        ret.append('|'.join(list(set([x['seatFeature'] for x in j['data']]))) )
+        ret.append('|'.join(sorted(list(set([x['seatFeature'] for x in j['data']])))) )
         ret.append(j['data'][0]['startDate'])
         ret.append(j['data'][0]['stopDate'])
         print(' '.join(ret))
@@ -2004,7 +2159,7 @@ for i in range(0, len(c), 1):
         fn = name
     #if os.path.exists(fn):
         #continue
-    ret = getcompilelist(c[i][0], 1)
+    ret = getcompilelist(c[i][0], 2)
     if len(ret) > 2 and '|' in ret[2]:
         print(' '.join(ret))
 '''
@@ -2172,7 +2327,7 @@ def getcdinfo(date, s, cache=2):
     url = 'https://tripapi.ccrgt.com/crgt/trip-server-app/travel/getCDInfo'
     j = {"params": {"date": date, "trainNumber": s}}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36",
         "Content-Type": "application/json"
     }
     try:
@@ -2265,7 +2420,7 @@ def ccrgtcsv(name, date):
 def gtzwdjsp():
     url = 'http://www.gtbyxx.com/wxg/ky/zhengwan.jsp'
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"}
     resp = requests.get(url, headers=header, timeout=20)
     body = resp.content.decode('utf-8')
     match = re.findall(u'更新时间为(\\d+)月(\\d+)日 (\\d+)点(\\d+)分',
@@ -2283,7 +2438,7 @@ def gtzwd(date, s):
     url = 'http://www.gtbyxx.com/wxg/inter/kyData/getTrainZwd'
     j = {"trainNo": s}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"}
     resp = requests.post(url, data=json.dumps(j), headers=header, timeout=60)
     body = resp.content.decode('utf-8')
     #
@@ -2623,7 +2778,6 @@ def compress_bin_vector(date_bin, base_date, size):
     # ('b{:0>%db}' % (size)).format(date_bin) + ' consecutive' + str(bin_count1n(date_bin)), 0
     return slice_to_str(one_slice, base_date), 0
 
-
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'basedate':
         print(base_yymmdd())
@@ -2635,6 +2789,16 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'station':
         writecsv("js/station.csv", [[col.encode('utf-8') for col in row] for row in station])
         writecsv("js/station.min.csv", [[row[x].encode('utf-8') for x in [1,2,6]] for row in station])
+        exit()
+
+    if len(sys.argv) > 2 and sys.argv[1] == 'search':
+        date = sys.argv[2]
+        print('search ', date)
+        maxlen = 90000
+        train_map = [[] for i in range(maxlen)]
+        st = ["S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+        st, tmpsize = searchAll12306(train_map, basedate(''), date, st, cache=0)
+        print(date, st)
         exit()
 
     if len(sys.argv) > 1 and sys.argv[1] == 'cache':
@@ -2651,131 +2815,18 @@ if __name__ == '__main__':
     #train_list.js
     #base_date, mask, msg = add_train_list(train_map, fn0, '2019-12-30')
     size = 0  # bin_cnt(mask)
-    max_date_diff = 15  # 29 #T+29
+    max_date_diff = 15 #5 # 15  # 29 #T+29 #可以查到全部车次的日期
     #
-    #
-    # 97-98主要换乘站 北京 天津 沈阳 长春 通辽 哈尔滨 齐齐哈尔 大连 泰安 徐州 南京 上海 石家庄 郑州 武昌 长沙 株洲 广州 襄阳 柳州 贵阳 西安 兰州 成都
-    # 京哈线及东北地区 京沪线及华东地区 京九线 京广线及中南地区 陇海线及西南、西北地区 宝成线及西南地区 侯月、京原、京包、南北同蒲
-    # 1986年铁道部铁路局列表：
-    # （1）哈尔滨铁路局，下属铁路分局7个：01哈尔滨、04齐齐哈尔、03牡丹江、02佳木斯、05海拉尔、04加格达奇、05伊图里河铁路分局。
-    # （2）沈阳铁路局，下属铁路分局11个：12沈阳、13大连、12丹东、11长春、18吉林、19通化、20图们、16通辽、11白城、15锦州、15阜新铁路分局。
-    # （3）北京铁路局，下属铁路分局6个：24北京、25天津、26石家庄、28大同、27太原、27临汾铁路分局。
-    # （4）呼和浩特铁路局，下属铁路分局2个：33包头、36集宁铁路分局。
-    # （5）郑州铁路局，下属铁路分局8个：38郑州、38新乡、39武汉、42襄樊、40洛阳、41西安、41宝鸡、43安康铁路分局。
-    # （6）济南铁路局，下属铁路分局3个：47济南、48徐州、49青岛铁路分局。
-    # （7）上海铁路局，下属铁路分局7个：55上海、54南京、53蚌埠、56杭州、57鹰潭、57南昌、58福州铁路分局。
-    # （8）广州铁路局，下属铁路分局4个：63广州、62衡阳、62长沙、64怀化铁路分局。另有65广深铁路公司和6b海南铁路办事处。66 67广梅汕 69深圳西
-    # （9）柳州铁路局，下属铁路分局2个：71柳州、71南宁铁路分局。
-    # （10）成都铁路局，下属铁路分局6个：76成都、77重庆、78贵阳、76西昌、80昆明、开远铁路分局。
-    # （11）兰州铁路局，下属铁路分局4个：85兰州、86武威、88西宁、87银川铁路分局。
-    # （12）乌鲁木齐铁路局，下属铁路分局2个：93乌鲁木齐、92哈密铁路分局。 94南疆临管处、91北疆公司 95
-
-    citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
-    samecity_arr = []
-    samecity_map = {}
-    import math
-    # get data less than ex-2sd
-    if totalcache < 2 and now != base_date:
-        for name in citys:
-            t1 = telecode(name, station)
-            if len(t1) == 0:
-                continue
-            if name in samecity_map:
-                continue
-            rets = []
-            for i in range(-1, max_date_diff):  # -8...32
-                date = date_add(now, i)
-                c, samecity, ret = getczxx(t1, date, cache=2)
-                rets.append(ret)
-                if len(samecity) > 1:
-                    samecity_arr.append(samecity)
-                    for ii in samecity:
-                        samecity_map[ii] = name
-            n = len(rets)
-            ex = sum(rets)  # /n
-            ex2 = sum([x*x for x in rets])  # /n
-            sd = round(math.sqrt((ex2*n - ex * ex)) / n)
-            level = round(ex/n) - 2*sd  # sorted(rets)[len(rets)//2]*8//10
-            for i in range(len(rets)):
-                if rets[i] < level:
-                    print(t1, date_add(now, i-1), rets[i], level)
-                    c, samecity, ret = getczxx(
-                        t1, date_add(now, i-1), cache=0)
     #czxx
-    for i in range(-datediff(now, base_date), max_date_diff+3): # base_date...now+max_date_diff+2
-        date = date_add(now, i)
-        freq = re.split(r'[\s\n,*]+',
-                        u'''北京 上海 广州 天津 沈阳 长春 哈尔滨 济南 徐州 南京 杭州 石家庄 郑州 武昌 长沙 株洲 贵阳 西安 兰州 成都 重庆
-            深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
-        samecity_arr = []
-        samecity_map = {}
-        for name in citys:
-            t1 = telecode(name, station)
-            if len(t1) == 0:
-                continue
-            if name in samecity_map:
-                continue
-            if i > max_date_diff and name not in freq:
-                continue
-            fn = getczxxFileName(t1, date)
-            mdate = '1970-01-01'
-            if os.path.exists(fn):
-                mdate = time.strftime("%Y-%m-%d", time.localtime(os.path.getmtime(fn)))
-            cache = 1
-            if i == 0:
-                cache = 0
-            if datediff(date, mdate) > max_date_diff:
-                cache = 0
-            if i < 0:  # min -8
-                cache = 2
-            if name in freq:
-                if (0 <= i and i < 5):
-                    cache = 0
-                if (5 <= i and i < 14) and datediff(now, mdate) >= 2:
-                    cache = 0
-                if (14 <= i) and datediff(now, mdate) >= 3:
-                    cache = 0
-            if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
-                cache = 0
-            if (0 <= i) and datediff(now, mdate) >= max_date_diff-10:
-                cache = 0
-            if totalcache >= 2:
-                cache = 2
-            for retry in range(5):
-                c, samecity, ret = getczxx(t1, date, cache)
-                if ret > -1:
-                    break
-                time.sleep(1 << retry)
-            if ret == -1:
-                c, samecity, ret = getczxx(t1, date, cache=2)
-            for t in c:
-                diff = datediff(re.sub(
-                    r'(\d\d\d\d)(\d\d)(\d\d)',
-                    r'\1-\2-\3',
-                    t['start_train_date']),
-                    base_date
-                )
-                if diff < 0:
-                    continue
-                if diff >= size:
-                    size = diff + 1
-                s = {}
-                s['station_train_code'] = t['station_train_code']
-                s['from_station'] = t['start_station_name']
-                s['to_station'] = t['end_station_name']
-                s['train_no'] = t['train_no']
-                s['total_num'] = 0
-                s['date'] = 1 << diff
-                s['src'] = 8
-                add_map(train_map, s)
-            if len(samecity) > 1:
-                samecity_arr.append(samecity)
-                for ii in samecity:
-                    samecity_map[ii] = name
+    tmpsize = add_station(base_date, now, max_date_diff, size, totalcache=1) # totalcache=1 tmp 2
+    if tmpsize > size:
+        size = tmpsize
     #search
-    '''for i in range(31, -1, -1):
-        # st = ["90", "50", "10", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
-        st = ["D9", "G9", "3", "T", "Z", "K5", "K4", "D4", "G4"]
+    #for i in range(max_date_diff+2, -1, -1):
+    for i in range(-datediff(now, base_date), max_date_diff+1):
+        st = ["S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+        #st = ["90", "50", "10", "S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+        #st = ["D9", "G9", "3", "T", "Z", "K5", "K4", "D4", "G4"]
         date = date_add(now, i)
         #diff = datediff(date, base_date)
         #if diff >= size:
@@ -2783,12 +2834,19 @@ if __name__ == '__main__':
         cache = 1
         if i == 0:
             cache = 0
+        if i < 0:
+            cache = 2
+        if totalcache >= 2:
+            cache = 2
         for retry in range(3):
-            st = searchAll12306(train_map, base_date, date, st, cache)
+            st, tmpsize = searchAll12306(train_map, base_date, date, st, cache)
+            time.sleep(30)
+            if tmpsize > size:
+                size = tmpsize
             if len(st) == 0:
                 break
-            time.sleep(2 << retry)
-        print(date, st)'''
+            time.sleep(310) # 2 << retry
+        print(date, st)
     #stat
     print('base_date %s size %d' % (base_date, size))
     stat, train_num = hash_no_stat_block(train_map, 100, maxlen)
@@ -3066,7 +3124,7 @@ def getsearch(kw, cache=1):
     url = "http://dynamic.12306.cn/yjcx/doPickJZM?param=" + kw + "&type=1&czlx=0"
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
@@ -3102,7 +3160,7 @@ def getsearch2(kw, cache=1):
     url = "http://hyfw.95306.cn/Hywsyyt/ajax/getSzjfZdZmHwkyLjm.json?q=" + kw
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
@@ -3138,7 +3196,7 @@ def getAllFz(kw, cache=1):
     url = "http://hyfw.95306.cn/gateway/DzswD2D/Dzsw/action/AjaxAction_getAllFz?q=" + kw
     # header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}
     header = {
-        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"}
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"}
     try:
         resp = requests.get(url, headers=header, timeout=20)
     except:
