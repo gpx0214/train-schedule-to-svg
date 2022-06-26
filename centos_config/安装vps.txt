@@ -26,6 +26,7 @@ ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 service crond restart
 service rsyslog restart
 
+sudo amazon-linux-extras install epel #aws
 yum -y install epel-release
 yum -y install lrzsz python-pip wget mtr vim zip unzip p7zip git
 yum -y install bind-utils # dig
@@ -115,12 +116,202 @@ yum -y install libimagequant libimagequant-devel
 
 yum -y install libheif libheif-devel libraqm libraqm-devel libtiff libtiff-devel
 
+yum -y install libjpeg libjpeg-devel
+yum -y install libavif libavif-devel
+yum -y install libXpm libXpm-devel
+yum -y install fontconfig fontconfig-devel
+
 #yum install -y https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
 #yum install libheif*
 
-wget https://github.com/libgd/libgd/releases/download/gd-2.3.2/libgd-2.3.2.tar.gz
-tar zxf libgd-2.3.2.tar.gz
-cd libgd-2.3.2
+git clone https://github.com/AOMediaCodec/libavif.git
+git clone https://github.com/strukturag/libheif.git
+
+wget https://github.com/libgd/libgd/releases/download/gd-2.3.3/libgd-2.3.3.tar.gz
+tar zxf libgd-2.3.3.tar.gz
+cd libgd-2.3.3
+
+ ./configure --help
+`configure' configures GD 2.3.3 to adapt to many kinds of systems.
+
+Usage: ./configure [OPTION]... [VAR=VALUE]...
+
+To assign environment variables (e.g., CC, CFLAGS...), specify them as
+VAR=VALUE.  See below for descriptions of some of the useful variables.
+
+Defaults for the options are specified in brackets.
+
+Configuration:
+  -h, --help              display this help and exit
+      --help=short        display options specific to this package
+      --help=recursive    display the short help of all the included packages
+  -V, --version           display version information and exit
+  -q, --quiet, --silent   do not print `checking ...' messages
+      --cache-file=FILE   cache test results in FILE [disabled]
+  -C, --config-cache      alias for `--cache-file=config.cache'
+  -n, --no-create         do not create output files
+      --srcdir=DIR        find the sources in DIR [configure dir or `..']
+
+Installation directories:
+  --prefix=PREFIX         install architecture-independent files in PREFIX
+                          [/usr/local]
+  --exec-prefix=EPREFIX   install architecture-dependent files in EPREFIX
+                          [PREFIX]
+
+By default, `make install' will install all the files in
+`/usr/local/bin', `/usr/local/lib' etc.  You can specify
+an installation prefix other than `/usr/local' using `--prefix',
+for instance `--prefix=$HOME'.
+
+For better control, use the options below.
+
+Fine tuning of the installation directories:
+  --bindir=DIR            user executables [EPREFIX/bin]
+  --sbindir=DIR           system admin executables [EPREFIX/sbin]
+  --libexecdir=DIR        program executables [EPREFIX/libexec]
+  --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
+  --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
+  --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
+  --libdir=DIR            object code libraries [EPREFIX/lib]
+  --includedir=DIR        C header files [PREFIX/include]
+  --oldincludedir=DIR     C header files for non-gcc [/usr/include]
+  --datarootdir=DIR       read-only arch.-independent data root [PREFIX/share]
+  --datadir=DIR           read-only architecture-independent data [DATAROOTDIR]
+  --infodir=DIR           info documentation [DATAROOTDIR/info]
+  --localedir=DIR         locale-dependent data [DATAROOTDIR/locale]
+  --mandir=DIR            man documentation [DATAROOTDIR/man]
+  --docdir=DIR            documentation root [DATAROOTDIR/doc/libgd]
+  --htmldir=DIR           html documentation [DOCDIR]
+  --dvidir=DIR            dvi documentation [DOCDIR]
+  --pdfdir=DIR            pdf documentation [DOCDIR]
+  --psdir=DIR             ps documentation [DOCDIR]
+
+Program names:
+  --program-prefix=PREFIX            prepend PREFIX to installed program names
+  --program-suffix=SUFFIX            append SUFFIX to installed program names
+  --program-transform-name=PROGRAM   run sed PROGRAM on installed program names
+
+X features:
+  --x-includes=DIR    X include files are in DIR
+  --x-libraries=DIR   X library files are in DIR
+
+System types:
+  --build=BUILD     configure for building on BUILD [guessed]
+  --host=HOST       cross-compile to build programs to run on HOST [BUILD]
+
+Optional Features:
+  --disable-option-checking  ignore unrecognized --enable/--with options
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-silent-rules   less verbose build output (undo: "make V=1")
+  --disable-silent-rules  verbose build output (undo: "make V=0")
+  --enable-dependency-tracking
+                          do not reject slow dependency extractors
+  --disable-dependency-tracking
+                          speeds up one-time build
+  --enable-shared[=PKGS]  build shared libraries [default=yes]
+  --enable-static[=PKGS]  build static libraries [default=yes]
+  --enable-fast-install[=PKGS]
+                          optimize for fast installation [default=yes]
+  --disable-libtool-lock  avoid locking (might break parallel builds)
+  --disable-rpath         do not hardcode runtime library paths
+  --disable-gd-formats    Disable support for the legacy/testing gd image
+                          formats
+  --enable-werror         treat compile warnings as errors
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
+                          both]
+  --with-aix-soname=aix|svr4|both
+                          shared library versioning (aka "SONAME") variant to
+                          provide on AIX, [default=aix].
+  --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
+  --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
+                          compiler's sysroot if not specified).
+  --with-x                use the X Window System
+  --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
+  --with-libiconv-prefix[=DIR]  search for libiconv in DIR/include and DIR/lib
+  --without-libiconv-prefix     don't search for libiconv in includedir and libdir
+  --with-zlib[=DIR]       Support zlib (optionally in DIR)
+  --with-png[=DIR]        Support png (optionally in DIR)
+  --with-freetype[=DIR]   Support freetype (optionally in DIR)
+  --with-raqm[=DIR]       Support raqm (optionally in DIR)
+  --with-fontconfig[=DIR] Support fontconfig (optionally in DIR)
+  --with-jpeg[=DIR]       Support jpeg (optionally in DIR)
+  --with-liq[=DIR]        Support liq (optionally in DIR)
+  --with-xpm[=DIR]        Support xpm (optionally in DIR)
+  --with-tiff[=DIR]       Support tiff (optionally in DIR)
+  --with-webp[=DIR]       Support webp (optionally in DIR)
+  --with-heif[=DIR]       Support heif (optionally in DIR)
+  --with-avif[=DIR]       Support avif (optionally in DIR)
+
+Some influential environment variables:
+  CC          C compiler command
+  CFLAGS      C compiler flags
+  LDFLAGS     linker flags, e.g. -L<lib dir> if you have libraries in a
+              nonstandard directory <lib dir>
+  LIBS        libraries to pass to the linker, e.g. -l<library>
+  CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
+              you have headers in a nonstandard directory <include dir>
+  LT_SYS_LIBRARY_PATH
+              User-defined run-time library search path.
+  CPP         C preprocessor
+  PKG_CONFIG  path to pkg-config utility
+  PKG_CONFIG_PATH
+              directories to add to pkg-config's search path
+  PKG_CONFIG_LIBDIR
+              path overriding pkg-config's built-in search path
+  XMKMF       Path to xmkmf, Makefile generator for X Window System
+  LIBZ_CFLAGS C compiler flags for LIBZ, overriding pkg-config
+  LIBZ_LIBS   linker flags for LIBZ, overriding pkg-config
+  LIBPNG_CFLAGS
+              C compiler flags for LIBPNG, overriding pkg-config
+  LIBPNG_LIBS linker flags for LIBPNG, overriding pkg-config
+  LIBFREETYPE_CFLAGS
+              C compiler flags for LIBFREETYPE, overriding pkg-config
+  LIBFREETYPE_LIBS
+              linker flags for LIBFREETYPE, overriding pkg-config
+  LIBRAQM_CFLAGS
+              C compiler flags for LIBRAQM, overriding pkg-config
+  LIBRAQM_LIBS
+              linker flags for LIBRAQM, overriding pkg-config
+  LIBFONTCONFIG_CFLAGS
+              C compiler flags for LIBFONTCONFIG, overriding pkg-config
+  LIBFONTCONFIG_LIBS
+              linker flags for LIBFONTCONFIG, overriding pkg-config
+  LIBJPEG_CFLAGS
+              C compiler flags for LIBJPEG, overriding pkg-config
+  LIBJPEG_LIBS
+              linker flags for LIBJPEG, overriding pkg-config
+  LIBXPM_CFLAGS
+              C compiler flags for LIBXPM, overriding pkg-config
+  LIBXPM_LIBS linker flags for LIBXPM, overriding pkg-config
+  LIBTIFF_CFLAGS
+              C compiler flags for LIBTIFF, overriding pkg-config
+  LIBTIFF_LIBS
+              linker flags for LIBTIFF, overriding pkg-config
+  LIBWEBP_CFLAGS
+              C compiler flags for LIBWEBP, overriding pkg-config
+  LIBWEBP_LIBS
+              linker flags for LIBWEBP, overriding pkg-config
+  LIBHEIF_CFLAGS
+              C compiler flags for LIBHEIF, overriding pkg-config
+  LIBHEIF_LIBS
+              linker flags for LIBHEIF, overriding pkg-config
+  LIBAVIF_CFLAGS
+              C compiler flags for LIBAVIF, overriding pkg-config
+  LIBAVIF_LIBS
+              linker flags for LIBAVIF, overriding pkg-config
+
+Use these variables to override the choices made by `configure' or to help
+it to find libraries and programs with nonstandard names/locations.
+
+Report bugs to <https://github.com/libgd/libgd/issues>.
+GD home page: <https://lib.gd>.
+
 ./configure --x-includes=/usr/include/imagequant/
 checking build system type... x86_64-pc-linux-gnu
 checking host system type... x86_64-pc-linux-gnu
@@ -130,7 +321,7 @@ checking for a thread-safe mkdir -p... /usr/bin/mkdir -p
 checking for gawk... gawk
 checking whether make sets $(MAKE)... yes
 checking whether make supports nested variables... yes
-checking for style of include used by make... GNU
+checking whether make supports the include directive... yes (GNU style)
 checking for gcc... gcc
 checking whether the C compiler works... yes
 checking for C compiler default output file name... a.out
@@ -144,19 +335,19 @@ checking whether gcc understands -c and -o together... yes
 checking dependency style of gcc... gcc3
 checking for ar... ar
 checking the archiver (ar) interface... ar
-checking for gcc option to accept ISO C99... -std=gnu99
-checking for gcc -std=gnu99 option to accept ISO Standard C... (cached) -std=gnu99
+checking for gcc option to accept ISO C99... none needed
+checking for gcc option to accept ISO Standard C... (cached) none needed
 checking how to print strings... printf
 checking for a sed that does not truncate output... /usr/bin/sed
 checking for grep that handles long lines and -e... /usr/bin/grep
 checking for egrep... /usr/bin/grep -E
 checking for fgrep... /usr/bin/grep -F
-checking for ld used by gcc -std=gnu99... /usr/bin/ld
+checking for ld used by gcc... /usr/bin/ld
 checking if the linker (/usr/bin/ld) is GNU ld... yes
 checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
 checking the name lister (/usr/bin/nm -B) interface... BSD nm
 checking whether ln -s works... yes
-checking the maximum length of command line arguments... 1572864
+checking the maximum length of command line arguments... 1966080
 checking how to convert x86_64-pc-linux-gnu file names to x86_64-pc-linux-gnu format... func_convert_file_noop
 checking how to convert x86_64-pc-linux-gnu file names to toolchain format... func_convert_file_noop
 checking for /usr/bin/ld option to reload object files... -r
@@ -167,13 +358,13 @@ checking how to associate runtime and link libraries... printf %s\n
 checking for archiver @FILE support... @
 checking for strip... strip
 checking for ranlib... ranlib
-checking command to parse /usr/bin/nm -B output from gcc -std=gnu99 object... ok
+checking command to parse /usr/bin/nm -B output from gcc object... ok
 checking for sysroot... no
 checking for a working dd... /usr/bin/dd
 checking how to truncate binary pipes... /usr/bin/dd bs=4096 count=1
 checking for mt... no
 checking if : is a manifest tool... no
-checking how to run the C preprocessor... gcc -std=gnu99 -E
+checking how to run the C preprocessor... gcc -E
 checking for ANSI C header files... yes
 checking for sys/types.h... yes
 checking for sys/stat.h... yes
@@ -186,13 +377,13 @@ checking for stdint.h... yes
 checking for unistd.h... yes
 checking for dlfcn.h... yes
 checking for objdir... .libs
-checking if gcc -std=gnu99 supports -fno-rtti -fno-exceptions... no
-checking for gcc -std=gnu99 option to produce PIC... -fPIC -DPIC
-checking if gcc -std=gnu99 PIC flag -fPIC -DPIC works... yes
-checking if gcc -std=gnu99 static flag -static works... no
-checking if gcc -std=gnu99 supports -c -o file.o... yes
-checking if gcc -std=gnu99 supports -c -o file.o... (cached) yes
-checking whether the gcc -std=gnu99 linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking if gcc supports -fno-rtti -fno-exceptions... no
+checking for gcc option to produce PIC... -fPIC -DPIC
+checking if gcc PIC flag -fPIC -DPIC works... yes
+checking if gcc static flag -static works... no
+checking if gcc supports -c -o file.o... yes
+checking if gcc supports -c -o file.o... (cached) yes
+checking whether the gcc linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
 checking whether -lc should be explicitly linked in... no
 checking dynamic linker characteristics... GNU/Linux ld.so
 checking how to hardcode library paths into programs... immediate
@@ -207,18 +398,13 @@ checking pkg-config is at least version 0.9.0... yes
 checking for X... libraries , headers /usr/include/imagequant/
 checking for ANSI C header files... (cached) yes
 checking for dirent.h... yes
-checking for errno.h... yes
 checking for inttypes.h... (cached) yes
-checking for limits.h... yes
-checking for stddef.h... yes
 checking for stdint.h... (cached) yes
-checking for stdlib.h... (cached) yes
-checking for string.h... (cached) yes
 checking for strings.h... (cached) yes
 checking for unistd.h... (cached) yes
 checking for sys/stat.h... (cached) yes
 checking for sys/types.h... (cached) yes
-checking for ld used by gcc -std=gnu99... /usr/bin/ld -m elf_x86_64
+checking for ld used by gcc... /usr/bin/ld -m elf_x86_64
 checking if the linker (/usr/bin/ld -m elf_x86_64) is GNU ld... yes
 checking for shared library run path origin... done
 checking for iconv... yes
@@ -231,22 +417,25 @@ checking for iconv.h... yes
 checking whether iconv.h defines iconv_t... yes
 checking for sin... no
 checking for sin in -lm... yes
-checking whether gcc -std=gnu99 is Clang... no
+checking whether gcc is Clang... no
 checking whether pthreads work with -pthread... yes
 checking for joinable pthread attribute... PTHREAD_CREATE_JOINABLE
 checking whether more special flags are required for pthreads... no
 checking for PTHREAD_PRIO_INHERIT... yes
 checking for OpenMP flag of C compiler... -fopenmp
+checking whether to support gd image formats... no
 checking whether to support zlib... auto
 checking for LIBZ... yes
 checking whether to support png... auto
 checking for LIBPNG... yes
 checking whether to support freetype... auto
 checking for LIBFREETYPE... yes
+checking whether to support raqm... auto
+checking for LIBRAQM... yes
 checking whether to support fontconfig... auto
 checking for LIBFONTCONFIG... yes
 checking whether to support jpeg... auto
-checking for jpeg_set_defaults in -ljpeg... yes
+checking for LIBJPEG... yes
 checking whether to support liq... auto
 checking libimagequant.h usability... yes
 checking libimagequant.h presence... no
@@ -259,22 +448,34 @@ checking for LIBXPM... yes
 checking whether to support tiff... auto
 checking for LIBTIFF... yes
 checking whether to support webp... auto
-checking for WebPGetInfo in -lwebp... yes
+checking for LIBWEBP... yes
+checking whether to support heif... auto
+checking for LIBHEIF... no
+checking for heif_get_version in -lheif... yes
+configure: Disabling support for heif
+checking whether to support avif... auto
+checking for LIBAVIF... no
+checking for avifVersion in -lavif... no
+configure: Disabling support for avif
 checking for simple visibility declarations... yes
 checking whether we are building for a Win32 host... no
 checking CFLAGS for maximum warnings... -Wall
 
-** Configuration summary for libgd 2.2.5:
+** Configuration summary for libgd 2.3.3:
 
+   Support for gd/gd2 images:        no
    Support for Zlib:                 yes
    Support for PNG library:          yes
    Support for JPEG library:         yes
    Support for WebP library:         yes
+   Support for HEIF library:         no
+   Support for AVIF library:         no
    Support for TIFF library:         yes
    Support for Freetype 2.x library: yes
    Support for Fontconfig library:   yes
    Support for Xpm library:          yes
    Support for liq library:          yes
+   Support for complex text:         yes
    Support for pthreads:             yes
 
 checking that generated files are newer than configure... done
@@ -283,7 +484,6 @@ config.status: creating Makefile
 config.status: creating src/Makefile
 config.status: creating tests/Makefile
 config.status: creating config/Makefile
-config.status: creating config/gdlib-config
 config.status: creating config/gdlib.pc
 config.status: creating src/config.h
 config.status: executing depfiles commands
@@ -295,6 +495,7 @@ yum remove gd gd-devel
 
 #源码安装nginx
 yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel GeoIP GeoIP-devel GeoIP-data gd gd-devel libvpx libvpx-devel libwebp libwebp-devel libwebp-tools libXpm libxml2 libxml2-devel libxslt libxslt-devel perl-ExtUtils-Embed
+yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel GeoIP GeoIP-devel GeoIP-data libvpx libvpx-devel libwebp libwebp-devel libwebp-tools libXpm libXpm-devel libxml2 libxml2-devel libxslt libxslt-devel perl-ExtUtils-Embed
 
 git clone https://github.com/arut/nginx-rtmp-module.git
 
@@ -308,17 +509,17 @@ http://www.zlib.net/
 openssl
 https://www.openssl.org/source/
 
-wget --no-check-certificate https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz
-wget http://www.zlib.net/zlib-1.2.11.tar.gz
-wget https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+wget --no-check-certificate https://iweb.dl.sourceforge.net/project/pcre/pcre/8.45/pcre-8.45.tar.gz
+wget http://www.zlib.net/zlib-1.2.12.tar.gz
+wget https://www.openssl.org/source/openssl-1.1.1n.tar.gz
 
-编译选项后加上 --with-pcre=../pcre-8.44 --with-zlib=../zlib-1.2.11 --with-openssl=../openssl-1.1.1k
+编译选项后加上 --with-pcre=../pcre-8.45 --with-zlib=../zlib-1.2.12 --with-openssl=../openssl-1.1.1n
 
-wget http://nginx.org/download/nginx-1.20.0.tar.gz
-tar -zxvf nginx-1.20.0.tar.gz
-cd nginx-1.20.0
+wget http://nginx.org/download/nginx-1.20.2.tar.gz
+tar -zxvf nginx-1.20.2.tar.gz
+cd nginx-1.20.2
 
-#nginx1.14.0 1.18.0 1.20.0编译选项
+#nginx1.14.0 1.18.0 1.20.0 1.20.2编译选项
 ./configure --help
 
   --help                             print this message
@@ -498,12 +699,12 @@ cd nginx-1.20.0
 
 
 #指定pcre zlib openssl源码目录
-./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_v2_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_geoip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module --with-pcre=../pcre-8.45 --with-zlib=../zlib-1.2.11 --with-openssl=../openssl-1.1.1k
+./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_v2_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_geoip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module --with-pcre-jit --with-pcre=../pcre-8.45 --with-zlib=../zlib-1.2.12 --with-openssl=../openssl-1.1.1n
 checking for OS
- + Linux 5.8.1-1.el7.elrepo.x86_64 x86_64
+ + Linux 4.14.275-207.503.amzn2.x86_64 x86_64
 checking for C compiler ... found
  + using GNU C compiler
- + gcc version: 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC)
+ + gcc version: 7.3.1 20180712 (Red Hat 7.3.1-14) (GCC)
 checking for gcc -pipe switch ... found
 checking for --with-ld-opt="-Wl,-z,relro" ... found
 checking for -Wl,-E switch ... found
@@ -522,7 +723,8 @@ checking for crypt.h ... found
 checking for Linux specific features
 checking for epoll ... found
 checking for EPOLLRDHUP ... found
-checking for EPOLLEXCLUSIVE ... not found
+checking for EPOLLEXCLUSIVE ... found
+checking for eventfd() ... found
 checking for O_PATH ... found
 checking for sendfile() ... found
 checking for sendfile64() ... found
@@ -565,7 +767,6 @@ checking for TCP_KEEPIDLE ... found
 checking for TCP_FASTOPEN ... found
 checking for TCP_INFO ... found
 checking for accept4() ... found
-checking for eventfd() ... found
 checking for int size ... 4 bytes
 checking for long size ... 8 bytes
 checking for long long size ... 8 bytes
@@ -588,6 +789,7 @@ checking for setproctitle() ... not found
 checking for pread() ... found
 checking for pwrite() ... found
 checking for pwritev() ... found
+checking for strerrordesc_np() ... not found
 checking for sys_nerr ... found
 checking for localtime_r() ... found
 checking for clock_gettime(CLOCK_MONOTONIC) ... found
@@ -611,10 +813,6 @@ checking for getaddrinfo() ... found
 configuring additional modules
 adding module in ../nginx-rtmp-module
  + ngx_rtmp_module was configured
-checking for PCRE library ... found
-checking for PCRE JIT support ... found
-checking for OpenSSL library ... found
-checking for zlib library ... found
 checking for libxslt ... found
 checking for libexslt ... found
 checking for GD library ... found
@@ -627,9 +825,9 @@ checking for GeoIP IPv6 support ... found
 creating objs/Makefile
 
 Configuration summary
-  + using system PCRE library
-  + using system OpenSSL library
-  + using system zlib library
+  + using PCRE library: ../pcre-8.45
+  + using OpenSSL library: ../openssl-1.1.1n
+  + using zlib library: ../zlib-1.2.12
 
   nginx path prefix: "/usr/local/nginx"
   nginx binary file: "/usr/local/nginx/sbin/nginx"
