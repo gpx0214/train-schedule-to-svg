@@ -25,7 +25,7 @@ var (
 
 	emuseatmap = map[string]string{}
 
-	seat_map = map[string]string{
+	seatmap = map[string]string{
 		"餐车":     "CA",
 		"行李车":    "XL",
 		"行邮车":    "XU",
@@ -196,7 +196,7 @@ func (s SeatCapSortCoachNo) Less(i, j int) bool {
 func seats(List []SeatCap) string {
 	ret := []string{}
 	for _, x := range List {
-		cur_seat := seat_map[x.SeatType]
+		cur_seat := seatmap[x.SeatType]
 		if len(cur_seat) == 0 {
 			cur_seat = x.SeatType
 		}
@@ -219,7 +219,7 @@ func seatcaps(List []SeatCap) string {
 	last_seat := ""
 	last_cap := ""
 	for i, x := range List {
-		cur_seat := seat_map[x.SeatType]
+		cur_seat := seatmap[x.SeatType]
 		if len(cur_seat) == 0 {
 			cur_seat = x.SeatType
 		}
@@ -423,6 +423,98 @@ func detailcsv(d TrainDetail) [][]string {
 	return ret
 }
 
+type Seat struct {
+	TrainNo      string `json:"trainNo"`
+	TrainGroupNo int    `json:"trainGroupNo"`
+	CoachNo      string `json:"coachNo"`
+	CoachType    string `json:"coachType"`
+	Limit1       int    `json:"limit1"`
+	Limit2       int    `json:"limit2"`
+	CommentCode  string `json:"commentCode"` //
+	SeatFeature  string `json:"seatFeature"` // 0 非空调 1 自发电空调 3 新空调
+	StartDate    string `json:"startDate"`
+	StopDate     string `json:"stopDate"`
+	Origin       string `json:"origin"`
+	RunningStyle int    `json:"runningStyle"`
+	RunningRule  int    `json:"runningRule"`
+}
+type CompileList struct {
+	// Timestamp int64 `json:"timestamp"`
+	Status int    `json:"status"`
+	Data   []Seat `json:"data"`
+}
+
+type SeatSort []Seat
+
+func (s SeatSort) Len() int {
+	return len(s)
+}
+func (s SeatSort) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s SeatSort) Less(i, j int) bool {
+	if s[i].StartDate != s[j].StartDate {
+		return s[i].StartDate < s[j].StartDate
+	}
+
+	if s[i].CoachNo != s[j].CoachNo {
+		return s[i].CoachNo < s[j].CoachNo
+	}
+
+	return false
+}
+
+func compilelistlocal(fn string) CompileList {
+	var List CompileList
+	json.Unmarshal(ReadByte(fn), &List)
+	return List
+}
+
+func compilelistcsv(l CompileList) [][]string {
+	ret := make([][]string, 0, 8)
+
+	sort.Stable(SeatSort(l.Data))
+
+	for i, car := range l.Data {
+		limit := ""
+		if car.Limit1 > 0 {
+			limit = strconv.Itoa(car.Limit1)
+		}
+		if car.Limit2 > 0 {
+			limit += "/" + strconv.Itoa(car.Limit2)
+		}
+
+		seatfeature := ""
+		if car.SeatFeature != "3" {
+			seatfeature = car.SeatFeature
+		}
+
+		row := []string{
+			// car.TrainGroupNo,
+			car.CoachNo,
+			strings.TrimRight(car.CoachType, " "),
+			limit,
+			strings.TrimRight(car.CommentCode, " "),
+			seatfeature,
+		}
+
+		if i == 0 {
+			row = append(row,
+				car.TrainNo,
+				strings.TrimPrefix(car.StartDate, "20"),
+				strings.TrimPrefix(car.StopDate, "20"),
+			)
+		}
+
+		ret = append(
+			ret,
+			row,
+		)
+	}
+
+	return ret
+}
+
 func hash_no(s string) int {
 	train_class := d[s[0]]
 	n, _ := strconv.Atoi(re1.ReplaceAllString(s, ""))
@@ -430,14 +522,16 @@ func hash_no(s string) int {
 }
 
 type Event struct {
-	rw     [16]sync.Mutex
-	wg     sync.WaitGroup
-	fns    []string
-	tables [][][][]string
-	ret    [][]string
-	ret2   [][]string
-	cur    int32
-	limit  int32
+	rw            [16]sync.Mutex
+	wg            sync.WaitGroup
+	fns           []string
+	tables        [][][][]string
+	tablesCompile [][][][]string
+	ret           [][]string
+	ret2          [][]string
+	ret3          [][]string
+	cur           int32
+	limit         int32
 }
 
 func (e *Event) AddMapThread(id int) {
@@ -457,13 +551,57 @@ func (e *Event) AddMapThread(id int) {
 		for i := st; i < ed; i++ {
 			fn := e.fns[i]
 			c := detailcsv(detaillocal(fn))
+			fncompile := strings.ReplaceAll(fn, "detail\\detail", "list/list") //  fmt.Sprintf("list/list_%s.json", c[0][0])
+			compile := compilelistcsv(compilelistlocal(fncompile))
 			key := hash_no(strings.TrimLeft(c[0][0][5:10], "0"))
 
+			// if len(compile) > 0 && (c[0][2] != compile[0][7]) { // c[0][1] != compile[0][6] ||
+			// 	if fmt.Sprintf("list/list_%s.json", c[0][0]) != fncompile {
+			// 		fmt.Printf("# ")
+			// 	}
+			// 	if c[0][2] > "231231" && compile[0][7] < "231231" {
+			// 		//fmt.Printf("getcompilelist('%s',cache=0)\n", c[0][0])
+			// 		//} else {
+			// 		fmt.Printf("getdetail('%s', '%s', '%s',cache=0)\n", c[1][0], c[0][0], "20"+compile[0][7])
+			// 	}
+			// } else if len(compile) > 1 && (c[0][1] != compile[0][6]) {
+			// 	if fmt.Sprintf("list/list_%s.json", c[0][0]) != fncompile {
+			// 		fmt.Printf("# ")
+			// 	}
+			// 	fmt.Printf("#### getcompilelist('%s',cache=0)\n", c[0][0])
+			// }
+
+			serviceTypeMap := make(map[string]int, 1)
+			for _, row := range compile {
+				serviceType := "3"
+				if len(row) > 4 {
+					serviceType = row[4]
+				}
+				serviceTypeMap[serviceType]++
+			}
+			serviceTypeArr := []string{}
+			for serviceType := range serviceTypeMap {
+				serviceTypeArr = append(serviceTypeArr, serviceType)
+			}
+			sort.Strings(serviceTypeArr)
+			serviceTypes := strings.Join(serviceTypeArr, "|")
+
+			if serviceTypes != "3" { // most serviceType
+				c[0] = append(c[0], serviceTypes)
+			}
+
 			e.rw[key&0x0f].Lock()
+
 			if e.tables[key] == nil {
 				e.tables[key] = make([][][]string, 0, 8)
 			}
 			e.tables[key] = append(e.tables[key], c)
+
+			if e.tablesCompile[key] == nil {
+				e.tablesCompile[key] = make([][][]string, 0, 18)
+			}
+			e.tablesCompile[key] = append(e.tablesCompile[key], compile)
+
 			e.rw[key&0x0f].Unlock()
 
 			c = nil
@@ -516,6 +654,47 @@ func (s Cmpby1_0) Less(i, j int) bool {
 	return false
 }
 
+type Cmpby6_5 [][][]string
+
+func (s Cmpby6_5) Len() int {
+	return len(s)
+}
+func (s Cmpby6_5) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s Cmpby6_5) Less(i, j int) bool {
+	if len(s[i]) < 1 {
+		return false
+	}
+	if len(s[j]) < 1 {
+		return false
+	}
+	if len(s[i][0]) < 8 {
+		return false
+	}
+	if len(s[j][0]) < 8 {
+		return false
+	}
+
+	date1 := s[i][0][6]
+	date2 := s[j][0][6]
+	if date1 > date2 {
+		return false
+	}
+	if date1 < date2 {
+		return true
+	}
+
+	if s[i][0][5] > s[j][0][5] {
+		return false
+	}
+	if s[i][0][5] < s[j][0][5] {
+		return true
+	}
+
+	return false
+}
+
 func (e *Event) SortThread(id int) {
 	var st, ed, part int32
 	part = 100
@@ -531,11 +710,14 @@ func (e *Event) SortThread(id int) {
 		//fmt.Fprintf(os.Stderr, "run   %2d %9d %9d %9d|%s\n", id, st, ed, ed-st, strings.Repeat(" ", id)+"+")
 		//t0 := time.Now().UnixNano()
 		for key := st; key < ed; key++ {
-			if len(e.tables[key]) < 2 {
-				continue
+			if len(e.tables[key]) >= 2 {
+				sort.Stable(Cmpby1_0(e.tables[key]))
 			}
 			//fmt.Fprintf(os.Stderr, "%d len:%d\n", key, len(e.tables[key]))
-			sort.Stable(Cmpby1_0(e.tables[key]))
+
+			if len(e.tablesCompile[key]) >= 2 {
+				sort.Stable(Cmpby6_5(e.tablesCompile[key]))
+			}
 		}
 		//t1 := time.Now().UnixNano()
 		//fmt.Fprintf(os.Stderr, "done  %2d %9d %9d %9d|%s %10d\n", id, st, ed, ed-st, strings.Repeat(" ", id)+"_"+strings.Repeat(" ", 24-id), (t1-t0)/1E+6)
@@ -591,6 +773,11 @@ func (e *Event) JoinThread(id int) {
 					e.ret = append(e.ret, []string{})
 				}
 			}
+
+			for _, tableCompile := range e.tablesCompile[key] {
+				e.ret3 = append(e.ret3, tableCompile...)
+			}
+
 			e.rw[0].Unlock()
 		}
 		//t1 := time.Now().UnixNano()
@@ -679,7 +866,7 @@ func main() {
 			if car_num == 8 {
 				emuseatmap[key1+"_"+key1] = row[2] + "_" + row[2]
 			}
-			fmt.Println(key1, row[2])
+			// fmt.Println(key1, row[2])
 		}
 
 	}
@@ -688,6 +875,7 @@ func main() {
 	var e Event
 	e.fns = globdetail()
 	e.tables = make([][][][]string, maxlen)
+	e.tablesCompile = make([][][][]string, maxlen)
 	//e.rw = make([]sync.Mutex, 16)
 
 	var t0, t1 int64
@@ -721,7 +909,7 @@ func main() {
 	e.cur = 0
 	e.limit = int32(maxlen)
 	e.ret = make([][]string, 0, 2525684)
-	e.ret2 = make([][]string, 0, 270000)
+	e.ret2 = make([][]string, 0, 307200)
 	threadnum = 1
 	e.wg.Add(threadnum)
 	for id := 0; id < threadnum; id++ {
@@ -732,14 +920,14 @@ func main() {
 	fmt.Fprintf(os.Stderr, "%6d.%06d ms join\n", (t1-t0)/1e6, (t1-t0)%1e6)
 
 	/*
-			if memProfile != "" {
-		        f, err := os.Create(memProfile)
-		        if err != nil {
-		            //log.Fatal(err)
-		        }
-		        pprof.WriteHeapProfile(f)
-		        f.Close()
+		if memProfile != "" {
+			f, err := os.Create(memProfile)
+			if err != nil {
+				//log.Fatal(err)
 			}
+			pprof.WriteHeapProfile(f)
+			f.Close()
+		}
 	*/
 
 	// e.tables = nil
@@ -747,7 +935,14 @@ func main() {
 
 	t0 = time.Now().UnixNano()
 	WriteMinCsv("js/time_detail.csv", e.ret)
+	t1 = time.Now().UnixNano()
+	fmt.Fprintf(os.Stderr, "%6d.%06d ms write\n", (t1-t0)/1e6, (t1-t0)%1e6)
+	t0 = time.Now().UnixNano()
 	WriteMinCsv("js/train_detail.csv", e.ret2)
+	t1 = time.Now().UnixNano()
+	fmt.Fprintf(os.Stderr, "%6d.%06d ms write\n", (t1-t0)/1e6, (t1-t0)%1e6)
+	t0 = time.Now().UnixNano()
+	WriteMinCsv("js/compilelist.csv", e.ret3)
 	t1 = time.Now().UnixNano()
 	fmt.Fprintf(os.Stderr, "%6d.%06d ms write\n", (t1-t0)/1e6, (t1-t0)%1e6)
 
