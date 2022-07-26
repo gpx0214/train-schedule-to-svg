@@ -1733,11 +1733,11 @@ def add_station(base_date, now, max_date_diff, size, totalcache=1):
             if i < 0:  # min -8  #
                 cache = 2
             if name in freq:
-                if (0 <= i and i < 5):
+                if (0 <= i and i < 4):
                     cache = 0
-                if (5 <= i and i < 14) and datediff(now, mdate) >= 2:
+                if (4 <= i and i < 8) and datediff(now, mdate) >= 2:
                     cache = 0
-                if (14 <= i) and datediff(now, mdate) >= 3:
+                if (8 <= i) and datediff(now, mdate) >= 3:
                     cache = 0
             if (-3 <= i and i <= 0) and datediff(date, mdate) > 0:
                 cache = 0
@@ -2798,6 +2798,17 @@ if __name__ == '__main__':
         print(date, st)
         exit()
 
+    if len(sys.argv) > 2 and sys.argv[1] == 'czxx':
+        citys = sys.argv[2:]
+        print('czxx ', citys)
+        now = nowdate()
+        base_date = basedate('')
+        station = getStation()
+        for t1 in citys:
+            for i in range(1,15):
+                c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
+        exit()
+
     if len(sys.argv) > 1 and sys.argv[1] == 'cache':
         print('set totalcache=2')
         totalcache = 2
@@ -2820,7 +2831,7 @@ if __name__ == '__main__':
         size = tmpsize
     #search
     #for i in range(max_date_diff+2, -1, -1):
-    for i in range(-datediff(now, base_date), max_date_diff+1):
+    for i in range(-datediff(now, base_date), 1): # , max_date_diff+1
         st = ["S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
         #st = ["90", "50", "10", "S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
         #st = ["D9", "G9", "3", "T", "Z", "K5", "K4", "D4", "G4"]
@@ -2837,13 +2848,16 @@ if __name__ == '__main__':
             cache = 2
         for retry in range(3):
             st, tmpsize = searchAll12306(train_map, base_date, date, st, cache)
-            time.sleep(30)
+            if cache < 2:
+                time.sleep(30)
             if tmpsize > size:
                 size = tmpsize
             if len(st) == 0:
                 break
-            time.sleep(310) # 2 << retry
-        print(date, st)
+            if cache < 2:
+                time.sleep(310) # 2 << retry
+        if cache < 2:
+            print(date, st)
     #stat
     print('base_date %s size %d' % (base_date, size))
     stat, train_num = hash_no_stat_block(train_map, 100, maxlen)
