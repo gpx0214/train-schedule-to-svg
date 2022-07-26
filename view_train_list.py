@@ -2391,6 +2391,13 @@ def ccrgtcsv(name, date):
     map = {}
     ret = []
     for i in range(idx, len(c), 1):
+        key = hash_no(c[i][3])-1
+        if key / 10 in [7060,7061,7090,7091]: # S6 S9
+            continue
+        if key / 100 in [507,508]: # D7xx D8xx
+            continue
+        if key / 1000 in [60]: # Cxxx
+            continue
         if len(c[i]) <= 3 or c[i][3] in map:
             continue
         if len(c[i]) < 7:

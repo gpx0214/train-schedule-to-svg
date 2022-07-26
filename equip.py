@@ -28,12 +28,19 @@ for i in range(idx, len(c), 1):
         idx = i
         continue
     if is_a_day(c[i][6], yyyymmdd):
-        train_map[hash_no(re.sub(r'^0+', '', c[i][0][5:-2]))].append(c[i])
+        train_map[hash_no(re.sub(r'^0+', '', c[i][0][5:-2]))-1].append(c[i])
         #print(c[i][0])
 
 
 rows = []
 for key in range(40000, 80000):  # range(len(train_map))
+    key = hash_no(c[i][3])-1
+    if key / 10 in [7060,7061,7090,7091]: # S6 S9
+        continue
+    if key / 100 in [507,508]: # D7xx D8xx
+        continue
+    if key / 1000 in [60]: # Cxxx
+        continue
     if len(train_map[key]) == 0:
         continue
     for retry in range(3):
