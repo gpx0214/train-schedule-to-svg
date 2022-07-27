@@ -34,7 +34,6 @@ for i in range(idx, len(c), 1):
 
 rows = []
 for key in range(40000, 80000):  # range(len(train_map))
-    key = hash_no(c[i][3])-1
     if key / 10 in [7060,7061,7090,7091]: # S6 S9
         continue
     if key / 100 in [507,508]: # D7xx D8xx

@@ -2391,6 +2391,11 @@ def ccrgtcsv(name, date):
     map = {}
     ret = []
     for i in range(idx, len(c), 1):
+        if len(c[i]) <= 3 or c[i][3] in map:
+            continue
+        if len(c[i]) < 7:
+            c[i].append('')
+            c[i].append('')
         key = hash_no(c[i][3])-1
         if key / 10 in [7060,7061,7090,7091]: # S6 S9
             continue
@@ -2398,11 +2403,6 @@ def ccrgtcsv(name, date):
             continue
         if key / 1000 in [60]: # Cxxx
             continue
-        if len(c[i]) <= 3 or c[i][3] in map:
-            continue
-        if len(c[i]) < 7:
-            c[i].append('')
-            c[i].append('')
         if not is_a_day(c[i][6], yyyymmdd):
             continue
         if c[i][3][0] in 'GDCS':
