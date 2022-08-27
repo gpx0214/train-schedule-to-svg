@@ -22,6 +22,9 @@ import requests
 
 
 def readcsv(fn):
+    if not os.path.exists(fn):
+        print('%s not exist' % (fn))
+        return []
     with open(fn, 'rb') as f:  # py2
         if f.read(3) != b'\xef\xbb\xbf':
             f.seek(0, 0)
@@ -1654,7 +1657,7 @@ def getczxxOnline(t1, date):
         return [], [], 0
 
 
-def add_station(base_date, now, max_date_diff, size, totalcache=1):
+def add_station(train_map, base_date, now, max_date_diff, size, totalcache=1):
     '''
     czxx
     '''
@@ -1679,7 +1682,7 @@ def add_station(base_date, now, max_date_diff, size, totalcache=1):
     samecity_map = {}
     import math
     # get data less than ex-2sd
-    if False and totalcache < 2 and now != base_date: # TODO
+    if totalcache < 2 and now != base_date:
         for name in citys:
             t1 = telecode(name, station)
             if len(t1) == 0:
@@ -2278,6 +2281,79 @@ def getpreseq(code, date):
         return ''
 
 
+def getbureau(train_no, date, cache=1):
+    yyyymmdd = date.replace("-", "")
+    name = 'bureau/bureau_%s_%s.json' % (yyyymmdd, train_no)
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    ret = [
+        train_no,
+        u'',
+        u'',
+        u'',
+        u'',
+        u'',
+    ]
+    if cache and os.path.exists(fn):
+        try:
+            j = json.loads(readbyte(fn))
+            if 'data' in j:
+                ret = [
+                    train_no,
+                    j['data']['bureau_code'], # 客运段
+                    j['data']['bureau_code_name'],
+                    j['data']['subbureau_code'], # 始发分局
+                    j['data']['subbureau_code_name'],
+                    j['data']['startDate']
+                ]
+                #print(' '.join(ret))
+                return ret, 0
+        except:
+            pass
+    if cache >=2:
+        print('%s no file' % (train_no))
+        return ret, -1
+    url = 'https://mobile.12306.cn/wxxcx/wechat/bigScreen/queryTrainBureau'
+    postdata = "queryDate=" + yyyymmdd + "&trainCode=" + train_no
+    header = {
+        "User-Agent": "MicroMessenger",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    try:
+        resp = requests.post(url, data=postdata, headers=header, timeout=60)
+    except:
+        print('Net Error bureau %s' % (train_no))
+        return ret, -1
+    body = resp.content.decode('utf-8')
+    #
+    try:
+        j = json.loads(body)
+    except:
+        print('ValueError %s' % (train_no))
+        return ret, -1
+    if 'data' in j:
+        writebyte(name, resp.content)
+        ret = [
+            train_no,
+            j['data']['bureau_code'], # 客运段
+            j['data']['bureau_code_name'],
+            j['data']['subbureau_code'], # 始发分局
+            j['data']['subbureau_code_name'],
+            j['data']['startDate']
+        ]
+        #print(' '.join(ret))
+        return ret, 0
+    else:
+        if 'errorMsg' in j:
+            print('bureau %s %s no data' % (train_no, date))
+            return ret, 0
+        print('bureau %s %s no data' % (train_no, date))
+        return ret, 0
+
+
+#ccrgt
 def getcdinfo(date, s, cache=2):
     yyyymmdd = re.sub(
         r'(\d\d)(\d\d)-(\d+)-(\d+)',
@@ -2833,7 +2909,7 @@ if __name__ == '__main__':
     max_date_diff = 15 #5 # 15  # 29 #T+29 #可以查到全部车次的日期
     #
     #czxx
-    tmpsize = add_station(base_date, now, max_date_diff, size, totalcache=1) # totalcache=1 tmp 2
+    tmpsize = add_station(train_map, base_date, now, max_date_diff, size, totalcache)
     if tmpsize > size:
         size = tmpsize
     #search
