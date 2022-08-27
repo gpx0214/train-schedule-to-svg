@@ -39,10 +39,29 @@ certifi-2021.10.8 chardet-4.0.0 idna-2.10 requests-2.27.1 urllib3-1.26.9
 yum -y install python-pip
 升级pip 7.1.0->9.0.1
 pip install --upgrade pip==20.3.4
+
+
+# sodium 不要用yum的旧版 支持xchacha20-ietf-poly1305
+wget -N --no-check-certificate https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz
+tar xvf libsodium-1.0.18.tar.gz
+cd libsodium-1.0.18
+./configure
+make && make check
+make install
+
+mv /usr/local/lib/libsodium* /lib64/
+mv /usr/local/lib/pkgconfig/libsodium.pc /lib64/pkgconfig/
+
+
 安装shadowsocks
 pip install shadowsocks
+# ss 3.0.0
+pip install https://github.com/shadowsocks/shadowsocks/archive/master.zip -U
 配置shadowsocks
 vi /etc/shadowsocks.json
+
+#列出支持算法
+ssserver --help
 
 #单端口
 { 
