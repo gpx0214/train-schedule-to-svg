@@ -10,13 +10,14 @@ date = re.sub(
     nowdate()
 )
 
-
 ccrgt = readcsv('emu/ccrgt%s.csv'%(date))
 equip = readcsv('emu/equip%s.csv'%(date))
+bureau = readcsv('emu/bureau%s.csv'%(date))
 
 maxlen = 90000
 ccrgtmap = [[] for i in range(maxlen)]
 equipmap = [[] for i in range(maxlen)]
+bureaumap = [[] for i in range(maxlen)]
 
 for row in ccrgt:
     if not len(row[0]):
@@ -33,7 +34,10 @@ for row in equip:
         continue
     equipmap[hash_no(re.sub(r'^0+', "", row[0][2:10]))] = row
 
-
+for row in bureau:
+    if not len(row[0]):
+        continue
+    bureaumap[hash_no(row[0])] = row
 
 
 bureaustr = u'''哈尔滨,哈
@@ -57,10 +61,15 @@ bureaustr = u'''哈尔滨,哈
 bureau_map = dict([x.split(',') for x in bureaustr.split('\n')])
 
 ret = []
-for key in range(40000,80000):
+for key in range(0,maxlen):
     c = ccrgtmap[key]
     e = equipmap[key]
+    b = bureaumap[key]
     if (len(c) == 0) and (len(e) == 0):
+        if len(b) > 1:
+            row = [b[0],b[1]]
+            ret.append(row)
+            continue
         #print(key,len(c),len(e))
         continue
     #print(key,len(c),len(e))

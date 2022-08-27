@@ -24,7 +24,7 @@ for i in range(idx, len(c), 1):
     if len(c[i]) < 7:
         c[i].append('')
         c[i].append('')
-    if c[i][3] not in c[i][0]:
+    if c[i][3] not in c[i][0]: # 复车次查不到
         idx = i
         continue
     if is_a_day(c[i][6], yyyymmdd):
