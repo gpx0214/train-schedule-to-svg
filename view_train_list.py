@@ -572,6 +572,7 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     s.append([u'', u'车墩', u'MIH', u'chedun', u'cd', u'-1'])
     s.append([u'', u'羊木', u'AMJ', u'yangmu', u'ym', u'-1'])
     s.append([u'', u'马海', u'MHO', u'mahai', u'mh', u'-1'])
+    s.append([u'', u'西里', u'XIC', u'xili', u'xl', u'-1'])
     try:
         qss = json.loads(re.findall(
             r'{.*}',
