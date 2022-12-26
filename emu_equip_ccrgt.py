@@ -37,6 +37,9 @@ for row in equip:
 for row in bureau:
     if not len(row[0]):
         continue
+    key = hash_no(row[0])
+    if key < 0 or key >= len(bureaumap):
+        continue
     bureaumap[hash_no(row[0])] = row
 
 
@@ -62,7 +65,7 @@ bureau_map = dict([x.split(',') for x in bureaustr.split('\n')])
 
 ret = []
 for key in range(0,maxlen):
-    c = ccrgtmap[key]
+    c = ccrgtmap[key] #221226 插入下标2 车号
     e = equipmap[key]
     b = bureaumap[key]
     if (len(c) == 0) and (len(e) == 0):
@@ -72,23 +75,22 @@ for key in range(0,maxlen):
             continue
         #print(key,len(c),len(e))
         continue
-    #print(key,len(c),len(e))
-    c.extend(["" for i in range(6-len(c))])
+    #print(key,len(c),len(e),len(b))
+    c.extend(["" for i in range(7-len(c))])
     e.extend(["" for i in range(9-len(e))])
     row = []
     row.append(c[0])
     #row.append(e[0])
-    bu = bureau_map.get(c[3],c[3]) #c[2]
+    bu = bureau_map.get(c[4],c[4]) #c[3]
     #if len(bu) and len(e[3]) and bu != e[3]:
         #print(','.join([','.join(c),','.join(e)]))
     row.append(e[3] if e[3] else bu)
-    emu_no = (u'2*' if u'重' in c[1] else '') + (e[2] if e[2] else (c[1].replace(u'型','').replace(u'重联','')))
+    emu_no = (u'2*' if u'重' in c[1] else '') + (e[2] if e[2] else c[2] if c[2] else (c[1].replace(u'型','').replace(u'重联','')))
     row.append(emu_no.replace(u'CRH380','').replace(u'CRH','').replace(u'CR400','').replace(u'CR300','300'))
     row.extend([e[i] for i in [4,5]])
-    row.extend([c[i] for i in [4,5]])
+    row.extend([c[i] for i in [5,6]])
     #row.extend([e[i] for i in [6,7,8]])
     ret.append(row)
-
 
 writecsv(
     'emu/emu%s.csv'%(date),

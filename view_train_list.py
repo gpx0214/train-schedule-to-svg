@@ -246,7 +246,8 @@ def basedate(now):
 #    '20190121', '20190404', '20190430', '20190606', '20190912', '20190930', 
 '20200110', '20200410', '20200701', '20201011', #    '20200430',
 '20210120', '20210410', '20210625', '20211011',
-'20220110', '20220408', '20220620',
+'20220110', '20220408', '20220620', '20221011',
+'20221226',
 ][::-1]
     if not now:
         now = nowdate()
@@ -974,7 +975,7 @@ def atos(a):
 
 # timetable train_list.js
 def processS(a, date, station):
-    name = 'sch/' + a['train_no'].encode('utf-8')+'.json'
+    name = 'sch%s/%s.json' % (base_yymmdd(date), a['train_no'].encode('utf-8'))
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -1019,7 +1020,7 @@ def getSch12306(t1, t2, train_no, date):
 
 
 def getSch12306Local(train_no):
-    name = 'sch/' + train_no + '.json'
+    name = 'sch%s/%s.json' % (base_yymmdd(date), train_no)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -1052,7 +1053,7 @@ def getSch12306Online(t1, t2, train_no, date):
     except ValueError:
         print('ValueError %s %s' % (train_no, date))
         return []
-    name = 'sch/' + train_no + '.json'
+    name = 'sch%s/%s.json' % (base_yymmdd(date), train_no)
     if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
         writebyte(name, resp.content)
         print('%s %s %s %2d' % (train_no, t1, t2, len(sch['data']['data'])))
@@ -1852,7 +1853,8 @@ def checkLeftTicket(t1, t2, date):
         sp = i.split('|')
         if len(sp) > 38:
             print('%s %s %s %s' % (sp[3], sp[2], sp[4], sp[5]))
-            if not os.path.exists('sch/'+sp[2].encode('utf-8')+'.json'):
+            name = 'sch%s/%s.json' % (base_yymmdd(date), sp[2].encode('utf-8'))
+            if not os.path.exists(name):
                 for retry in range(3):
                     s = getSch12306(sp[4], sp[5], sp[2], date)
                     if len(s):
@@ -2366,7 +2368,7 @@ def getcdinfo(date, s, cache=2):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    if os.path.exists(fn):
+    if cache and os.path.exists(fn):
         try:
             j = json.loads(readbyte(fn))
             ret = [
@@ -2376,6 +2378,7 @@ def getcdinfo(date, s, cache=2):
                     sum([int(re.sub(r'\D', '', x['peopleNum']))
                          for x in j['data']['cdInfoList']])
                 ),
+                '_'.join(j['data']['czids']).encode('utf-8'),
                 re.sub(u'中国铁路(.*)局动车段', r'\1',
                        j['data']['fixDepart']).encode('utf-8'),
                 re.sub(u'中国铁路(.*)局客运段', r'\1',
@@ -2397,7 +2400,7 @@ def getcdinfo(date, s, cache=2):
             # print(fn)
     if cache >= 2:
         print('%s no file' % (s))
-        return [s.encode('utf-8'), "", "", "", "", ""], -1
+        return [s.encode('utf-8'), "", "", "", "", "", ""], -1
     url = 'https://tripapi.ccrgt.com/crgt/trip-server-app/travel/getCDInfo'
     j = {"params": {"date": date, "trainNumber": s}}
     header = {
@@ -2409,7 +2412,7 @@ def getcdinfo(date, s, cache=2):
                              headers=header, timeout=20)
     except:
         print('net error %s' % (s))
-        return [s.encode('utf-8'), "", "", "", "", ""], -3
+        return [s.encode('utf-8'), "", "", "", "", "", ""], -3
     body = resp.content.decode('utf-8')
     time.sleep(0.2)
     #
@@ -2417,7 +2420,7 @@ def getcdinfo(date, s, cache=2):
         j = json.loads(body)
     except:
         print('json error %s' % (s))
-        return [s.encode('utf-8'), "", "", "", "", ""], -2
+        return [s.encode('utf-8'), "", "", "", "", "", ""], -2
     if 'data' in j and j['data']:
         ret = [
             s.encode('utf-8'),
@@ -2426,6 +2429,7 @@ def getcdinfo(date, s, cache=2):
                 sum([int(re.sub(r'\D', '', x['peopleNum']))
                      for x in j['data']['cdInfoList']])
             ),
+            '_'.join(j['data']['czids']).encode('utf-8'),
             re.sub(u'中国铁路(.*)局动车段', r'\1',
                    j['data']['fixDepart']).encode('utf-8'),
             re.sub(u'中国铁路(.*)局客运段', r'\1',
@@ -2448,7 +2452,7 @@ def getcdinfo(date, s, cache=2):
     # except:
     else:
         print('%s -' % (s))
-        return [s.encode('utf-8'), "", "", "", "", ""], -1
+        return [s.encode('utf-8'), "", "", "", "", "", ""], -1
     return j, 0
 
 
