@@ -574,6 +574,7 @@ def getStation(fn='js/station_name.js', fn1='js/qss.js'):
     s.append([u'', u'羊木', u'AMJ', u'yangmu', u'ym', u'-1'])
     s.append([u'', u'马海', u'MHO', u'mahai', u'mh', u'-1'])
     s.append([u'', u'西里', u'XIC', u'xili', u'xl', u'-1'])
+    s.append([u'', u'斗沟子', u'DGB', u'dougouzi', u'dgz', u'-1'])
     try:
         qss = json.loads(re.findall(
             r'{.*}',
@@ -619,6 +620,8 @@ def unhash_tele(n):
 
 # train_map
 def hash_no(s):
+    if not s:
+        return 0
     items = [('Z', 10000), ('T', 20000), ('K', 30000),
              ('Y', 00000),
              ('G', 40000), ('D', 50000), ('C', 60000),
@@ -975,7 +978,7 @@ def atos(a):
 
 # timetable train_list.js
 def processS(a, date, station):
-    name = 'sch%s/%s.json' % (base_yymmdd(date), a['train_no'].encode('utf-8'))
+    name = 'sch%s/%s.json' % (base_yymmdd(date), re.sub(r'/', "_", a['train_no'].encode('utf-8')))
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -1020,7 +1023,7 @@ def getSch12306(t1, t2, train_no, date):
 
 
 def getSch12306Local(train_no):
-    name = 'sch%s/%s.json' % (base_yymmdd(date), train_no)
+    name = 'sch%s/%s.json' % (base_yymmdd(date), re.sub(r'/', "_", train_no))
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -1053,7 +1056,7 @@ def getSch12306Online(t1, t2, train_no, date):
     except ValueError:
         print('ValueError %s %s' % (train_no, date))
         return []
-    name = 'sch%s/%s.json' % (base_yymmdd(date), train_no)
+    name = 'sch%s/%s.json' % (base_yymmdd(date), re.sub(r'/', "_", train_no))
     if sch['status'] == True and sch['httpstatus'] == 200 and len(sch['data']['data']):
         writebyte(name, resp.content)
         print('%s %s %s %2d' % (train_no, t1, t2, len(sch['data']['data'])))
@@ -1853,7 +1856,7 @@ def checkLeftTicket(t1, t2, date):
         sp = i.split('|')
         if len(sp) > 38:
             print('%s %s %s %s' % (sp[3], sp[2], sp[4], sp[5]))
-            name = 'sch%s/%s.json' % (base_yymmdd(date), sp[2].encode('utf-8'))
+            name = 'sch%s/%s.json' % (base_yymmdd(date), re.sub(r'/', "_", sp[2].encode('utf-8')))
             if not os.path.exists(name):
                 for retry in range(3):
                     s = getSch12306(sp[4], sp[5], sp[2], date)
@@ -1936,7 +1939,7 @@ def getdetail(tele, no, date, cache=1):
     -2 over_limit
     -3 unknown
     '''
-    name = 'detail/detail_' + no + '.json'
+    name = 'detail/detail_' + re.sub(r'/', "_", no) + '.json'
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -1961,7 +1964,7 @@ def getdetail(tele, no, date, cache=1):
         "User-Agent": "MicroMessenger",
     }
     try:
-        resp = requests.get(url, headers=header, timeout=30)
+        resp = requests.get(url, headers=header, timeout=5)
     except:
         print('Net Error %s %s %s' % (tele, date, no))
         return date, date, -1
@@ -2086,7 +2089,7 @@ def tryzero(s, no, date, l=6):
 def getcompilelist(no, cache=1):
     if len(no) < 12:
         return []
-    name = 'list/list_' + no + '.json'
+    name = 'list/list_' + re.sub(r'/', "_", no) + '.json'
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -2118,7 +2121,7 @@ def getcompilelist(no, cache=1):
         "User-Agent": "MicroMessenger",
     }
     try:
-        resp = requests.get(url, headers=header, timeout=30)
+        resp = requests.get(url, headers=header, timeout=3)
     except:
         print('Net Error %s' % (no))
         return []  # ,-1
@@ -2213,7 +2216,7 @@ def getequip(no, date):
         "User-Agent": "MicroMessenger",
     }
     try:
-        resp = requests.get(url, headers=header, timeout=30)
+        resp = requests.get(url, headers=header, timeout=10)
     except:
         print('Net Error %s' % (no))
         return ret, -1
@@ -2286,7 +2289,7 @@ def getpreseq(code, date):
 
 def getbureau(train_no, date, cache=1):
     yyyymmdd = date.replace("-", "")
-    name = 'bureau/bureau_%s_%s.json' % (yyyymmdd, train_no)
+    name = 'bureau/bureau_%s_%s.json' % (yyyymmdd, re.sub(r'/', "_", train_no))
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -2395,8 +2398,8 @@ def getcdinfo(date, s, cache=2):
             ]
             return ret, 0
         except:
-            pass
-            #print(s + "-")
+            #pass
+            print(s + "- except")
             # print(fn)
     if cache >= 2:
         print('%s no file' % (s))
@@ -2472,12 +2475,13 @@ def ccrgtcsv(name, date):
     map = {}
     ret = []
     for i in range(idx, len(c), 1):
-        if len(c[i]) <= 3 or c[i][3] in map:
+        if len(c[i]) <= 3:
             continue
-        if len(c[i]) < 7:
-            c[i].append('')
-            c[i].append('')
-        key = hash_no(c[i][3])-1
+        code = re.sub(r'^0+', "", c[i][0][2:10])
+        if code in map:
+            continue
+        c[i].extend(["" for ii in range(7-len(c[i]))])
+        key = hash_no(code)-1
         if key / 10 in [7060,7061,7090,7091]: # S6 S9
             continue
         if key / 100 in [507,508]: # D7xx D8xx
@@ -2486,18 +2490,18 @@ def ccrgtcsv(name, date):
             continue
         if not is_a_day(c[i][6], yyyymmdd):
             continue
-        if c[i][3][0] in 'GDCS':
-            # print(c[i][3])
+        if code[0] in 'GDCS':
+            # print(code)
             cache = 1
             row = []
             for retry in range(3):
-                row, status = getcdinfo(date, c[i][3], cache)
+                row, status = getcdinfo(date, code, cache)
                 if status >= -1:
                     break
             ret.append([x for x in row])
             # print(','.join(row))
             idx = i + 1
-            map[c[i][3]] = 1
+            map[code] = 1
     return ret
 
 
