@@ -5,6 +5,17 @@ wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_l
 7za a -t7z -r js.7z js/ -xr\!*.gz
 7za a -t7z -r sch.7z sch/
 
+7za a -t7z -r equip221225.7z equip/
+7za a -t7z -r emu_ccrgt221225.7z ccrgt/
+7za a -t7z -r bureau221225.7z bureau/
+7za a -t7z -r emu221225.7z emu/
+
+7za a -t7z -r sch221011.7z sch221011/
+7za a -t7z -r search221011.7z search221011/
+7za a -t7z -r ticket221011.7z ticket221011/
+
+7za a -t7z -r js.7z js/ -xr\!*.gz
+
 7za a -t7z -r script.7z *.py
 7za a -t7z -r script.7z *.sh
 7za a -t7z -r script.7z *.htm
@@ -556,25 +567,25 @@ openssl
 https://www.openssl.org/source/
 
 # https --no-check-certificate 
-wget http://www.zlib.net/zlib-1.2.12.tar.gz
+wget http://www.zlib.net/zlib-1.2.13.tar.gz
 wget https://jaist.dl.sourceforge.net/project/pcre/pcre/8.45/pcre-8.45.tar.gz
-wget https://www.openssl.org/source/openssl-1.1.1q.tar.gz
+wget https://www.openssl.org/source/openssl-1.1.1t.tar.gz
 
-wget https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.40/pcre2-10.40.tar.gz
-wget https://www.openssl.org/source/openssl-3.0.5.tar.gz
+wget https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.40/pcre2-10.42.tar.gz
+wget https://www.openssl.org/source/openssl-3.0.8.tar.gz
 
 tar -zxvf pcre-8.45.tar.gz
-tar -zxvf zlib-1.2.12.tar.gz
-tar -zxvf openssl-1.1.1q.tar.gz
-tar -zxvf pcre2-10.40.tar.gz
-tar -zxvf openssl-3.0.5.tar.gz
+tar -zxvf zlib-1.2.13.tar.gz
+tar -zxvf openssl-1.1.1t.tar.gz
+tar -zxvf pcre2-10.42.tar.gz
+tar -zxvf openssl-3.0.8.tar.gz
 
 编译选项后加上 --with-pcre=../pcre-8.45 --with-zlib=../zlib-1.2.12 --with-openssl=../openssl-1.1.1q
 编译选项后加上 --with-pcre=../pcre2-10.40 --with-zlib=../zlib-1.2.12 --with-openssl=../openssl-3.0.5
 
-wget http://nginx.org/download/nginx-1.22.0.tar.gz
-tar -zxvf nginx-1.22.0.tar.gz
-cd nginx-1.22.0
+wget http://nginx.org/download/nginx-1.22.1.tar.gz
+tar -zxvf nginx-1.22.1.tar.gz
+cd nginx-1.22.1
 
 #nginx1.14.0 1.18.0 1.20.0 1.20.2编译选项
 # 1.22.0 增加 --without-pcre2
@@ -758,9 +769,9 @@ cd nginx-1.22.0
 
 
 #指定pcre zlib openssl源码目录
-./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_v2_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_geoip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module --with-pcre-jit --with-pcre=../pcre2-10.40 --with-zlib=../zlib-1.2.12 --with-openssl=../openssl-3.0.5 --with-openssl-opt=enable-ktls
+./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_v2_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_geoip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module --with-pcre-jit --with-pcre=../pcre2-10.42 --with-zlib=../zlib-1.2.13 --with-openssl=../openssl-3.0.8 --with-openssl-opt=enable-ktls
 checking for OS
- + Linux 5.18.7-1.el7.elrepo.x86_64 x86_64
+ + Linux 5.18.12-1.el7.elrepo.x86_64 x86_64
 checking for C compiler ... found
  + using GNU C compiler
  + gcc version: 4.8.5 20150623 (Red Hat 4.8.5-44) (GCC) 
@@ -884,9 +895,9 @@ checking for GeoIP IPv6 support ... found
 creating objs/Makefile
 
 Configuration summary
-  + using PCRE2 library: ../pcre2-10.40
-  + using OpenSSL library: ../openssl-3.0.4
-  + using zlib library: ../zlib-1.2.12
+  + using PCRE2 library: ../pcre2-10.42
+  + using OpenSSL library: ../openssl-3.0.8
+  + using zlib library: ../zlib-1.2.13
 
   nginx path prefix: "/usr/local/nginx"
   nginx binary file: "/usr/local/nginx/sbin/nginx"

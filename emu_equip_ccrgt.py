@@ -4,20 +4,29 @@
 
 from view_train_list import *
 
-date = re.sub(
+
+try:
+    date = sys.argv[1]
+except:
+    date = nowdate()
+
+
+yyyymmdd = re.sub(
     r'(\d\d)(\d\d)-(\d+)-(\d+)',
     r"\1\2\3\4",
-    nowdate()
+    date
 )
 
-ccrgt = readcsv('emu/ccrgt%s.csv'%(date))
-equip = readcsv('emu/equip%s.csv'%(date))
-bureau = readcsv('emu/bureau%s.csv'%(date))
+ccrgt = readcsv('emu/ccrgt%s.csv'%(yyyymmdd))
+equip = readcsv('emu/equip%s.csv'%(yyyymmdd))
+bureau = readcsv('emu/bureau%s.csv'%(yyyymmdd))
+carcode = readcsv('emu/carcode%s.csv'%(yyyymmdd))
 
 maxlen = 90000
 ccrgtmap = [[] for i in range(maxlen)]
 equipmap = [[] for i in range(maxlen)]
 bureaumap = [[] for i in range(maxlen)]
+carcodemap = [[] for i in range(maxlen)]
 
 for row in ccrgt:
     if not len(row[0]):
@@ -41,6 +50,14 @@ for row in bureau:
     if key < 0 or key >= len(bureaumap):
         continue
     bureaumap[hash_no(row[0])] = row
+
+for row in carcode:
+    if not len(row[0]):
+        continue
+    key = hash_no(row[0])
+    if key < 0 or key >= len(carcodemap):
+        continue
+    carcodemap[hash_no(row[0])] = row
 
 
 bureaustr = u'''哈尔滨,哈
@@ -68,32 +85,35 @@ for key in range(0,maxlen):
     c = ccrgtmap[key] #221226 插入下标2 车号
     e = equipmap[key]
     b = bureaumap[key]
-    if (len(c) == 0) and (len(e) == 0):
+    a = carcodemap[key]
+    if (len(c) == 0) and (len(e) == 0) and (len(a) == 0):
         if len(b) > 1:
             row = [b[0],b[1]]
             ret.append(row)
             continue
-        #print(key,len(c),len(e))
+        #print(key,len(c),len(e),len(a))
         continue
-    #print(key,len(c),len(e),len(b))
+    #print(key,len(c),len(e),len(b),len(a))
     c.extend(["" for i in range(7-len(c))])
     e.extend(["" for i in range(9-len(e))])
+    b.extend(["" for i in range(2-len(b))])
+    a.extend(["" for i in range(3-len(a))])
     row = []
-    row.append(c[0])
+    row.append(c[0] if c[0] else a[0])
     #row.append(e[0])
     bu = bureau_map.get(c[4],c[4]) #c[3]
     #if len(bu) and len(e[3]) and bu != e[3]:
         #print(','.join([','.join(c),','.join(e)]))
-    row.append(e[3] if e[3] else bu)
-    emu_no = (u'2*' if u'重' in c[1] else '') + (e[2] if e[2] else c[2] if c[2] else (c[1].replace(u'型','').replace(u'重联','')))
-    row.append(emu_no.replace(u'CRH380','').replace(u'CRH','').replace(u'CR400','').replace(u'CR300','300'))
+    row.append(e[3] if e[3] else bu if bu else b[1])
+    emu_no = (u'2*' if u'重' in c[1] else '') + (a[1] if a[1] else e[2] if e[2] else c[2] if c[2] else (c[1].replace(u'型','').replace(u'重联','')))
+    row.append(emu_no.replace(u'CRH380','').replace(u'CRH','').replace(u'CR400','').replace(u'CR300','300').replace(u'CR200','200'))
     row.extend([e[i] for i in [4,5]])
     row.extend([c[i] for i in [5,6]])
     #row.extend([e[i] for i in [6,7,8]])
     ret.append(row)
 
 writecsv(
-    'emu/emu%s.csv'%(date),
+    'emu/emu%s.csv'%(yyyymmdd),
     [[x.encode('utf-8') for x in row] for row in ret]
 )
 

@@ -43,6 +43,12 @@ https://www.12306.cn/index/otn/index12306/queryStopStations?train_no=6c00000G660
 https://www.12306.cn/index/otn/index12306/queryTicketCheck
 Cookie: BIGipServerotn=334496266.64545.0000;
 
+起售时缓存
+https://kyfw.12306.cn/index/otn/index12306/queryAllCacheSaleTime
+换乘时间
+https://kyfw.12306.cn/index/otn/index12306/queryLCtime
+POST
+from_station_telecode=BJP&trainDate=20230419
 查询同城站起售时
 https://www.12306.cn/index/otn/index12306/queryScSname
 POST

@@ -222,6 +222,9 @@ def datediff(date1, date0):
 def nowdate():
     return datetime.datetime.now().strftime('%Y-%m-%d')
 
+def nowtime():
+    return datetime.datetime.now().strftime('%H:%M')
+
 
 def basedate(now):
     graphdate_rev = [
@@ -247,7 +250,7 @@ def basedate(now):
 '20200110', '20200410', '20200701', '20201011', #    '20200430',
 '20210120', '20210410', '20210625', '20211011',
 '20220110', '20220408', '20220620', '20221011',
-'20221226',
+'20221226', '20230401', '20230701',
 ][::-1]
     if not now:
         now = nowdate()
@@ -424,26 +427,43 @@ def seat(s):
         '包厢式硬卧': 'YW18',  # BY
         '高级软卧': 'RW19',  # GR
         '高级卧': 'WG',
+        '豪华软卧': 'WG',
         '一等软座': 'RZ1',
         '二等软座': 'RZ2',
         '一等座': 'ZY',
+        '一等': 'ZY',
         '二等座': 'ZE',
+        '二等': 'ZE',
         '二等座一等座': 'ZYE',
         '商务座': 'ZS',
+        '商务': 'ZS',
         '特等座': 'ZT',
+        '特等': 'ZT',
         '二等/餐车': 'ZEC',
         '二等座餐车': 'ZEC',
+        '餐车/二等': 'ZEC',
+        '餐椅/二等': 'ZEC',
+        '餐座合造': 'ZEC',
         '软卧餐车': 'WRC',
+        '软卧/餐车': 'WRC',
         '一等/商务座': 'ZYS',
         '一等座商务座': 'ZYS',
         '商务座一等座': 'ZYS',
+        '商务/一等': 'ZYS',
+        '一等/商务': 'ZYS',
         '二等/商务座': 'ZES',
         '商务座二等座': 'ZES',
         '二等座商务座': 'ZES',
+        '商务/二等': 'ZES',
+        '二等/商务': 'ZES',
         '一等/特等座': 'ZYT',
         '一等座特等座': 'ZYT',
+        '特等/一等': 'ZYT',
+        '一等/特等': 'ZYT',
         '二等/特等座': 'ZET',
         '二等座特等座': 'ZET',
+        '特等/二等': 'ZET',
+        '二等/特等': 'ZET',
     }
     if s.encode('utf-8') in seat_map:
         return seat_map[s.encode('utf-8')]
@@ -493,6 +513,11 @@ def seatcapsccrgt(arr_seat, arr_cap):
     for i in range(len(arr_seat)):
         ret.append('%s%s(%s)' % ('', seat(arr_seat[i]), arr_cap[i]))
     return '+'.join(ret)
+
+
+def seatcarcode(seat_cap): 
+    sp = seat_cap.replace(u'\xa0', '').replace(u'一等/二等','ZET').split(' ')
+    return '%s(%s)' % (seat(sp[1]), sp[2])
 
 
 # compare
@@ -821,8 +846,8 @@ def getsearch12306(kw, date, cache=1):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    if cache == 0 and os.path.exists(fn) and os.path.getmtime(fn):
-        cache = 1
+    #if cache == 0 and os.path.exists(fn) and os.path.getmtime(fn):
+        #cache = 1
     if cache and os.path.exists(fn):
         try:
             search = json.loads(readbyte(fn))
@@ -1636,7 +1661,8 @@ def getczxxLocal(t1, date):
 
 def getczxxOnline(t1, date):
     # url = "https://kyfw.12306.cn/otn/czxx/query?train_start_date=" + date + \
-    url = "https://www.12306.cn/kfzmpt/czxx/query?train_start_date=" + date + \
+    #url = "https://www.12306.cn/kfzmpt/czxx/query?train_start_date=" + date + \
+    url = "https://kyfw.12306.cn/kfzmpt/czxx/query?train_start_date=" + date + \
         "&train_station_name=" + "" + \
         "&train_station_code=" + t1 + "&randCode="
     header = {
@@ -2174,7 +2200,8 @@ for i in range(0, len(c), 1):
 def getequip(no, date):
     if len(no) < 12:
         return
-    name = 'equip/equip_' + date + '_' + no + '.json'
+    yyyymmdd = date.replace("-", "")
+    name = 'equip%s/equip_%s_%s.json' % (yyyymmdd[2:-2], date, no)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -2244,6 +2271,11 @@ def getequip(no, date):
         #print(' '.join(ret))
         return ret, 0
     else:
+        if 'error' in j:
+            print('equip(\'%s\') data error %s' % (no, j['error']))
+            if j['error'] == u'查询异常,请重试':
+                return ret, -1
+            return ret, -2
         print('equip %s no data' % (no))
         return ret, 0
 
@@ -2289,7 +2321,7 @@ def getpreseq(code, date):
 
 def getbureau(train_no, date, cache=1):
     yyyymmdd = date.replace("-", "")
-    name = 'bureau/bureau_%s_%s.json' % (yyyymmdd, re.sub(r'/', "_", train_no))
+    name = 'bureau%s/bureau_%s_%s.json' % (yyyymmdd[2:-2], yyyymmdd, re.sub(r'/', "_", train_no))
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -2366,7 +2398,7 @@ def getcdinfo(date, s, cache=2):
         r"\1\2\3\4",
         date
     )
-    name = 'ccrgt/ccrgt_' + yyyymmdd + '_' + s + '.json'
+    name = 'ccrgt%s/ccrgt_%s_%s.json' % (yyyymmdd[2:-2], yyyymmdd, s)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -2392,8 +2424,7 @@ def getcdinfo(date, s, cache=2):
                     [(x['seatType1'] if x['seatType1'] else '') +
                      (x['seatType2'] if x['seatType2'] else '') +
                      (x['dinnerCar'] if x['dinnerCar'] else '') for x in j['data']['cdInfoList']],
-                    [re.sub(r'\D', '', x['peopleNum'])
-                     for x in j['data']['cdInfoList']]
+                    [re.sub(r'\D', '', x['peopleNum']) for x in j['data']['cdInfoList']]
                 ).encode('utf-8'),
             ]
             return ret, 0
@@ -2417,7 +2448,7 @@ def getcdinfo(date, s, cache=2):
         print('net error %s' % (s))
         return [s.encode('utf-8'), "", "", "", "", "", ""], -3
     body = resp.content.decode('utf-8')
-    time.sleep(0.2)
+    time.sleep(0.1)
     #
     try:
         j = json.loads(body)
@@ -2500,6 +2531,140 @@ def ccrgtcsv(name, date):
                     break
             ret.append([x for x in row])
             # print(','.join(row))
+            idx = i + 1
+            map[code] = 1
+    return ret
+
+
+#carcode
+def getcarcode(date, s, cache=2):
+    yyyymmdd = re.sub(
+        r'(\d\d)(\d\d)-(\d+)-(\d+)',
+        r"\1\2\3\4",
+        date
+    )
+    name = 'carcode%s/carcode_%s_%s.json' % (yyyymmdd[2:-2], yyyymmdd, s)
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if cache and os.path.exists(fn):
+        try:
+            j = json.loads(readbyte(fn))
+            ret = [
+                s.encode('utf-8'),
+                #j['content']['data']['trainStyle'].encode('utf-8'),
+                j['content']['data']['carCode'].encode('utf-8'),
+                '_'.join([seatcarcode(x['pictureName']) for x in j['content']['data']['coachPicList']]).encode('utf-8'),
+            ]
+            return ret, 0
+        except:
+            #pass
+            print(s + "- except")
+            # print(fn)
+    if cache >= 2:
+        print('%s no file' % (s))
+        return [s.encode('utf-8')], -1
+    url = 'https://mobile.12306.cn/wxxcx/openplatform-inner/miniprogram/wifiapps/appFrontEnd/v2/lounge/open-smooth-common/trainStyleBatch/getCarDetail?carCode=CR400BF-5033&trainCode=%s&runningDay=%s&reqType=form' % (
+        s, yyyymmdd
+    )
+    header = {
+        "content-type": "application/x-www-form-urlencoded",
+        "User-Agent": "MicroMessenger",
+    }
+    try:
+        resp = requests.get(url, headers=header, timeout=10)
+    except:
+        print('net error %s' % (s))
+        return [s.encode('utf-8')], -3
+    body = resp.content.decode('utf-8')
+    time.sleep(0.05)
+    #
+    try:
+        j = json.loads(body)
+    except:
+        print('json error %s' % (s))
+        return [s.encode('utf-8')], -2
+    if 'content' in j and 'data' in j['content']:
+        ret = [
+            s.encode('utf-8'),
+            #j['content']['data']['trainStyle'].encode('utf-8'),
+            j['content']['data']['carCode'].encode('utf-8'),
+            '_'.join([seatcarcode(x['pictureName']) for x in j['content']['data']['coachPicList']]).encode('utf-8'),
+        ]
+        # for r in ret:
+        # print(type(r))
+        # print((','.join(ret)).decode('utf-8'))
+        writebyte(name, resp.content)
+        return ret, 0
+    # except:
+    else:
+        print('%s -' % (s))
+        return [s.encode('utf-8')], -1
+    return j, 0
+
+
+def carcodecsv(name, date, cache=1):
+    #name = 'js/train%s.csv'%(base_yymmdd())
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    yyyymmdd = re.sub(
+        r'(\d\d)(\d\d)-(\d+)-(\d+)',
+        r"\1\2\3\4",
+        date
+    )
+    timecsv = readcsv('js/time%s.csv'%(base_yymmdd()))
+    maxlen = 90000
+    timemap = ['23:00' for i in range(maxlen)]
+
+    for row in timecsv:
+        if not len(row[0]):
+            continue
+        if row[2] != '01':
+            continue
+        key = hash_no(row[0])-1
+        if key < 0 or key >= len(timemap):
+            continue
+        timemap[key] = row[4]
+    #
+    c = readcsv(fn)
+    idx = 0
+    map = {}
+    ret = []
+    for i in range(idx, len(c), 1):
+        if len(c[i]) <= 3:
+            continue
+        code = re.sub(r'^0+', "", c[i][0][2:10])
+        if code in map:
+            continue
+        c[i].extend(["" for ii in range(7-len(c[i]))])
+        key = hash_no(code)-1
+        #if key / 100 in [507,508]: # D7xx D8xx
+            #continue
+        #if key / 1000 in [60]: # Cxxx
+            #continue
+        if key / 100 in [628,629,647,648]: # C47xx C48xx
+            continue
+        if not is_a_day(c[i][6], yyyymmdd):
+            continue
+        if (date_yyyymmdd(nowdate()) == yyyymmdd):
+            if key / 1000 not in [40,41,42,43,50,51,52,53] and (getmin(timemap[key]) > 60+getmin(nowtime())):
+                continue
+            if (getmin(timemap[key]) > 30+getmin(nowtime())):
+                continue
+            if key / 10000 in [6] and (getmin(timemap[key]) > getmin(nowtime())):
+                continue
+        if code[0] in 'GDC':
+            # print(code)
+            row = []
+            for retry in range(3):
+                row, status = getcarcode(date, code, cache)
+                if status >= -1:
+                    break
+            ret.append([x for x in row])
+            #print(timemap[key] + ' ' + b','.join(row))
             idx = i + 1
             map[code] = 1
     return ret
@@ -2877,7 +3042,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1 and sys.argv[1] == 'station':
         writecsv("js/station.csv", [[col.encode('utf-8') for col in row] for row in station])
-        writecsv("js/station.min.csv", [[row[x].encode('utf-8') for x in [1,2,6]] for row in station])
+        writecsv("js/station.min.csv", [[row[x].encode('utf-8') for x in [1,2,-2]] for row in station])
         exit()
 
     if len(sys.argv) > 2 and sys.argv[1] == 'search':
@@ -2886,6 +3051,8 @@ if __name__ == '__main__':
         maxlen = 90000
         train_map = [[] for i in range(maxlen)]
         st = ["S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+        if len(sys.argv) > 3:
+            st = sys.argv[3].split(',')
         st, tmpsize = searchAll12306(train_map, basedate(''), date, st, cache=0)
         print(date, st)
         exit()
@@ -2923,7 +3090,7 @@ if __name__ == '__main__':
         size = tmpsize
     #search
     #for i in range(max_date_diff+2, -1, -1):
-    for i in range(-datediff(now, base_date), 1): # , max_date_diff+1
+    for i in range(-datediff(now, base_date), max_date_diff+1): # , max_date_diff+1
         st = ["S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
         #st = ["90", "50", "10", "S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
         #st = ["D9", "G9", "3", "T", "Z", "K5", "K4", "D4", "G4"]
