@@ -12,14 +12,27 @@ try:
 except:
     date = nowdate()
 
-name = 'js/train%s.csv'%(base_yymmdd())
-ret = ccrgtcsv(name, date)
+try:
+    if sys.argv[2] == "cache":
+        print("set cache = 2")
+        cache=2
+except:
+    cache=1
+
 
 yyyymmdd = re.sub(
     r'(\d\d)(\d\d)-(\d+)-(\d+)',
     r"\1\2\3\4",
     date
 )
+
+path = 'ccrgt%s' % (yyyymmdd[2:-2])
+touchdir(path)
+
+
+name = 'js/train%s.csv'%(base_yymmdd())
+ret = ccrgtcsv(name, date, cache)
+
 name = 'emu/ccrgt%s.csv' % (yyyymmdd)
 try:
     fn1 = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)

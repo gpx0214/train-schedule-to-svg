@@ -117,6 +117,8 @@ https://www.meipian.cn/u09s9hf
 车次开头
 
 
+编组查询 (失效)
+https://kyfw.12306.cn/kfzmpt/bbcx/query?train_code=G1&train_date=2023-07-09&rand_code=
 
 车站车次
 http://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=24000T56850P&from_station_telecode=BJP&to_station_telecode=QTP&depart_date=2018-04-04
