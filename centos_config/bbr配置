@@ -4,8 +4,11 @@ cat /etc/redhat-release
 
 rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 #yum -y install https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
-rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-5.el7.elrepo.noarch.rpm
-yum --enablerepo=elrepo-kernel install kernel-ml -y
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-6.el7.elrepo.noarch.rpm
+#yum --enablerepo=elrepo-kernel install kernel-ml -y
+yum --enablerepo=elrepo-kernel install kernel-lt -y
+
+# grub2-mkconfig -o /boot/grub2/grub.cfg
 
 egrep ^menuentry /etc/grub2.cfg | cut -f 2 -d \'
 grub2-set-default 0
