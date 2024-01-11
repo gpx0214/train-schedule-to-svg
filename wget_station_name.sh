@@ -3,32 +3,31 @@
 path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/"
 
 t0='0'
-if [ -f "${path}js/qss.js" ];then
-t0=`stat -c %Y ${path}js/qss.js`
+if [ -f "${path}js/saletime.json" ];then
+t0=`md5sum ${path}js/saletime.json|awk '{print $1}'`
 else
 t0='0'
 fi
-#echo ${t0}
+echo ${t0}
 
 #download only new file
-/usr/bin/wget -N -nv -S --no-check-certificate https://www.12306.cn/index/script/core/common/qss.js -P ${path}js/
+/usr/bin/wget -N -nv -S --no-check-certificate https://kyfw.12306.cn/index/otn/index12306/queryAllCacheSaleTime -O ${path}js/saletime.json
 
 t1='0'
-if [ -f "${path}js/qss.js" ];then
-t1=`stat -c %Y ${path}js/qss.js`
+if [ -f "${path}js/saletime.json" ];then
+t1=`md5sum ${path}js/saletime.json|awk '{print $1}'`
 else
 t1='0'
 fi
-#echo ${t1}
+echo ${t1}
 
-#echo $((${t1}-${t0}))
-if ((${t1} > ${t0}));then
+if [ "$t0" != "$t1" ];then
 echo t1 newer
-yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}js/qss.js)"`
-cp -p ${path}js/qss.js ${path}js/qss_${yymmdd}.js
-#gzip -c9 ${path}js/qss.js > ${path}js/qss.js.gz
-rm -f ${path}js/qss.js.gz
-7za a -tgzip -mx9 ${path}js/qss.js.gz ${path}js/qss.js >/dev/null
+yymmdd=`date +"%y%m%d" -d "$(stat -c %y ${path}js/saletime.json)"`
+cp -p ${path}js/saletime.json ${path}js/saletime${yymmdd}.json
+#gzip -c9 ${path}js/saletime.json > ${path}js/saletime.json.gz
+rm -f ${path}js/saletime.json.gz
+7za a -tgzip -mx9 ${path}js/saletime.json.gz ${path}js/saletime.json >/dev/null
 else
 echo t0 newer or same
 fi
