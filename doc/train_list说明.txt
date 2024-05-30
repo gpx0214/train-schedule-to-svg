@@ -160,6 +160,8 @@ https://kyfw.12306.cn/otn/leftTicket/queryTicketPriceFL?train_no=5600000Z1020&fr
 https://kyfw.12306.cn/otn/leftTicket/queryTicketPrice?train_no=5600000Z1020&from_station_no=01&to_station_no=04&seat_types=1413&train_date=2018-05-01
 
 
+queryReservationTicket 学生和农民工专区 purpose_codes=YG_1F00
+
 https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2018-04-05&leftTicketDTO.from_station=BJP&leftTicketDTO.to_station=SHH&purpose_codes=ADULT
 
 {"validateMessagesShowId":"_validatorMessage","status":true,"httpstatus":200,"messages":["选择的查询日期不在预售日期范围内"],"validateMessages":{}}

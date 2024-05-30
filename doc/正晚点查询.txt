@@ -33,14 +33,15 @@ return "http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz="+unicode2gbk(str
 .match(/预计(.*)次列车，(.*)站(到达|出发)时间为(.*)/)
 
 http://www.12306.cn/mapping/kfxt/zwdcx/LCZWD/cx.jsp?cz=%CA%AF%BC%D2%D7%AF&cc=Y511&cxlx=1&rq=2017-12-11&czEn=-E7-9F-B3-E5-AE-B6-E5-BA-84&tp=1512928161526
-
-
 cz GBK
 cc 车次
 cxlx 0 到 1 发
 rq 日期 1970-01-01
 czEn UTF-8
 tp 13位时间
+
+https://www.12306.cn/mormhweb/kyfw/lczwdcx/ 空白页
+
 
 广州
 http://www.gtbyxx.com/wxg/ky/zhengwan.jsp
