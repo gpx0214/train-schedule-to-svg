@@ -25,7 +25,7 @@ def readcsv(fn):
     if not os.path.exists(fn):
         print('%s not exist' % (fn))
         return []
-    with open(fn, 'rb') as f:  # py2
+    with open(fn, 'rb') as f:  # py2 py3
         if f.read(3) != b'\xef\xbb\xbf':
             f.seek(0, 0)
         data = f.read().decode('utf-8')
@@ -175,6 +175,13 @@ def date_yyyymmdd(s):
     return re.sub(r'(\d\d\d\d)-(\d\d)-(\d\d)', r"\1\2\3", s)
 
 
+def date_yymmdd(s):
+    '''
+    2007-04-18 -> 070418
+    '''
+    return re.sub(r'(\d\d\d\d)-(\d\d)-(\d\d)', r"\1\2\3", s)[2:]
+
+
 def date_add_ymd(s, diff):
     if diff == 0:
         return s
@@ -269,10 +276,12 @@ def basedate(now):
 '20210120', '20210410', '20210625', '20211011',
 '20220110', '20220408', '20220620', '20221011',
 '20221226', '20230401', '20230701', '20231011',
-'20240110',
+'20240110', '20240410', '20240615',
 ][::-1]
     if not now:
         now = nowdate()
+    else:
+        now = date_ymd(now)
     for d in graphdate_rev:
         date = date_ymd(d)
         if datediff(now, date) >= 0:
@@ -487,7 +496,7 @@ def seat(s):
     if s.encode('utf-8') in seat_map: # py2
         return seat_map[s.encode('utf-8')]
     if s in seat_map:                 # py3
-        return seat_map[s].encode('utf-8')
+        return seat_map[s]
     return s
 
 
@@ -1083,10 +1092,12 @@ def atos(a):
 
 
 # timetable train_list.js
-def processS(a, date, station):
+def processS(a, date, station, cache=1):
     date = date_ymd(date)
     sch = getSch12306Local(a['train_no'], date)
     if len(sch):
+        return sch
+    if cache >= 3:
         return sch
     #
     t1 = telecode(a['from_station'], station).encode('utf-8')
@@ -1324,48 +1335,80 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
     return ret
 
 
-def checkSchdatebintocsvmin(train_arr, base_date, size, station=None):
+def checktimecsvmin(train_map, base_date, size, station=None):
     '''
-    change train_arr[i]['service_type'] ['total_num']
+    change train_map[key][i]['service_type'] ['total_num']
+    compress same station and time
     '''
-    rows = []
-    for train in train_arr:
-        for retry in range(1): # 2
-            diff = get_last_one(train['date'], size)
-            date = base_date  # TODO
-            if diff > -1:
-                date = date_add(base_date, diff)
-            if train['date'] & (1 << datediff(nowdate(), base_date)):
-                date = nowdate()
-            sch = processS(train, date, station)
+    ret = []
+    for key in range(len(train_map)):
+        tables = []
+        for train in train_map[key]:
+            for retry in range(1): # 2
+                diff = get_last_one(train['date'], size)
+                date = base_date  # TODO
+                if diff > -1:
+                    date = date_add(base_date, diff)
+                if train['date'] & (1 << datediff(nowdate(), base_date)):
+                    date = nowdate()
+                sch = processS(train, date, station)
+                if len(sch):
+                    break
+                time.sleep(1 << retry)
+            train['total_num'] = len(sch)
             if len(sch):
-                break
-            time.sleep(1 << retry)
-        train['total_num'] = len(sch)
-        if len(sch):
-            train['service_type'] = sch[0]['service_type']
-        else:
-            train['service_type'] = ""
-        #if (train['station_train_code'] in train['train_no']) == False:
-            #continue
-        s = schDateToCsvMin(sch, train['src'], train['date'], base_date, size, station)
-        rows.extend(s)
-    return rows
+                train['service_type'] = sch[0]['service_type']
+            else:
+                train['service_type'] = ""
+            #if (train['station_train_code'] in train['train_no']) == False:
+                #continue
+            table = []
+            val, _ = compress_bin_vector(
+                train['date'],
+                base_date,
+                size
+            )
+            table.append([
+            train['train_no'].encode('utf-8'),
+                train['station_train_code'].encode('utf-8'),
+                # str(train['total_num'] if 'total_num' in train else 0),
+                val,
+                '0' if 'service_type' in train and train['service_type'] == '0' else '',
+                # train['src'],
+            ])
+            s = schToMinCsv(sch, station)
+            table.extend(s)
+            tables.append(table)
+        #
+        for i in range(len(tables)):
+            if i+1 < len(tables) and CompareTime(tables[i][1:], tables[i+1][1:]):
+                ret.append(tables[i][0])
+            else:
+                ret.extend(tables[i])
+                ret.append([])
+    return ret
 
 
-def schDateToCsvMin(s, src, date_bin, base_date, size, station=None):
+def CompareTime(a1, a2):
+    '''
+    CompareTime for sch col 1 2 0
+    '''
+    if len(a1) != len(a2):
+        return False
+    for j in [1,2,0]:
+        for i in range(1, len(a1)):
+            if a1[i][j] != a2[i][j]:
+                return False
+    return True
+
+
+def schToMinCsv(s, station=None):
     '''
     use diff time to reduce size
-    change train_arr[i]['service_type'] ['total_num']
     '''
     ret = []
     day = 0
     last = 0
-    val, _ = compress_bin_vector(
-        date_bin,
-        date_add(base_date, day),
-        size
-    )
     for i in range(0, len(s)):
         t1 = ''
         if station != None:
@@ -1379,22 +1422,12 @@ def schDateToCsvMin(s, src, date_bin, base_date, size, station=None):
             arrive_minute = getmin(s[i]['arrive_time'])
             if arrive_minute < last:
                 day += 1
-                val, _ = compress_bin_vector(
-                    date_bin,
-                    date_add(base_date, day),
-                    size
-                )
                 cross_day = 1
             last = arrive_minute
         if getmin(s[i]['start_time']) > -1 and i < len(s)-1:
             start_minute = getmin(s[i]['start_time'])
             if start_minute < last:
                 day += 1
-                val, _ = compress_bin_vector(
-                    date_bin,
-                    date_add(base_date, day),
-                    size
-                )
                 cross_day = 1
                 stop_cross_day = 1
             last = start_minute
@@ -1412,9 +1445,9 @@ def schDateToCsvMin(s, src, date_bin, base_date, size, station=None):
             #s[i]['station_no'].encode('utf-8'),
             str(run_time) if i > 0 else '',
             str(stop_time) if stop_time > 0 else s[i]['start_time'].encode('utf-8') if i < len(s)-1 else '',
-            s[0]['station_train_code'].encode('utf-8') if i == 0 else '',
-            str(day) if cross_day else '',
-            val if cross_day or i == 0 else ''
+            # s[0]['station_train_code'].encode('utf-8') if i == 0 else '',
+            # str(day) if cross_day else '',
+            # val if cross_day or i == 0 else ''
             # str(src),
         ])
     return ret
@@ -1666,44 +1699,6 @@ polyline {
     #
     buf += ('</svg>')
     return buf, num
-
-
-def train_list_class_str(t):
-    s = ''
-    for date in sorted(t.keys()):
-        s += train_list_day_class_str(t[date], date) + '\n'
-    return s
-
-
-def train_list_day_class_str(d, date):
-    ss = ''
-    ss += (date.encode('utf-8'))
-    for train_class in d:
-        ss += '\t%s %d' % (
-            train_class.encode('utf-8'),
-            len(d[train_class])
-        )
-    # ss += '\n'
-    return ss
-
-
-def train_list_train_no_array(t, maxlen):
-    arr = ['' for i in range(maxlen)]
-    for date in sorted(t.keys()):
-        for train_class in t[date]:
-            # for train_class in ['Z']:
-            for i in range(0, len(t[date][train_class])):
-                # for i in range(0,1):
-                a = t[date][train_class][i]
-                match = re.findall(
-                    r'(.*)\((.*)-(.*)\)',
-                    a['station_train_code'],
-                    re.I | re.M
-                )[0]
-                arr[hash_no(
-                    match[0].encode('utf-8')
-                ) - 1] = a['train_no'].encode('utf-8')
-    return arr
 
 
 # czxx
@@ -1964,6 +1959,22 @@ def getLeftTicket(t1, t2, date):
     else:
         print('data error %s %s %s' % (t1, t2, date))
         return []
+
+
+def pricebed(s, seattype):
+    '''
+    col[55] 上中下铺价格
+    '''
+    ret = []
+    for c in seattype:
+        ret1 = []
+        for j in range(1,3+1):
+            for i in range(0, len(s), 7):
+                if '%s%d'%(c,j) == s[i:i+2]:
+                    ret1.append(re.sub(r'^0+', "", s[i+2:i+6]) + '.' + s[i+6:i+7])
+        if ret1:
+            ret.append('/'.join(ret1))
+    return ' '.join(ret)
 
 
 def checkLeftTicket(t1, t2, date):
@@ -2578,7 +2589,7 @@ def ccrgtcsv(name, date, cache=1):
         key = int( hash_no(code)-1)
         if key // 10 in [7060,7061,7090,7091]: # S6 S9
             continue
-        if key // 100 in [507,508]: # D7xx D8xx
+        if key // 100 in [500,501,502, 507,508]: # D7xx D8xx
             continue
         if key // 1000 in [60]: # Cxxx
             continue
@@ -3312,7 +3323,6 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1 and sys.argv[1] == 'touch':
         date = nowdate()
-        base_date = basedate('')
         yyyymmdd = re.sub(
             r'(\d\d)(\d\d)-(\d+)-(\d+)',
             r"\1\2\3\4",
@@ -3327,6 +3337,7 @@ if __name__ == '__main__':
             'bureau%s' % (yyyymmdd[2:-2]),
             'carcode%s' % (yyyymmdd[2:-2]),
             'trainset%s' % (yyyymmdd[2:-2]),
+            'web',
         ]
         for fn in fns:
             print(fn)
@@ -3395,11 +3406,14 @@ if __name__ == '__main__':
     print('base_date %s size %d' % (base_date, size))
     stat, train_num = hash_no_stat_block(train_map, 100, maxlen)
     #
+    ret = checktimecsvmin(train_map, base_date, size, station)
+    num = writemincsv('js/cr%s.min.csv'%(base_yymmdd()), ret)
+    print(num)
     train_arr = mapToArr(train_map)
     #
-    ret = checkSchdatebintocsvmin(train_arr, base_date, size, station)
-    num = writemincsv('js/time%s.min.csv'%(base_yymmdd()), ret)
-    print(num)
+    # ret = checkSchdatebintocsvmin(train_arr, base_date, size, station)
+    # num = writemincsv('js/time%s.min.csv'%(base_yymmdd()), ret)
+    # print(num)
     #
     ret = checkSchdatebintocsv(train_arr, base_date, size, station)
     num = writecsv('js/time%s.csv'%(base_yymmdd()), ret)
