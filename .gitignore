@@ -17,6 +17,7 @@
 /search
 /station
 /ticket
+/web
 /*.pyc
 /*.js
 /*.gz

@@ -119,10 +119,12 @@ for key in range(0,maxlen):
     #if len(bu) and len(e[3]) and bu != e[3]:
         #print(','.join([','.join(c),','.join(e)]))
     row.append(e[3] if e[3] else bu)
-    emu_no = (u'2*' if u'重' in (c[1] if c[1] else t[6]) else '') + (a[1] if a[1] else e[2] if e[2] else c[2] if c[2] else c[1] if c[1] else t[6] if t[6] else t[1])
+    emu_no = (u'2*' if u'重' in (c[1] if c[1] else t[6]) else '') + (e[2] if e[2] else c[2] if c[2] else c[1] if c[1] else a[1] if a[1] else t[6] if t[6] else t[1])
     row.append(emu_no.replace(u'型','').replace(u'重联','').replace(u'CRH380','').replace(u'CRH','').replace(u'CR400','').replace(u'CR300','300').replace(u'CR200','200').replace(u'DC600V','-').replace(u'AC380V','~'))
-    row.extend([e[i] for i in [4,5]])
-    row.extend([c[i] for i in [5,6]])
+    row.append(e[4])
+    row.append(e[5])
+    row.append(c[5])
+    row.append(c[6] if c[6] else a[2])
     #row.extend([e[i] for i in [6,7,8]])
     ret.append(row)
 

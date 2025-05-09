@@ -172,6 +172,8 @@ def date_yyyymmdd(s):
     '''
     2007-04-18 -> 20070418
     '''
+    if len(s) == 6:
+        s = '20' + s
     return re.sub(r'(\d\d\d\d)-(\d\d)-(\d\d)', r"\1\2\3", s)
 
 
@@ -185,8 +187,7 @@ def date_yymmdd(s):
 def date_add_ymd(s, diff):
     if diff == 0:
         return s
-    ymd = date_ymd(s)
-    return re.sub(r'(\d\d\d\d)-(\d\d)-(\d\d)', r"\1\2\3", date_add(ymd, diff))
+    return date_yyyymmdd(date_add(date_ymd(s), diff))
 
 
 def datediff(date1, date0):
@@ -276,7 +277,8 @@ def basedate(now):
 '20210120', '20210410', '20210625', '20211011',
 '20220110', '20220408', '20220620', '20221011',
 '20221226', '20230401', '20230701', '20231011',
-'20240110', '20240410', '20240615',
+'20240110', '20240410', '20240615', '20241011',
+'20250105', '20250410',
 ][::-1]
     if not now:
         now = nowdate()
@@ -290,7 +292,7 @@ def basedate(now):
 
 
 def base_yymmdd(now=''):
-    return date_yyyymmdd(basedate(now))[2:]
+    return date_yymmdd(basedate(now))
 
 
 def weekday(date):
@@ -332,7 +334,7 @@ def has_a_day(s):
     if s[0] == u'双':
         return date
     if s[0] == u'w':
-        diff = int(s[1]) - weekday(re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", date))
+        diff = int(s[1]) - weekday(date_ymd(date))
         if diff < 0:
             diff += 7
         return date_add_ymd(date, diff)
@@ -349,6 +351,7 @@ def has_a_day(s):
 
 
 def is_a_day(s, date):
+    date = date_yyyymmdd(date)
     #print('is_a_day() %s %s'%(s,date))
     s = re.sub("^(.*)&", "", s)
     if s == "":
@@ -365,7 +368,7 @@ def is_a_day(s, date):
         return 1
     if s[0] == u'w':
         return 1
-        w = weekday(re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", date))
+        w = weekday(date_ymd(date))
         if w < 0:
             w += 7
         return 1
@@ -621,11 +624,17 @@ def getStation(fn='js/station_name.js', fn1='js/saletime.json'):
     s.append([u"gye", u"古冶", u"GYP", u"guye", u"gy", u"-1", u'', u''])
     s.append([u"", u"香港红磡", u"JQO", u"xiangganghongkan", u"xghk", u"-1", u'', u''])
     s.append([u"jlo", u"九龙", u"JQO", u"jiulong", u"jl", u"-1", u'', u''])
+    s.append([u'xzh', u'莘庄', u'XZH', u'xinzhuang', u'xz', u'-1', u'', u''])
+    s.append([u'csh', u'春申', u'CWH', u'chunshen', u'cs', u'-1', u'', u''])
+    s.append([u'xqi', u'新桥', u'XQH', u'xinqiao', u'xq', u'-1', u'', u''])
+    s.append([u'cdu', u'车墩', u'MIH', u'chedun', u'cd', u'-1', u'', u''])
+    s.append([u'yxi', u'叶榭', u'YOH', u'yexie', u'yx', u'-1', u'', u''])
+    s.append([u'tli', u'亭林', u'TVH', u'tinglin', u'tl', u'-1', u'', u''])
+    s.append([u'jsq', u'金山园区', u'REH', u'jinshanyuanqu', u'jsyq', u'-1', u'', u''])
     s.append([u'jsw', u'金山卫', u'BGH', u'jinshanwei', u'jsw', u'-1', u'', u''])
     s.append([u'mji', u'梅江', u'MKQ', u'meijiang', u'mj', u'-1', u'', u''])
     s.append([u'ylo', u'元龙', u'YLY', u'yuanlong', u'yl', u'-1', u'', u''])
     s.append([u'nsb', u'南山北', u'NBQ', u'nanshanbei', u'nsb', u'-1', u'', u''])
-    s.append([u'', u'车墩', u'MIH', u'chedun', u'cd', u'-1', u'', u''])
     s.append([u'', u'羊木', u'AMJ', u'yangmu', u'ym', u'-1', u'', u''])
     s.append([u'', u'马海', u'MHO', u'mahai', u'mh', u'-1', u'', u''])
     s.append([u'', u'西里', u'XIC', u'xili', u'xl', u'-1', u'', u''])
@@ -807,6 +816,10 @@ def add_map(train_map, a):
     found = 0
     for train in train_map[key]:
         if train['train_no'] == a['train_no']:
+            if (train['from_station']) == "":
+                train['from_station'] = a['from_station']
+            if (train['to_station']) == "":
+                train['to_station'] = a['to_station']
             train['date'] |= a['date']
             train['src'] |= a['src']
             found = 1
@@ -1061,6 +1074,79 @@ def searchAll12306(train_map, base_date, date, st, station=None, cache=1):
     return dead, size
 
 
+#
+def getqueryTrainFileName(kw, date):
+    return 'train%s/%s_%s.json' % (base_yymmdd(date), date_yyyymmdd(date), kw)
+
+
+def getqueryTrain(kw, date, cache=1):
+    name = getqueryTrainFileName(kw, date)
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if cache and os.path.exists(fn):
+        try:
+            j = json.loads(readbyte(fn))
+            return j['data'], len(j['data'])
+        except ValueError:
+            print('ValueError ' + kw)
+    if cache >= 2:
+        return [], 0
+    url = "https://mobile.12306.cn/weixin/wxcore/queryTrain?ticket_no=" + kw + "&depart_date=" + date
+    header = {
+        "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+        "Referer": "https://kyfw.12306.cn/",
+    }
+    try:
+        resp = requests.get(url, headers=header, timeout=20)
+    except:
+        print('Net Error %s %s' %(kw, nowHMS()))
+        return [], -1
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    try:
+        j = json.loads(body)
+    except ValueError:
+        print('ValueError %s %-1s %s' %(kw, resp.elapsed.total_seconds() * 1000, nowHMS()))
+        time.sleep(5)
+        return [], -2
+    if 'data' in j and len(j['data']):
+        writebyte(name, resp.content)
+        print('save  %-1s  %4d %5s-%5s %8s %8.2fms %s' % (
+            kw, len(j['data']),
+            j['data'][0]['ticket_no'],
+            j['data'][-1]['ticket_no'],
+            date,
+            resp.elapsed.total_seconds() * 1000,
+            nowHMS(),
+            )
+        )
+        # time.sleep(0.1)
+        return j['data'], len(j['data'])
+    else:
+        print('empty %-3s %s' % (kw, nowHMS()))
+        return [], 0
+
+
+def getqueryTrainAll(train_map, base_date, date, station=None, cache=1):
+    st = ["Z", "P", "T", "K", "Y", "G", "D", "C", "S", "9", "8", "7", "6", "5", "4", "3", "2", "1"]
+    size = 0
+    for kw in st:
+        res = []
+        for retry in range(2):
+            res, ret = getqueryTrain(kw, date, cache)
+            if ret >= 0:
+                break
+        for i in range(len(res)):
+            diff = datediff(date, base_date)
+            if diff >= size:
+                size = diff + 1
+            s = qtos(res[i])
+            s['date'] = 1 << diff
+            s['src'] = 2
+            add_map(train_map, s)
+    return size
+
 def atos(a):
     '''
     transform object a in train_list.js to object s in search_v1
@@ -1091,6 +1177,67 @@ def atos(a):
     return s
 
 
+def wtos(w):
+    '''
+    transform object w in wifi_station to object s in search_v1
+
+    {
+      "trainNo": "6x0000G89802",
+      "trainCode": "G898",
+      "stationName": "香港西九龙",
+      "stationCode": "XJA",
+      "departTime": "1926"
+    },
+
+    {
+      "trainNo": "6x00000G8005",
+      "trainCode": "G80",
+      "stationName": "香港西九龙",
+      "stationCode": "XJA",
+      "startStationName": "香港西九龙",
+      "startStationCode": "XJA",
+      "endStationName": "北京西",
+      "endStationCode": "BXP",
+      "arriveTime": " ",
+      "departTime": "1120"
+    },
+
+    s['station_train_code'] = u'Z97'
+    s['from_station'] = u'北京西'
+    s['to_station'] = u'广州'
+    s['train_no'] = u'2400000Z9701'
+    s['total_num'] = 0
+    s['date'] = 0
+    '''
+    #
+    s = {}
+    s['station_train_code'] = w['trainCode']
+    s['from_station'] = w['startStationName'] if 'startStationName' in w else ''
+    s['to_station'] = w['endStationName'] if 'endStationName' in w else ''
+    s['train_no'] = w['trainNo']
+    s['total_num'] = 0
+    s['date'] = 0
+    return s
+
+
+def qtos(q):
+    '''
+    transform object q in queryTrain to object s in search_v1
+
+    {
+      "ticket_no": "G89",
+      "train_code": "2400000G890N"
+    }
+    '''
+    s = {}
+    s['station_train_code'] = q['ticket_no']
+    s['from_station'] = ''
+    s['to_station'] = ''
+    s['train_no'] = q['train_code']
+    s['total_num'] = 0
+    s['date'] = 0
+    return s
+
 # timetable train_list.js
 def processS(a, date, station, cache=1):
     date = date_ymd(date)
@@ -1104,19 +1251,29 @@ def processS(a, date, station, cache=1):
     t2 = telecode(a['to_station'], station).encode('utf-8')
     if not t1:
         if platform.system() == "Windows":
-            print(a['from_station'].encode('gbk') +
-                  " telecode not found! " + a['station_train_code'].encode('gbk'))
+            print('%s telecode not found! %s ' % (
+                a['from_station'].encode('gbk'), 
+                a['station_train_code'].encode('gbk')
+            ))
         else:
-            print(a['from_station'].encode('utf-8') +
-                  " telecode not found! " + a['station_train_code'].encode('utf-8'))
+            pass
+            # print('%s telecode not found! %s ' % (
+            #     a['from_station'].encode('utf-8'), 
+            #     a['station_train_code'].encode('utf-8')
+            # ))
         t1 = "AAA"
     if not t2:
         if platform.system() == "Windows":
-            print(a['to_station'].encode('gbk') +
-                  " telecode not found! " + a['station_train_code'].encode('gbk'))
+            print('%s telecode not found! %s ' % (
+                a['to_station'].encode('gbk'), 
+                a['station_train_code'].encode('gbk')
+            ))
         else:
-            print(a['to_station'].encode('utf-8') +
-                  " telecode not found! " + a['station_train_code'].encode('utf-8'))
+            pass
+            # print('%s telecode not found! %s ' % (
+            #     a['to_station'].encode('utf-8'), 
+            #     a['station_train_code'].encode('utf-8')
+            # ))
         t2 = "AAA"
     return getSch12306Online(t1, t2, a['train_no'], date)
 
@@ -1242,20 +1399,20 @@ def schToCsv(s):
     return ret
 
 
-def checkSchdatebintocsv(train_arr, base_date, size, station=None):
+def checkSchdatebintocsv(train_arr, base_date, size, station=None, cache=1):
     '''
     change train_arr[i]['service_type'] ['total_num']
     '''
     rows = []
     for train in train_arr:
         for retry in range(1): # 2
-            diff = get_last_one(train['date'], size)
+            diff = get_nearest_one(train['date'], size, datediff(nowdate(), base_date))
             date = base_date  # TODO
             if diff > -1:
                 date = date_add(base_date, diff)
-            if train['date'] & (1 << datediff(nowdate(), base_date)):
-                date = nowdate()
-            sch = processS(train, date, station)
+            # if train['date'] & (1 << datediff(nowdate(), base_date)):
+            #     date = nowdate()
+            sch = processS(train, date, station, cache)
             if len(sch):
                 break
             time.sleep(1 << retry)
@@ -1345,12 +1502,12 @@ def checktimecsvmin(train_map, base_date, size, station=None):
         tables = []
         for train in train_map[key]:
             for retry in range(1): # 2
-                diff = get_last_one(train['date'], size)
+                diff = get_nearest_one(train['date'], size, datediff(nowdate(), base_date))
                 date = base_date  # TODO
                 if diff > -1:
                     date = date_add(base_date, diff)
-                if train['date'] & (1 << datediff(nowdate(), base_date)):
-                    date = nowdate()
+                # if train['date'] & (1 << datediff(nowdate(), base_date)):
+                #     date = nowdate()
                 sch = processS(train, date, station)
                 if len(sch):
                     break
@@ -1746,7 +1903,7 @@ def getczxxOnline(t1, date):
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"}
     try:
-        resp = requests.get(url, headers=header, timeout=55)
+        resp = requests.get(url, headers=header, timeout=25)
     except:
         print('Net Error %s %s' % (t1, date))
         return [], [], -1
@@ -1861,7 +2018,7 @@ def add_station(train_map, base_date, now, max_date_diff, size, totalcache=1):
                 cache = 2
             if totalcache >= 2:
                 cache = 2
-            for retry in range(5):
+            for retry in range(2):
                 c, samecity, ret = getczxx(t1, date, cache)
                 if ret > -1:
                     break
@@ -1869,12 +2026,7 @@ def add_station(train_map, base_date, now, max_date_diff, size, totalcache=1):
             if ret == -1:
                 c, samecity, ret = getczxx(t1, date, cache=2)
             for t in c:
-                diff = datediff(re.sub(
-                    r'(\d\d\d\d)(\d\d)(\d\d)',
-                    r'\1-\2-\3',
-                    t['start_train_date']),
-                    base_date
-                )
+                diff = datediff(date_ymd(t['start_train_date']), base_date)
                 if diff < 0:
                     continue
                 if diff >= size:
@@ -1894,6 +2046,43 @@ def add_station(train_map, base_date, now, max_date_diff, size, totalcache=1):
                     samecity_map[ii] = name
     return size
 
+
+def add_wifi_station(train_map, base_date, now, max_date_diff, size, station, totalcache=1):
+    #20241001
+    citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
+    freq = re.split(r'[\s\n,*]+',
+                        u'''北京 上海 广州 天津 沈阳 长春 哈尔滨 济南 徐州 南京 杭州 石家庄 郑州 武昌 长沙 株洲 贵阳 西安 兰州 成都 重庆
+            深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
+    dates = []
+    for i in range(-datediff(now, base_date), 1): # TODO base_date...max_date_diff+2+1
+        date = date_add(now, i)
+        dates.append(date)
+    #
+    for name in citys:
+        t1 = telecode(name, station)
+        if len(t1) == 0:
+            continue
+        for date in dates:
+            cache = 1
+            if totalcache >= 2:
+                cache = 2
+            if datediff(date_ymd(date),'2024-09-15') < 0:
+                cache = 2
+            data, ret = getstation(t1, date, cache)
+            for w in data:
+                s = wtos(w)
+                diff = datediff(
+                    date_ymd(date), # TODO 超过1天车次
+                    base_date
+                )
+                if diff < 0:
+                    continue
+                if diff >= size:
+                    size = diff + 1
+                s['date'] = 1 << diff
+                s['src'] = 8 # TODO 
+                add_map(train_map, s)
+    return size
 
 def findschstation(sch, station_name):  # TODO
     for i in range(len(sch)):
@@ -1928,7 +2117,7 @@ for i in range(len(station)):
 '''
 
 # leftTicket
-LeftTicketUrl = "leftTicket/query"
+LeftTicketUrl = "leftTicket/queryG"
 
 
 def getLeftTicket(t1, t2, date):
@@ -2019,19 +2208,23 @@ for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2
 
 
 # wifi.12306.cn
-def getstation(tele, date):
-    name = 'station/station_%s_%s.json' % (tele, date)
+def getstation(tele, date, cache=1):
+    date = date_yyyymmdd(date)
+    #name = 'station/station_%s_%s.json' % (tele, date)
+    name = 'station%s/station_%s_%s.json' % (base_yymmdd(date), tele, date)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    if os.path.exists(fn):
+    if cache > 0 and os.path.exists(fn):
         try:
             j = json.loads(readbyte(fn))
-            print('read wifi_station %s %s %d' % (tele, date, len(j['data'])))
+            #print('read wifi_station %s %s %d' % (tele, date, len(j['data'])))
             return j['data'], 0
         except:
             print('read wifi_station %s %s error' % (tele, date))
+    if cache >= 2:
+        return [], 0
     url = "https://wifi.12306.cn/wifiapps/ticket/api/stoptime/queryByStationCodeAndDate?stationCode=%s&trainDate=%s" % (
         tele, date
     )
@@ -2157,7 +2350,7 @@ def trydetail(s, no, date, add=-1):
             correct += 1
         else:
             correct >>= 1
-        if add >= 0 and datediff(re.sub(r'(\d\d\d\d)(\d\d)(\d\d)', r"\1-\2-\3", dmax), '2020-12-31') > 0:
+        if add >= 0 and datediff(date_ymd(dmax), date_ymd('201231')) > 0:
             return dmin, dmax, ans
         if add < 0 and no[11] == '0':
             if no[10] == '0':
@@ -2449,7 +2642,7 @@ def getbureau(train_no, date, cache=1):
         "Content-Type": "application/x-www-form-urlencoded"
     }
     try:
-        resp = requests.post(url, data=postdata, headers=header, timeout=60)
+        resp = requests.post(url, data=postdata, headers=header, timeout=10)
     except:
         print('Net Error bureau %s' % (train_no))
         return ret, -1
@@ -2490,11 +2683,7 @@ def getcdinfo(date, s, cache=2):
     '''
     {"isSign":"0","sign":"","cguid":"","timeStamp":"","params":{"date":"2024-01-10","trainNumber":"D6702"},"token":null}
     '''
-    yyyymmdd = re.sub(
-        r'(\d\d)(\d\d)-(\d+)-(\d+)',
-        r"\1\2\3\4",
-        date
-    )
+    yyyymmdd = date_yyyymmdd(date)
     name = 'ccrgt%s/ccrgt_%s_%s.json' % (yyyymmdd[2:-2], yyyymmdd, s)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
@@ -2570,11 +2759,7 @@ def ccrgtcsv(name, date, cache=1):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    yyyymmdd = re.sub(
-        r'(\d\d)(\d\d)-(\d+)-(\d+)',
-        r"\1\2\3\4",
-        date
-    )
+    yyyymmdd = date_yyyymmdd(date)
     c = readcsv(fn)
     idx = 0
     map = {}
@@ -2589,7 +2774,7 @@ def ccrgtcsv(name, date, cache=1):
         key = int( hash_no(code)-1)
         if key // 10 in [7060,7061,7090,7091]: # S6 S9
             continue
-        if key // 100 in [500,501,502, 507,508]: # D7xx D8xx
+        if key // 100 in [500,501,502, 507,508, 738,739,750,751,752,753,754,767,768,769,778,779,780,781]: # D7xx D8xx
             continue
         if key // 1000 in [60]: # Cxxx
             continue
@@ -2612,11 +2797,7 @@ def ccrgtcsv(name, date, cache=1):
 
 #carcode
 def getcarcode(date, s, cache=2):
-    yyyymmdd = re.sub(
-        r'(\d\d)(\d\d)-(\d+)-(\d+)',
-        r"\1\2\3\4",
-        date
-    )
+    yyyymmdd = date_yyyymmdd(date)
     name = 'carcode%s/carcode_%s_%s.json' % (yyyymmdd[2:-2], yyyymmdd, s)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
@@ -2678,17 +2859,13 @@ def getcarcode(date, s, cache=2):
     return j, 0
 
 
-def carcodecsv(name, date, cache=1):
+def carcodecsv(name, date, totalcache=1):
     #name = 'js/train%s.csv'%(base_yymmdd())
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    yyyymmdd = re.sub(
-        r'(\d\d)(\d\d)-(\d+)-(\d+)',
-        r"\1\2\3\4",
-        date
-    )
+    yyyymmdd = date_yyyymmdd(date)
     timecsv = readcsv('js/time%s.csv'%(base_yymmdd()))
     emucsv = readcsv('emu/emu%s.csv'%(yyyymmdd))
     maxlen = 90000
@@ -2729,35 +2906,38 @@ def carcodecsv(name, date, cache=1):
             continue
         c[i].extend(["" for ii in range(7-len(c[i]))])
         key = hash_no(code)-1
-        #if key // 100 in [507,508]: # D7xx D8xx
-            #continue
-        #if key // 1000 in [60]: # Cxxx
-            #continue
-        if key // 100 in [628,629,647,648,768,769,780,781]: # C47xx C48xx
+        if key // 10 in [7060,7061,7090,7091]: # S6 S9
+            continue
+        if key // 100 in [628,629,647,648,738,739,750,751,752,753,754,767,768,769,778,779,780,781]: # C47xx C48xx
             continue
         if not is_a_day(c[i][6], yyyymmdd):
             continue
-        if cache == 0 and ('Z' not in emumap[key] and '300' not in emumap[key] and 'J' not in emumap[key]):
-            continue
-        if ((date_yyyymmdd(nowdate())) == yyyymmdd) and getmin(nowtime()) < getmin("21:00"):
-            if key // 1000 not in [40,41,42,43,50,51,52,53]:
-                if (getmin(timemap[key]) > 20+getmin(nowtime())):
-                    continue
-                if getmin(timemap[key]) < -240+getmin(nowtime()):
-                    continue
+        cache = totalcache
+        #if ('' == emumap[key]):
+            #cache = 1
+        if cache >= 1 and ((date_yyyymmdd(nowdate())) == yyyymmdd) and getmin(nowtime()) < getmin("21:00"):
             if (getmin(timemap[key]) > 30+getmin(nowtime())): #40
-                continue
+                stime = 30
+            if key // 1000 not in [40,41,42,43,50,51,52,53]:
+                stime = 20
+            if key // 10000 in [6,7]:
+                stime = 10
+            if ('Z' in emumap[key] or 'S' in emumap[key] or 'AE' in emumap[key] or '300' in emumap[key] or 'J' in emumap[key]):
+                stime = 10
+            if (getmin(timemap[key]) > stime+getmin(nowtime())):
+                cache = 2
+            if getmin(timemap[key]) < -240+getmin(nowtime()):
+                cache = 2
             if (bureaumap[key] == 'X' and getmin(nowtime()) < getmin("21:00")):
-                continue
-            if key // 10000 in [6,7] and (getmin(timemap[key]) > 10+getmin(nowtime())):
-                continue
-        if code[0] in 'GDC':
+                cache = 2
+        if code[0] in 'GDC' or key // 100 in [755]: # S55xx
             # print(code)
             row = []
             for retry in range(2):
                 row, status = getcarcode(date, code, cache)
                 if status == -1:
-                    print('%s - %s %s' % (code, timemap[key], nowtime()))
+                    if cache < 2:
+                        print('%s - %s %s' % (code, timemap[key], nowtime()))
                 if status >= -1:
                     break
             ret.append([x for x in row])
@@ -2769,11 +2949,7 @@ def carcodecsv(name, date, cache=1):
 
 #traininfo
 def gettraininfo(date, s, cache=2):
-    yyyymmdd = re.sub(
-        r'(\d\d)(\d\d)-(\d+)-(\d+)',
-        r"\1\2\3\4",
-        date
-    )
+    yyyymmdd = date_yyyymmdd(date)
     name = 'trainset%s/trainset_%s_%s.json' % (yyyymmdd[2:-2], yyyymmdd, s)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
@@ -2783,7 +2959,8 @@ def gettraininfo(date, s, cache=2):
         try:
             j = json.loads(readbyte(fn))
             ret = csvtraininfo(j)
-            return ret, 0
+            if ret[0][0] not in 'GDC' or ret[1] != "":
+                return ret, 0
         except:
             #pass
             print(s + "- except")
@@ -2810,7 +2987,8 @@ def gettraininfo(date, s, cache=2):
         print('json error %s' % (s))
         return [s.encode('utf-8')], -2
     ret = [s.encode('utf-8')]
-    if 'data' in j and 'trainDetail' in j['data'] and  len(j['data']['trainDetail']['stopTime']) > 0:
+    if 'data' in j and 'trainDetail' in j['data'] and 'stopTime' in j['data']['trainDetail'] and \
+        len(j['data']['trainDetail']['stopTime']) > 0:
         ret = csvtraininfo(j)
         writebyte(fn, resp.content)
     # except:
@@ -2845,11 +3023,7 @@ def traininfocsv(name, date, cache=1):
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
         fn = name
-    yyyymmdd = re.sub(
-        r'(\d\d)(\d\d)-(\d+)-(\d+)',
-        r"\1\2\3\4",
-        date
-    )
+    yyyymmdd = date_yyyymmdd(date)
     #
     c = readcsv(fn)
     idx = 0
@@ -2870,7 +3044,7 @@ def traininfocsv(name, date, cache=1):
             # print(code)
             row = []
             row, status = gettraininfo(date, code, cache)
-            print(','.join(row))
+            # print(','.join(row))
             ret.append([x for x in row])
             idx = i + 1
             map[code] = 1
@@ -3158,6 +3332,16 @@ def get_last_one(n, size):
     return ret
 
 
+def get_nearest_one(n, size, target):
+    ret = -1
+    for i in range(size):
+        if n & (1 << i):
+            ret = i
+            if i >= target:
+                return ret
+    return ret
+
+
 def get_zero_slice(n, size, offset=0, step=1):
     ret = []
     a = -1
@@ -3197,22 +3381,16 @@ def slice_to_str(ret, base_date):
         if i > 0:
             ans += "|"
         if ret[i][0] == ret[i][1]:
-            cur_ymd = re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                             r"\1\2\3\4",
-                             date_add(base_date, ret[i][0]))
+            cur_ymd = date_yyyymmdd(date_add(base_date, ret[i][0]))
             tail = gettail(cur_ymd, yyyymmdd)
             yyyymmdd = cur_ymd
             ans += tail
             continue
         else:
-            cur_ymd = re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                             r"\1\2\3\4",
-                             date_add(base_date, ret[i][0]))
+            cur_ymd = date_yyyymmdd(date_add(base_date, ret[i][0]))
             tail0 = gettail(cur_ymd, yyyymmdd)
             yyyymmdd = cur_ymd
-            cur_ymd = re.sub(r'(\d\d)(\d\d)-(\d+)-(\d+)',
-                             r"\1\2\3\4",
-                             date_add(base_date, ret[i][1]))
+            cur_ymd = date_yyyymmdd(date_add(base_date, ret[i][1]))
             tail1 = gettail(cur_ymd, yyyymmdd)
             yyyymmdd = cur_ymd
             ans += '%s-%s' % (
@@ -3310,6 +3488,16 @@ if __name__ == '__main__':
         print(date, st)
         exit()
 
+    if len(sys.argv) > 2 and sys.argv[1] == 'query':
+        date = date_ymd(sys.argv[2])
+        print('query ', date)
+        maxlen = 90000
+        train_map = [[] for i in range(maxlen)]
+        getqueryTrainAll(train_map, basedate(''), date, station, cache=0)
+        # if station and cache < 2:
+        #     processS(s, date, station)
+        exit()
+
     if len(sys.argv) > 2 and sys.argv[1] == 'czxx':
         citys = sys.argv[2:]
         print('czxx ', citys)
@@ -3321,22 +3509,56 @@ if __name__ == '__main__':
                 c, samecity, ret = getczxx(t1, date_add(now, i), cache = 0)
         exit()
 
+    if len(sys.argv) > 2 and sys.argv[1] == 'wifi':
+        citys = re.split(r'[\r\n,*]+', sys.argv[2].decode('utf-8'))
+        if len(sys.argv) == 2 or sys.argv[2] == 'all':
+            citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
+        print('wifi ', '|'.join(citys))
+        now = nowdate()
+        base_date = basedate('')
+        dates = [nowdate()]
+        if len(sys.argv) >3:
+            dates = []
+            dstr = sys.argv[3]
+            for i in range(-datediff(now, base_date), 14+3): # TODO max_date_diff+3
+                date = date_add(now, i)
+                if is_a_day(dstr, date):
+                    dates.append(date)
+        print('\n'.join(dates))
+        #
+        for name in citys:
+            t1 = telecode(name, station)
+            if len(t1) == 0:
+                continue
+            for date in dates:
+                data, ret = getstation(t1, date, cache=1)
+                for w in data:
+                    s = wtos(w)
+                    code = re.sub(r'^0+', "", s['train_no'][2:10])
+                    code = code.split('/')[0]
+                    sch = processS(s, date, station)
+                    row, status = gettraininfo(date, s['station_train_code'], cache = 1)
+                    print(','.join(row))
+        exit()
+
     if len(sys.argv) > 1 and sys.argv[1] == 'touch':
-        date = nowdate()
-        yyyymmdd = re.sub(
-            r'(\d\d)(\d\d)-(\d+)-(\d+)',
-            r"\1\2\3\4",
-            date
-        )
+        if len(sys.argv) >2:
+            date = sys.argv[2]
+        else:
+            date = nowdate()
+        yymmdd = base_yymmdd(date)
+        yymm = date_yymmdd(date)[:-2]
         fns = [
-            'sch%s' % (base_yymmdd(date)),
-            'search%s' % (base_yymmdd(date)),
-            'ticket%s' % (base_yymmdd(date)),
-            'ccrgt%s' % (yyyymmdd[2:-2]),
-            'equip%s' % (yyyymmdd[2:-2]),
-            'bureau%s' % (yyyymmdd[2:-2]),
-            'carcode%s' % (yyyymmdd[2:-2]),
-            'trainset%s' % (yyyymmdd[2:-2]),
+            'sch%s' % (yymmdd),
+            'search%s' % (yymmdd),
+            'train%s' % (yymmdd),
+            'ticket%s' % (yymmdd),
+            'station%s' % (yymmdd),
+            'ccrgt%s' % (yymm),
+            'equip%s' % (yymm),
+            'bureau%s' % (yymm),
+            'carcode%s' % (yymm),
+            'trainset%s' % (yymm),
             'web',
         ]
         for fn in fns:
@@ -3365,7 +3587,7 @@ if __name__ == '__main__':
     max_date_diff = 15 #5 # 15  # 29 #T+29 #可以查到全部车次的日期
     #
     #czxx
-    if totalcache < 3:
+    if totalcache < 3 and datediff(base_date, '2024-07-02') <= 0: # 20240702 
         tmpsize = add_station(train_map, base_date, now, max_date_diff, size, totalcache)
         if tmpsize > size:
             size = tmpsize
@@ -3374,7 +3596,7 @@ if __name__ == '__main__':
     for i in range(-datediff(now, base_date), max_date_diff+1): # , max_date_diff+1
         st = ["S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
         #st = ["90", "50", "10", "S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
-        #st = ["D9", "G9", "3", "T", "Z", "K5", "K4", "D4", "G4"]
+        #st = ["D9", "G9", "3", "T", "Z", "Y", "K5", "K4", "D4", "G4"]
         date = date_add(now, i)
         #diff = datediff(date, base_date)
         #if diff >= size:
@@ -3386,6 +3608,8 @@ if __name__ == '__main__':
             cache = 2
         if 1 <= i and i <= 14:
             cache = 2
+        if i == 7:
+            cache = 0
         if totalcache >= 2:
             cache = 2
         for retry in range(3):
@@ -3401,7 +3625,21 @@ if __name__ == '__main__':
         if len(st) > 0:
             searchAll12306(train_map, base_date, date, ["S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"], station, cache=3)
         if cache < 2:
-            print(date, st)
+            print('# search %s %s' %(date, ','.join(st)))
+    # wifi_station
+    tmpsize = add_wifi_station(train_map, base_date, date, max_date_diff, size, station, totalcache)
+    if tmpsize > size:
+            size = tmpsize
+    for i in range(-datediff(now, base_date), max_date_diff+1): # , max_date_diff+1
+        date = date_add(now, i)
+        cache = 0
+        if i < 0:
+            cache = 2
+        if totalcache >= 2:
+            cache = 2
+        tmpsize = getqueryTrainAll(train_map, base_date, date, station, totalcache)
+        if tmpsize > size:
+                size = tmpsize
     #stat
     print('base_date %s size %d' % (base_date, size))
     stat, train_num = hash_no_stat_block(train_map, 100, maxlen)
@@ -3411,11 +3649,7 @@ if __name__ == '__main__':
     print(num)
     train_arr = mapToArr(train_map)
     #
-    # ret = checkSchdatebintocsvmin(train_arr, base_date, size, station)
-    # num = writemincsv('js/time%s.min.csv'%(base_yymmdd()), ret)
-    # print(num)
-    #
-    ret = checkSchdatebintocsv(train_arr, base_date, size, station)
+    ret = checkSchdatebintocsv(train_arr, base_date, size, station, cache=2)
     num = writecsv('js/time%s.csv'%(base_yymmdd()), ret)
     print(num)
     #
