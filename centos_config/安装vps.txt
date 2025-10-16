@@ -5,18 +5,18 @@ wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_l
 7za a -t7z -r js.7z js/ -xr\!*.gz
 7za a -t7z -r sch.7z sch/
 
-7za a -t7z -r equip2504.7z equip2504/
-7za a -t7z -r emu_ccrgt2504.7z ccrgt2504/
-7za a -t7z -r carcode2504.7z carcode2504/
-7za a -t7z -r trainset2504.7z trainset2504/
-7za a -t7z -r bureau2504.7z bureau2504/
-7za a -t7z -r emu221225.7z emu/
+7za a -t7z -r equip2509.7z equip2509/
+7za a -t7z -r emu_ccrgt2509.7z ccrgt2509/
+7za a -t7z -r carcode2509.7z carcode2509/
+7za a -t7z -r trainset2509.7z trainset2509/
+7za a -t7z -r bureau2509.7z bureau2509/
+7za a -t7z -r emu250826.7z emu/
 
-7za a -t7z -r sch250105.7z sch250105/
-7za a -t7z -r search250105.7z search250105/
-7za a -t7z -r ticket250105.7z ticket250105/
-7za a -t7z -r station250105.7z station250105/
-7za a -t7z -r train250410.7z train250410/
+7za a -t7z -r sch250701.7z sch250701/
+7za a -t7z -r train250701.7z train250701/
+7za a -t7z -r search250701.7z search250701/
+7za a -t7z -r ticket250701.7z ticket250701/
+7za a -t7z -r station250701.7z station250701/
 
 7za a -t7z -r js.7z js/ -xr\!*.gz
 

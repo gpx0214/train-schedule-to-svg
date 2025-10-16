@@ -12,6 +12,7 @@ import sys
 import platform
 import re
 import json
+import gzip
 import time
 import datetime
 import base64
@@ -100,6 +101,60 @@ def writebytebom(f1, b):
     except:
         fn = f1
     with open(fn, 'wb') as f: # use wb on win, or get more \r \r\n
+        if f.tell() == 0:
+            f.write(b'\xef\xbb\xbf')
+        f.write(b)
+
+
+def readcsvgz(fn):
+    if not os.path.exists(fn):
+        print('%s not exist' % (fn))
+        return []
+    with gzip.open(fn+'.gz', 'rb') as f:  # py2 py3
+        if f.read(3) != b'\xef\xbb\xbf':
+            f.seek(0, 0)
+        data = f.read().decode('utf-8')
+    c = data.split('\n')
+    for i in range(len(c)):
+        c[i] = c[i].replace('\r', '').split(',')
+    return c
+
+
+def readgz(fn):
+    '''
+    read bytes skip UTF-8 BOM
+    '''
+    # f = open(fn, 'r',encoding = 'utf8'); #py3
+    # f = open(fn, 'r'); #py2
+    data = ''
+    with gzip.open(fn+'.gz', 'rb') as f: # py2 py3
+        if f.read(3) != b'\xef\xbb\xbf':
+            f.seek(0, 0)
+        data = f.read()
+    return data
+
+
+def writegz(f1, b):
+    '''
+    write bytes without UTF-8 BOM
+    '''
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
+    except:
+        fn = f1
+    with gzip.open(fn+'.gz', 'wb') as f: # use wb on win, or get more \r \r\n
+        f.write(b)
+
+
+def writegzbom(f1, b):
+    '''
+    write bytes with UTF-8 BOM
+    '''
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
+    except:
+        fn = f1
+    with gzip.open(fn+'.gz', 'wb') as f: # use wb on win, or get more \r \r\n
         if f.tell() == 0:
             f.write(b'\xef\xbb\xbf')
         f.write(b)
@@ -278,7 +333,7 @@ def basedate(now):
 '20220110', '20220408', '20220620', '20221011',
 '20221226', '20230401', '20230701', '20231011',
 '20240110', '20240410', '20240615', '20241011',
-'20250105', '20250410',
+'20250105', '20250410', '20250701', '20251011',
 ][::-1]
     if not now:
         now = nowdate()
@@ -1129,7 +1184,7 @@ def getqueryTrain(kw, date, cache=1):
 
 
 def getqueryTrainAll(train_map, base_date, date, station=None, cache=1):
-    st = ["Z", "P", "T", "K", "Y", "G", "D", "C", "S", "9", "8", "7", "6", "5", "4", "3", "2", "1"]
+    st = ["Z", "P", "T", "K", "Y", "L", "G", "D", "C", "S", "9", "8", "7", "6", "5", "4", "3", "2", "1"]
     size = 0
     for kw in st:
         res = []
@@ -1172,6 +1227,28 @@ def atos(a):
     s['from_station'] = match[1]
     s['to_station'] = match[2]
     s['train_no'] = a['train_no']
+    s['total_num'] = 0
+    s['date'] = 0
+    return s
+
+
+def w2tos(w):
+    '''
+    transform object w in wifi_station to object s in search_v1
+
+    s['station_train_code'] = u'Z97'
+    s['from_station'] = u'BXP'
+    s['to_station'] = u'GZQ'
+    s['train_no'] = u'2400000Z9701'
+    s['total_num'] = 0
+    s['date'] = 0
+    '''
+    #
+    s = {}
+    s['station_train_code'] = w['station_train_code']
+    s['from_station'] = w['start_station_telecode']
+    s['to_station'] = w['end_station_telecode']
+    s['train_no'] = w['train_no']
     s['total_num'] = 0
     s['date'] = 0
     return s
@@ -2084,6 +2161,51 @@ def add_wifi_station(train_map, base_date, now, max_date_diff, size, station, to
                 add_map(train_map, s)
     return size
 
+def add_wifi2_station(train_map, base_date, now, max_date_diff, size, station, totalcache=1):
+    #20250201 20250701
+    citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
+    freq = re.split(r'[\s\n,*]+',
+                        u'''北京 上海 广州 天津 沈阳 长春 哈尔滨 济南 徐州 南京 杭州 石家庄 郑州 武昌 长沙 株洲 贵阳 西安 兰州 成都 重庆
+            深圳 南昌 福州 厦门 昆明 呼和浩特 西宁 乌鲁木齐 大连 青岛''')
+    dates = []
+    for i in range(-datediff(now, base_date), 1): # TODO base_date...max_date_diff+2+1
+        date = date_add(now, i)
+        dates.append(date)
+    #
+    for name in citys:
+        t1 = telecode(name, station)
+        if len(t1) == 0:
+            continue
+        for date in dates:
+            cache = 1
+            if totalcache >= 2:
+                cache = 2
+            diff = datediff(date_ymd(date),now)
+            # if datediff(date_ymd(date),'2024-09-15') < 0:
+            #     cache = 2
+            if diff < 0:
+                cache = 2
+            if diff == 0:
+                cache = 0
+            if name in freq:
+                if datediff(date_ymd(date),now) == 3:
+                    cache = 0
+            data, ret = getquerystation(t1, date, cache)
+            for w in data:
+                s = w2tos(w)
+                diff = datediff(
+                    date_ymd(date), # TODO 超过1天车次
+                    base_date
+                )
+                if diff < 0:
+                    continue
+                if diff >= size:
+                    size = diff + 1
+                s['date'] = 1 << diff
+                s['src'] = 8 # TODO 
+                add_map(train_map, s)
+    return size
+
 def findschstation(sch, station_name):  # TODO
     for i in range(len(sch)):
         if sch[i]['station_name'] == station_name:
@@ -2208,10 +2330,56 @@ for date in ['2018-11-20','2018-11-21','2018-11-22','2018-11-23','2018-11-24','2
 
 
 # wifi.12306.cn
-def getstation(tele, date, cache=1):
+def getquerystation(tele, date, cache=1):
     date = date_yyyymmdd(date)
     #name = 'station/station_%s_%s.json' % (tele, date)
     name = 'station%s/station_%s_%s.json' % (base_yymmdd(date), tele, date)
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+    except:
+        fn = name
+    if cache > 0 and os.path.exists(fn+'.gz'):
+        try:
+            j = json.loads(readgz(fn))
+            # print('read query_station %s %s %d' % (tele, date, len(j['data'])))
+            return j['data'], 0
+        except:
+            print('read query_station %s %s error' % (tele, date))
+    if cache >= 2:
+        return [], 0
+    url = "https://mobile.12306.cn/wxxcx/wechat/bigScreen/queryTrainByStation"
+    postdata = "train_station_code=%s&train_start_date=%s" % (
+        tele, date
+    )
+    header = {
+        # "User-Agent": "MicroMessenger",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+    try:
+        resp = requests.post(url, data=postdata, headers=header, timeout=30)
+    except:
+        print('Net Error %s %s' % (tele, date))
+        return [], -1
+    body = resp.content.decode('utf-8')  # bytes -> str (ucs2)
+    #print(body)
+    try:
+        j = json.loads(body)
+    except:
+        print('ValueError %s %s' % (tele, date))
+        return [], -1
+    if 'data' in j:
+        print('query_station %s %s %d' % (tele, date, len(j['data'])))
+        if len(j['data']) == 0:
+            return [], 0
+        writegz(name, resp.content)
+        return j['data'], 0
+    return [], 0
+
+
+def getstation(tele, date, cache=1):
+    date = date_yyyymmdd(date)
+    #name = 'station/station_%s_%s.json' % (tele, date)
+    name = 'wifi_station%s/station_%s_%s.json' % (base_yymmdd(date), tele, date)
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -2615,7 +2783,8 @@ def getpreseq(code, date):
 
 def getbureau(train_no, date, cache=1):
     yyyymmdd = date.replace("-", "")
-    name = 'bureau%s/bureau_%s_%s.json' % (yyyymmdd[2:-2], yyyymmdd, re.sub(r'/', "_", train_no))
+    #name = 'bureau%s/bureau_%s_%s.json' % (yyyymmdd[2:-2], yyyymmdd, re.sub(r'/', "_", train_no))
+    name = 'bureau%s/bureau_%s.json' % (base_yymmdd(date), re.sub(r'/', "_", train_no))
     try:
         fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
     except:
@@ -3541,6 +3710,38 @@ if __name__ == '__main__':
                     print(','.join(row))
         exit()
 
+    if len(sys.argv) > 2 and sys.argv[1] == 'wifi2':
+        citys = re.split(r'[\r\n,*]+', sys.argv[2].decode('utf-8'))
+        if len(sys.argv) == 2 or sys.argv[2] == 'all':
+            citys = re.split(r'[\r\n,*]+', readbyte('citys.txt').decode('utf-8'))
+        print('query2 ', '|'.join(citys))
+        now = nowdate()
+        base_date = basedate('')
+        dates = [nowdate()]
+        if len(sys.argv) >3:
+            dates = []
+            dstr = sys.argv[3]
+            for i in range(-datediff(now, base_date), 14+3): # TODO max_date_diff+3
+                date = date_add(now, i)
+                if is_a_day(dstr, date):
+                    dates.append(date)
+        print('\n'.join(dates))
+        #
+        for name in citys:
+            t1 = telecode(name, station)
+            if len(t1) == 0:
+                continue
+            for date in dates:
+                data, ret = getquerystation(t1, date, cache=0)
+                for w in data:
+                    s = w2tos(w)
+                    code = re.sub(r'^0+', "", s['train_no'][2:10])
+                    code = code.split('/')[0]
+                    #sch = processS(s, date, station)
+                    #row, status = gettraininfo(date, s['station_train_code'], cache = 1)
+                    #print(','.join(row))
+        exit()
+
     if len(sys.argv) > 1 and sys.argv[1] == 'touch':
         if len(sys.argv) >2:
             date = sys.argv[2]
@@ -3594,7 +3795,7 @@ if __name__ == '__main__':
     #search
     #for i in range(max_date_diff+2, -1, -1):
     for i in range(-datediff(now, base_date), max_date_diff+1): # , max_date_diff+1
-        st = ["S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
+        st = ["S", "C", "D", "G", "L", "", "K", "Y", "P", "T", "Z"]
         #st = ["90", "50", "10", "S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"]
         #st = ["D9", "G9", "3", "T", "Z", "Y", "K5", "K4", "D4", "G4"]
         date = date_add(now, i)
@@ -3623,11 +3824,12 @@ if __name__ == '__main__':
             if cache < 2:
                 time.sleep(310) # 2 << retry
         if len(st) > 0:
-            searchAll12306(train_map, base_date, date, ["S", "C", "D", "G", "", "K", "Y", "P", "T", "Z"], station, cache=3)
+            searchAll12306(train_map, base_date, date, ["S", "C", "D", "G", "L", "", "K", "Y", "P", "T", "Z"], station, cache=3)
         if cache < 2:
             print('# search %s %s' %(date, ','.join(st)))
     # wifi_station
-    tmpsize = add_wifi_station(train_map, base_date, date, max_date_diff, size, station, totalcache)
+    # tmpsize = add_wifi_station(train_map, base_date, now, max_date_diff, size, station, totalcache)
+    tmpsize = add_wifi2_station(train_map, base_date, now, max_date_diff, size, station, totalcache)
     if tmpsize > size:
             size = tmpsize
     for i in range(-datediff(now, base_date), max_date_diff+1): # , max_date_diff+1

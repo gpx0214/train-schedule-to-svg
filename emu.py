@@ -125,6 +125,7 @@ for key in range(0,maxlen):
     row.append(e[5])
     row.append(c[5])
     row.append(c[6] if c[6] else a[2])
+    row.append(t[5])
     #row.extend([e[i] for i in [6,7,8]])
     ret.append(row)
 
