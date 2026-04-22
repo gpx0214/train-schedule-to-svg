@@ -11,11 +11,7 @@ except:
     date = nowdate()
 
 
-yyyymmdd = re.sub(
-    r'(\d\d)(\d\d)-(\d+)-(\d+)',
-    r"\1\2\3\4",
-    date
-)
+yyyymmdd = date_yyyymmdd(date)
 
 ccrgt = readcsv('emu/ccrgt%s.csv'%(yyyymmdd))
 equip = readcsv('emu/equip%s.csv'%(yyyymmdd))
@@ -34,10 +30,7 @@ for row in ccrgt:
     if not len(row[0]):
         continue
     #if row[2] != row[3]:
-        #if platform.system() == "Windows":
-            #print(','.join(row).encode('gbk'))
-        #else:
-            #print(','.join(row).encode('utf-8'))
+        print(','.join(row))
     ccrgtmap[hash_no(row[0])] = row
 
 for row in equip:
@@ -90,6 +83,26 @@ bureaustr = u'''哈尔滨,哈
 西安,西'''
 bureau_map = dict([x.split(',') for x in bureaustr.split('\n')])
 
+
+emuseat = readcsv('emutype2.csv')
+emuseat_map = {}
+for row in emuseat:
+    if len(row) <= 2:
+        continue
+    if len(row[1]):
+        emuseat_map[row[1]] = row[2]
+        emuseat_map[row[1]+'+'+row[1]] = row[2]+'+'+row[2]
+        emuseat_map[row[1]+'_'+row[1]] = row[2]+'_'+row[2]
+
+emuseatx_map = {}
+
+
+def emuseat_key(k):
+    if k in emuseat_map:
+        return emuseat_map[k]
+    return k
+
+
 ret = []
 for key in range(0,maxlen):
     c = ccrgtmap[key] #221226 插入下标2 车号
@@ -124,16 +137,22 @@ for key in range(0,maxlen):
     row.append(e[4])
     row.append(e[5])
     row.append(c[5])
-    row.append(c[6] if c[6] else a[2])
+    row.append(emuseat_key(c[6] if c[6] else a[2]))
     row.append(t[5])
     #row.extend([e[i] for i in [6,7,8]])
     ret.append(row)
+    if (c[6] if c[6] else a[2]) not in emuseat_map:
+        emuseatx_map[row[6]] = row[2]
 
-writemincsv(
+writemincsvgz(
     'emu/emu%s.csv'%(yyyymmdd),
-    [[x.encode('utf-8') for x in row] for row in ret]
+    ret, #[[x.encode('utf-8') for x in row] for row in ret]
 )
 
+writemincsv(
+    'emu/emuseatx.csv',
+    [[k, emuseatx_map[k]] for k in emuseatx_map]
+)
 
 '''
 for row in ret:

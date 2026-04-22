@@ -91,5 +91,5 @@ for key in range(40000, 80000):  # range(len(train_map))
 
 writecsv(
     'emu/equip%s.csv' % (yyyymmdd),
-    [[x.encode('utf-8') for x in row] for row in rows]
+    rows, #[[x.encode('utf-8') for x in row] for row in rows]
 )

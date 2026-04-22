@@ -20,12 +20,7 @@ except:
     cache=1
 
 
-yyyymmdd = re.sub(
-    r'(\d\d)(\d\d)-(\d+)-(\d+)',
-    r"\1\2\3\4",
-    date
-)
-
+yyyymmdd = date_yyyymmdd(date)
 path = 'ccrgt%s' % (yyyymmdd[2:-2])
 touchdir(path)
 

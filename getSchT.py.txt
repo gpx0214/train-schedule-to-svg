@@ -25,43 +25,43 @@ def getSchT(train_code, date):
         buffer= '';
         time_list = [];
         for i in range(0, len(s)):
-                print(s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8') + ',' + s[i]['ATIME'].encode('utf-8') + ',' + s[i]['STIME'].encode('utf-8'))
-                buffer += (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8') + ',' + s[i]['ATIME'].encode('utf-8') + ',' + s[i]['STIME'].encode('utf-8'))
+                print(s[i]['STNO'] + ',' + s[i]['SNAME'] + ',' + s[i]['ATIME'] + ',' + s[i]['STIME'])
+                buffer += (s[i]['STNO'] + ',' + s[i]['SNAME'] + ',' + s[i]['ATIME'] + ',' + s[i]['STIME'])
                 '''
-                #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8'));
-                if getmin(s[i]['arrive_time'].encode('utf-8')) > -1 and i > 0:
-                    min = getmin(s[i]['arrive_time'].encode('utf-8'));
-                    tele = telecode(s[i]['station_name'].encode('utf-8'));
+                #print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['start_time'] + ',' + s[i]['arrive_time']);
+                if getmin(s[i]['arrive_time']) > -1 and i > 0:
+                    min = getmin(s[i]['arrive_time']);
+                    tele = telecode(s[i]['station_name']);
                     if min < last:
                         day += 1;
                     last = min;
-                    #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
+                    #print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['arrive_time'] + ',' + '0');
                     if True:
-                        #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
-                        buffer+= (s[0]['station_train_code'].encode('utf-8') + ',' \
-                        + s[i]['station_name'].encode('utf-8') + ',' \
-                        + s[i]['station_no'].encode('utf-8') + ',' \
+                        #print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['station_no'] + ',' + str(day) + ',' + s[i]['arrive_time'] + ',' + '0');
+                        buffer+= (s[0]['station_train_code'] + ',' \
+                        + s[i]['station_name'] + ',' \
+                        + s[i]['station_no'] + ',' \
                         + str(day) + ',' \
-                        + s[i]['arrive_time'].encode('utf-8') + ',' \
+                        + s[i]['arrive_time'] + ',' \
                         + '0'+'\n');
                         time_list.append([\
-                        s[0]['station_train_code'].encode('utf-8'), \
-                        s[i]['station_name'].encode('utf-8'), \
-                        s[i]['station_no'].encode('utf-8'), \
+                        s[0]['station_train_code'], \
+                        s[i]['station_name'], \
+                        s[i]['station_no'], \
                         str(day), \
-                        s[i]['arrive_time'].encode('utf-8'), \
+                        s[i]['arrive_time'], \
                         '0']);
-                if getmin(s[i]['start_time'].encode('utf-8')) > -1 and i < len(s)-1:
-                    min = getmin(s[i]['start_time'].encode('utf-8'));
-                    tele = telecode(s[i]['station_name'].encode('utf-8'));
+                if getmin(s[i]['start_time']) > -1 and i < len(s)-1:
+                    min = getmin(s[i]['start_time']);
+                    tele = telecode(s[i]['station_name']);
                     if min < last:
                         day += 1;
                     last = min;
-                    #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
+                    #print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['start_time'] + ',' + '1');
                     if True:
-                        #print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
-                        buffer+= (s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1'+'\n');
-                        time_list.append([s[0]['station_train_code'].encode('utf-8'), s[i]['station_name'].encode('utf-8'), s[i]['station_no'].encode('utf-8'), str(day), s[i]['start_time'].encode('utf-8'), '1']);
+                        #print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['station_no'] + ',' + str(day) + ',' + s[i]['start_time'] + ',' + '1');
+                        buffer+= (s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['station_no'] + ',' + str(day) + ',' + s[i]['start_time'] + ',' + '1'+'\n');
+                        time_list.append([s[0]['station_train_code'], s[i]['station_name'], s[i]['station_no'], str(day), s[i]['start_time'], '1']);
         return buffer;
                 '''
     else:
