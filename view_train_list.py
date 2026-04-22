@@ -6,6 +6,7 @@
 # tested in python 2.7.5 on centos7 x64
 
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import sys
@@ -47,11 +48,41 @@ def writecsv(f1, ret):
         if f.tell() == 0:
             f.write(b'\xef\xbb\xbf')
         for i in range(len(ret)):
-            f.write(b','.join(ret[i]) + b'\n')
+            f.write((u','.join(ret[i]) + u'\n').encode('utf-8'))
     return len(ret)
 
 
 def writemincsv(f1, ret):
+    if len(ret) == 0:
+        return 0
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
+    except:
+        fn = f1
+    with open(fn, "wb") as f: # use wb on win, or get more \r \r\n
+        if f.tell() == 0:
+            f.write(b'\xef\xbb\xbf')
+        for i in range(len(ret)):
+            f.write((u','.join(ret[i]).rstrip(',') + u'\n').encode('utf-8'))
+    return len(ret)
+
+
+def writecsvb(f1, ret):
+    if len(ret) == 0:
+        return 0
+    try:
+        fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f1)
+    except:
+        fn = f1
+    with open(fn, "wb") as f: # use wb on win, or get more \r \r\n
+        if f.tell() == 0:
+            f.write(b'\xef\xbb\xbf')
+        for i in range(len(ret)):
+            f.write(b','.join(ret[i]) + b'\n')
+    return len(ret)
+
+
+def writemincsvb(f1, ret):
     if len(ret) == 0:
         return 0
     try:
@@ -334,6 +365,7 @@ def basedate(now):
 '20221226', '20230401', '20230701', '20231011',
 '20240110', '20240410', '20240615', '20241011',
 '20250105', '20250410', '20250701', '20251011',
+'20260126', '20260415',
 ][::-1]
     if not now:
         now = nowdate()
@@ -551,10 +583,10 @@ def seat(s):
         '特等/二等': 'ZET',
         '二等/特等': 'ZET',
     }
-    if s.encode('utf-8') in seat_map: # py2
-        return seat_map[s.encode('utf-8')]
     if s in seat_map:                 # py3
         return seat_map[s]
+    if s.encode('utf-8') in seat_map: # py2
+        return seat_map[s.encode('utf-8')]
     return s
 
 
@@ -761,6 +793,8 @@ def telecode(s, station):
         if s == station[i][1]:
             return station[i][2]
     # print(s)
+    if len(s) == 3 and ord(s[2]) <= 0x7f:
+        return s
     return u''
 
 
@@ -900,21 +934,21 @@ def trainlistCsv(train_arr, base_date, size, station=None):
         t1 = ''
         t2 = ''
         if station != None:
-            t1 = telecode(train['from_station'], station).encode('utf-8')
-            t2 = telecode(train['to_station'], station).encode('utf-8')
+            t1 = telecode(train['from_station'], station)
+            t2 = telecode(train['to_station'], station)
         if not t1:
-            t1 = train['from_station'].encode('utf-8')
+            t1 = train['from_station']
         if not t2:
-            t2 = train['to_station'].encode('utf-8')
+            t2 = train['to_station']
         #
         val, status = compress_bin_vector(train['date'], base_date, size)
         stat[status] += 1
         #
         ret.append([
-            train['train_no'].encode('utf-8'),
+            train['train_no'],
             t1,
             t2,
-            train['station_train_code'].encode('utf-8'),
+            train['station_train_code'],
             str(train['total_num'] if 'total_num' in train else 0),
             '0' if 'service_type' in train and train['service_type'] == '0' else '',
             val,
@@ -962,10 +996,10 @@ def add_train_list(train_map, fn0='js/train_list.js', base_date=None):
             continue
         cnt = 0
         ss = ''
-        ss += (date.encode('utf-8'))
+        ss += (date)
         for train_class in d:
             ss += '\t%s %d' % (
-                train_class.encode('utf-8'),
+                train_class,
                 len(d[train_class])
             )
             for idx in range(0, len(d[train_class])):
@@ -1085,7 +1119,7 @@ def searchAll12306(train_map, base_date, date, st, station=None, cache=1):
         #     time.sleep(60)
         if cache < 2 and cnt % 50 == 0: # TODO
             if sch_elapsed < 240:
-                time.sleep(240-sch_elapsed) #60
+                time.sleep(300-sch_elapsed) #240 #60
         if ret == -1:
             dead.append(kw)
             continue
@@ -1103,7 +1137,7 @@ def searchAll12306(train_map, base_date, date, st, station=None, cache=1):
             res[i]['src'] = 2
             add_map(train_map, res[i])
             if station and cache < 2:
-                processS(res[i], date, station)
+                processS(res[i], date, station, cache if cache >=1 else 1)
             if res[i]['station_train_code'].startswith(kw):
                 max_index = i
         t1 = int(time.time())
@@ -1200,6 +1234,7 @@ def getqueryTrainAll(train_map, base_date, date, station=None, cache=1):
             s['date'] = 1 << diff
             s['src'] = 2
             add_map(train_map, s)
+            processS(s, date, station, cache if cache >=1 else 1)
     return size
 
 def atos(a):
@@ -1324,33 +1359,23 @@ def processS(a, date, station, cache=1):
     if cache >= 3:
         return sch
     #
-    t1 = telecode(a['from_station'], station).encode('utf-8')
-    t2 = telecode(a['to_station'], station).encode('utf-8')
+    t1 = telecode(a['from_station'], station)
+    t2 = telecode(a['to_station'], station)
     if not t1:
-        if platform.system() == "Windows":
-            print('%s telecode not found! %s ' % (
-                a['from_station'].encode('gbk'), 
-                a['station_train_code'].encode('gbk')
-            ))
-        else:
-            pass
-            # print('%s telecode not found! %s ' % (
-            #     a['from_station'].encode('utf-8'), 
-            #     a['station_train_code'].encode('utf-8')
-            # ))
+        if a['from_station'] != "":
+            if platform.system() == "Windows":
+                print('%s telecode not found! %s' % (
+                    a['from_station'], 
+                    a['station_train_code']
+                ))
         t1 = "AAA"
     if not t2:
-        if platform.system() == "Windows":
-            print('%s telecode not found! %s ' % (
-                a['to_station'].encode('gbk'), 
-                a['station_train_code'].encode('gbk')
-            ))
-        else:
-            pass
-            # print('%s telecode not found! %s ' % (
-            #     a['to_station'].encode('utf-8'), 
-            #     a['station_train_code'].encode('utf-8')
-            # ))
+        if a['to_station'] != "":
+            if platform.system() == "Windows":
+                print('%s telecode not found! %s' % (
+                    a['to_station'], 
+                    a['station_train_code']
+                ))
         t2 = "AAA"
     return getSch12306Online(t1, t2, a['train_no'], date)
 
@@ -1389,9 +1414,7 @@ def getSch12306Local(train_no, date=''):
 
 
 def getSch12306Online(t1, t2, train_no, date):
-    url = "https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=" + train_no + \
-        "&from_station_telecode=" + t1 + "&to_station_telecode=" + t2 + \
-        "&depart_date=" + date
+    url = u'https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=%s&from_station_telecode=%s&to_station_telecode=%s&depart_date=%s'%(train_no, t1, t2, date)
     header = {
         "User-Agent": "Netscape 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"}
     try:
@@ -1421,30 +1444,30 @@ def schToCsv(s):
     day = 0
     last = 0
     for i in range(0, len(s)):
-        # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8')); # 打印时刻
+        # print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['start_time'] + ',' + s[i]['arrive_time']); # 打印时刻
         if getmin(s[i]['arrive_time']) > -1 and i > 0:
             minute = getmin(s[i]['arrive_time'])
             if minute < last:
                 day += 1
             last = minute
             # TODO
-            # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
-            # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['arrive_time'].encode('utf-8') + ',' + '0');
+            # print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['arrive_time'] + ',' + '0');
+            # print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['station_no'] + ',' + str(day) + ',' + s[i]['arrive_time'] + ',' + '0');
             '''buf += (
-                s[0]['station_train_code'].encode('utf-8')
-                + ',' + s[i]['station_name'].encode('utf-8')
-                + ',' + s[i]['station_no'].encode('utf-8')
+                s[0]['station_train_code']
+                + ',' + s[i]['station_name']
+                + ',' + s[i]['station_no']
                 + ',' + str(day)
-                + ',' + s[i]['arrive_time'].encode('utf-8')
+                + ',' + s[i]['arrive_time']
                 + ',' + '1'+'\n'
             )'''
             ret.append([
-                s[0]['station_train_code'].encode('utf-8'),
+                s[0]['station_train_code'],
                 s[i]['station_name'].replace(u'\ue244', u'\u78cf').replace(
-                    u'\ue24d', u'\u6911').encode('utf-8'),
-                s[i]['station_no'].encode('utf-8'),
+                    u'\ue24d', u'\u6911'),
+                s[i]['station_no'],
                 str(day),
-                s[i]['arrive_time'].encode('utf-8'),
+                s[i]['arrive_time'],
                 '0'
             ])
         #
@@ -1453,23 +1476,23 @@ def schToCsv(s):
             if minute < last:
                 day += 1
             last = minute
-            # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
-            # print(s[0]['station_train_code'].encode('utf-8') + ',' + s[i]['station_name'].encode('utf-8') + ',' + s[i]['station_no'].encode('utf-8') + ',' + str(day) + ',' + s[i]['start_time'].encode('utf-8') + ',' + '1');
+            # print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['start_time'] + ',' + '1');
+            # print(s[0]['station_train_code'] + ',' + s[i]['station_name'] + ',' + s[i]['station_no'] + ',' + str(day) + ',' + s[i]['start_time'] + ',' + '1');
             '''buf += (
-                s[0]['station_train_code'].encode('utf-8')
-                + ',' + s[i]['station_name'].encode('utf-8')
-                + ',' + s[i]['station_no'].encode('utf-8')
+                s[0]['station_train_code']
+                + ',' + s[i]['station_name']
+                + ',' + s[i]['station_no']
                 + ',' + str(day)
-                + ',' + s[i]['start_time'].encode('utf-8')
+                + ',' + s[i]['start_time']
                 + ',' + '1'+'\n'
             )'''
             ret.append([
-                s[0]['station_train_code'].encode('utf-8'),
+                s[0]['station_train_code'],
                 s[i]['station_name'].replace(u'\ue244', u'\u78cf').replace(
-                    u'\ue24d', u'\u6911').encode('utf-8'),
-                s[i]['station_no'].encode('utf-8'),
+                    u'\ue24d', u'\u6911'),
+                s[i]['station_no'],
                 str(day),
-                s[i]['start_time'].encode('utf-8'),
+                s[i]['start_time'],
                 '1'
             ])
     # return buf
@@ -1520,9 +1543,9 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
     for i in range(0, len(s)):
         t1 = ''
         if station != None:
-            t1 = telecode(s[i]['station_name'], station).encode('utf-8')
+            t1 = telecode(s[i]['station_name'], station)
         if not t1:
-            t1 = s[i]['station_name'].replace(u'\ue244', u'\u78cf').replace(u'\ue24d', u'\u6911').encode('utf-8')
+            t1 = s[i]['station_name'].replace(u'\ue244', u'\u78cf').replace(u'\ue24d', u'\u6911')
         #
         if getmin(s[i]['arrive_time']) > -1 and i > 0:
             minute = getmin(s[i]['arrive_time'])
@@ -1535,11 +1558,11 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
                 )
             last = minute
             ret.append([
-                s[0]['station_train_code'].encode('utf-8'),
+                s[0]['station_train_code'],
                 t1,
-                s[i]['station_no'].encode('utf-8'),
+                s[i]['station_no'],
                 str(day),
-                s[i]['arrive_time'].encode('utf-8'),
+                s[i]['arrive_time'],
                 '0',
                 val
                 # str(src),
@@ -1556,11 +1579,11 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
                 )
             last = minute
             ret.append([
-                s[0]['station_train_code'].encode('utf-8'),
+                s[0]['station_train_code'],
                 t1,
-                s[i]['station_no'].encode('utf-8'),
+                s[i]['station_no'],
                 str(day),
-                s[i]['start_time'].encode('utf-8'),
+                s[i]['start_time'],
                 '1',
                 val
                 # str(src),
@@ -1569,7 +1592,7 @@ def schDateToCsv(s, src, date_bin, base_date, size, station=None):
     return ret
 
 
-def checktimecsvmin(train_map, base_date, size, station=None):
+def checktimecsvmin(train_map, base_date, size, station=None, cache=1):
     '''
     change train_map[key][i]['service_type'] ['total_num']
     compress same station and time
@@ -1585,7 +1608,7 @@ def checktimecsvmin(train_map, base_date, size, station=None):
                     date = date_add(base_date, diff)
                 # if train['date'] & (1 << datediff(nowdate(), base_date)):
                 #     date = nowdate()
-                sch = processS(train, date, station)
+                sch = processS(train, date, station, cache)
                 if len(sch):
                     break
                 time.sleep(1 << retry)
@@ -1603,8 +1626,8 @@ def checktimecsvmin(train_map, base_date, size, station=None):
                 size
             )
             table.append([
-            train['train_no'].encode('utf-8'),
-                train['station_train_code'].encode('utf-8'),
+                train['train_no'],
+                train['station_train_code'],
                 # str(train['total_num'] if 'total_num' in train else 0),
                 val,
                 '0' if 'service_type' in train and train['service_type'] == '0' else '',
@@ -1646,9 +1669,9 @@ def schToMinCsv(s, station=None):
     for i in range(0, len(s)):
         t1 = ''
         if station != None:
-            t1 = telecode(s[i]['station_name'], station).encode('utf-8')
+            t1 = telecode(s[i]['station_name'], station)
         if not t1:
-            t1 = s[i]['station_name'].replace(u'\ue244', u'\u78cf').replace(u'\ue24d', u'\u6911').encode('utf-8')
+            t1 = s[i]['station_name'].replace(u'\ue244', u'\u78cf').replace(u'\ue24d', u'\u6911')
         #
         cross_day = 0
         stop_cross_day = 0
@@ -1676,10 +1699,10 @@ def schToMinCsv(s, station=None):
                 run_time += 1440
         ret.append([
             t1,
-            #s[i]['station_no'].encode('utf-8'),
+            #s[i]['station_no'],
             str(run_time) if i > 0 else '',
-            str(stop_time) if stop_time > 0 else s[i]['start_time'].encode('utf-8') if i < len(s)-1 else '',
-            # s[0]['station_train_code'].encode('utf-8') if i == 0 else '',
+            str(stop_time) if stop_time > 0 else s[i]['start_time'] if i < len(s)-1 else '',
+            # s[0]['station_train_code'] if i == 0 else '',
             # str(day) if cross_day else '',
             # val if cross_day or i == 0 else ''
             # str(src),
@@ -1747,9 +1770,9 @@ def schToPolyline(s, m):
     day = 0
     lastx = 0
     lasty = 0
-    polyline_class = polylineClass(s[0]['station_train_code'].encode('utf-8'))
+    polyline_class = polylineClass(s[0]['station_train_code'])
     buf += '<polyline name="%s" class="%s" points="' % (
-        s[0]['station_train_code'].encode('utf-8'),
+        s[0]['station_train_code'],
         polyline_class
     )
     for i in range(0, len(s)):
@@ -1762,7 +1785,7 @@ def schToPolyline(s, m):
                     ((1440+int(x)-int(lastx)))
                 buf += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' % (
                     1440, split_y,
-                    s[0]['station_train_code'].encode('utf-8'), day,
+                    s[0]['station_train_code'], day,
                     polyline_class,
                     0, split_y
                 )
@@ -1778,7 +1801,7 @@ def schToPolyline(s, m):
                     ((1440+int(x)-int(lastx)))
                 buf += '%d,%d "/>\n<polyline name="%s+%d" class="%s" points="%d,%d ' % (
                     1440, split_y,
-                    s[0]['station_train_code'].encode('utf-8'), day,
+                    s[0]['station_train_code'], day,
                     polyline_class,
                     0, split_y,
                 )
@@ -2178,15 +2201,15 @@ def add_wifi2_station(train_map, base_date, now, max_date_diff, size, station, t
             continue
         for date in dates:
             cache = 1
-            if totalcache >= 2:
-                cache = 2
             diff = datediff(date_ymd(date),now)
             # if datediff(date_ymd(date),'2024-09-15') < 0:
             #     cache = 2
-            if diff < 0:
-                cache = 2
             if diff == 0:
                 cache = 0
+            if diff < 0:
+                cache = 2
+            if totalcache >= 2:
+                cache = 2
             if name in freq:
                 if datediff(date_ymd(date),now) == 3:
                     cache = 0
@@ -2219,8 +2242,8 @@ def checkczxx(t1, date, cache=2):
         sch = getSch12306Local(c[i]['train_no'])
         if findschstation(sch, c[i]['station_name']) == 0:
             print('no station %s in %s' % (
-                c[i]['station_name'].encode('utf-8'),
-                c[i]['train_no'].encode('utf-8')
+                c[i]['station_name'],
+                c[i]['train_no']
             ))
             getSch12306Online(
                 c[i]['start_station_telecode'],
@@ -2867,7 +2890,7 @@ def getcdinfo(date, s, cache=2):
             print(s + "- except")
     if cache >= 2:
         print('%s no file' % (s))
-        return [s.encode('utf-8')], -1
+        return [s], -1
     url = 'https://tripapi.ccrgt.com/crgt/trip-server-app/travel/getCDInfo'
     j = {"params": {"date": date, "trainNumber": s}}
     header = {
@@ -2878,7 +2901,7 @@ def getcdinfo(date, s, cache=2):
         resp = requests.post(url, data=json.dumps(j), headers=header, timeout=20)
     except:
         print('net error %s' % (s))
-        return [s.encode('utf-8')], -3
+        return [s], -3
     body = resp.content.decode('utf-8')
     time.sleep(0.1)
     #
@@ -2886,7 +2909,7 @@ def getcdinfo(date, s, cache=2):
         j = json.loads(body)
     except:
         print('json error %s' % (s))
-        return [s.encode('utf-8')], -2
+        return [s], -2
     if 'data' in j and j['data']:
         ret = csvccrgt(s, j)
         # for r in ret:
@@ -2897,27 +2920,27 @@ def getcdinfo(date, s, cache=2):
     # except:
     else:
         print('%s -' % (s))
-        return [s.encode('utf-8')], -1
+        return [s], -1
     return j, 0
 
 
 def csvccrgt(s, j):
     ret = [
-        s.encode('utf-8'),
+        s,
         b'%s(%d)' % (
-            j['data']['trainType'].encode('utf-8'),
+            j['data']['trainType'],
             sum([int(re.sub(r'\D', '', x['peopleNum'])) for x in j['data']['cdInfoList']])
         ),
-        '_'.join(j['data']['czids']).encode('utf-8'),
-        re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']).encode('utf-8'),
-        re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']).encode('utf-8'),
-        re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T', j['data']['trainTeam']).encode('utf-8'),
+        '_'.join(j['data']['czids']),
+        re.sub(u'中国铁路(.*)局动车段', r'\1', j['data']['fixDepart']),
+        re.sub(u'中国铁路(.*)局客运段', r'\1', j['data']['serverDepart']),
+        re.sub(u'(.*)节动力车，(.*)节非动力车', r'\1M\2T', j['data']['trainTeam']),
         seatcapsccrgt(
             [(x['seatType1'] if x['seatType1'] else '') +
              (x['seatType2'] if x['seatType2'] else '') +
              (x['dinnerCar'] if x['dinnerCar'] else '') for x in j['data']['cdInfoList']],
             [re.sub(r'\D', '', x['peopleNum']) for x in j['data']['cdInfoList']]
-        ).encode('utf-8'),
+        ),
     ]
     return ret
 
@@ -2957,7 +2980,7 @@ def ccrgtcsv(name, date, cache=1):
                 row, status = getcdinfo(date, code, cache)
                 if status >= -1:
                     break
-            ret.append([x for x in row])
+            ret.append(row)
             #print(','.join(row))
             idx = i + 1
             map[code] = 1
@@ -2976,10 +2999,10 @@ def getcarcode(date, s, cache=2):
         try:
             j = json.loads(readbyte(fn))
             ret = [
-                s.encode('utf-8'),
-                #j['content']['data']['trainStyle'].encode('utf-8'),
-                j['content']['data']['carCode'].encode('utf-8'),
-                '_'.join([seatcarcode(x['pictureName']) for x in j['content']['data']['coachPicList']]).encode('utf-8'),
+                s,
+                #j['content']['data']['trainStyle'],
+                j['content']['data']['carCode'],
+                '_'.join([seatcarcode(x['pictureName']) for x in j['content']['data']['coachPicList']]),
             ]
             return ret, 0
         except:
@@ -2988,7 +3011,7 @@ def getcarcode(date, s, cache=2):
             # print(fn)
     if cache >= 2:
         print('%s no file' % (s))
-        return [s.encode('utf-8')], -1
+        return [s], -1
     url = 'https://mobile.12306.cn/wxxcx/openplatform-inner/miniprogram/wifiapps/appFrontEnd/v2/lounge/open-smooth-common/trainStyleBatch/getCarDetail?carCode=&trainCode=%s&runningDay=%s&reqType=form' % (
         s, yyyymmdd
     )
@@ -3000,7 +3023,7 @@ def getcarcode(date, s, cache=2):
         resp = requests.get(url, headers=header, timeout=20)
     except:
         print('net error %s' % (s))
-        return [s.encode('utf-8')], -3
+        return [s], -3
     body = resp.content.decode('utf-8')
     time.sleep(0.05)
     #
@@ -3008,13 +3031,13 @@ def getcarcode(date, s, cache=2):
         j = json.loads(body)
     except:
         print('json error %s' % (s))
-        return [s.encode('utf-8')], -2
+        return [s], -2
     if 'content' in j and 'data' in j['content']:
         ret = [
-            s.encode('utf-8'),
-            #j['content']['data']['trainStyle'].encode('utf-8'),
-            j['content']['data']['carCode'].encode('utf-8'),
-            '_'.join([seatcarcode(x['pictureName']) for x in j['content']['data']['coachPicList']]).encode('utf-8'),
+            s,
+            #j['content']['data']['trainStyle'],
+            j['content']['data']['carCode'],
+            '_'.join([seatcarcode(x['pictureName']) for x in j['content']['data']['coachPicList']]),
         ]
         # for r in ret:
         # print(type(r))
@@ -3024,7 +3047,7 @@ def getcarcode(date, s, cache=2):
     # except:
     else:
         print('%s -' % (s))
-        return [s.encode('utf-8')], -1
+        return [s], -1
     return j, 0
 
 
@@ -3109,7 +3132,7 @@ def carcodecsv(name, date, totalcache=1):
                         print('%s - %s %s' % (code, timemap[key], nowtime()))
                 if status >= -1:
                     break
-            ret.append([x for x in row])
+            ret.append(row)
             #print(timemap[key] + ' ' + b','.join(row))
             idx = i + 1
             map[code] = 1
@@ -3136,7 +3159,7 @@ def gettraininfo(date, s, cache=2):
             # print(fn)
     if cache >= 2:
         print('%s no file' % (s))
-        return [s.encode('utf-8')], -1
+        return [s], -1
     url = 'https://mobile.12306.cn/wxxcx/wechat/main/travelServiceQrcodeTrainInfo'
     data = "trainCode=" + s + "&startDay=" + yyyymmdd + "&startTime=&endDay=&endTime="
     header = {
@@ -3147,15 +3170,15 @@ def gettraininfo(date, s, cache=2):
         resp = requests.post(url, data=data, headers=header, timeout=10)
     except:
         print('net error %s' % (s))
-        return [s.encode('utf-8')], -3
+        return [s], -3
     body = resp.content.decode('utf-8')
     #
     try:
         j = json.loads(body)
     except:
         print('json error %s' % (s))
-        return [s.encode('utf-8')], -2
-    ret = [s.encode('utf-8')]
+        return [s], -2
+    ret = [s]
     if 'data' in j and 'trainDetail' in j['data'] and 'stopTime' in j['data']['trainDetail'] and \
         len(j['data']['trainDetail']['stopTime']) > 0:
         ret = csvtraininfo(j)
@@ -3163,25 +3186,25 @@ def gettraininfo(date, s, cache=2):
     # except:
     else:
         print('%s -' % (s))
-        return [s.encode('utf-8')], -1
+        return [s], -1
     return ret, 0
 
 
 def csvtraininfo(j):
     ret = [
-        j['data']['trainDetail']['stationTrainCodeAll'].encode('utf-8'),
-        j['data']['trainDetail']['stopTime'][0]['jiaolu_train_style'].encode('utf-8'),
-        j['data']['trainDetail']['stopTime'][0]['jiaolu_dept_train'].encode('utf-8'),
-        j['data']['trainDetail']['stopTime'][0]['jiaolu_corporation_code'].encode('utf-8'),
-        j['data']['trainDetail']['stopTime'][0]['train_flag'].encode('utf-8'),
+        j['data']['trainDetail']['stationTrainCodeAll'],
+        j['data']['trainDetail']['stopTime'][0]['jiaolu_train_style'],
+        j['data']['trainDetail']['stopTime'][0]['jiaolu_dept_train'],
+        j['data']['trainDetail']['stopTime'][0]['jiaolu_corporation_code'],
+        j['data']['trainDetail']['stopTime'][0]['train_flag'],
     ]
     if 'train_style' in j['data']['trainDetail']['stopTime'][0]:
-        ret.append(j['data']['trainDetail']['stopTime'][0]['train_style'].encode('utf-8'))
+        ret.append(j['data']['trainDetail']['stopTime'][0]['train_style'])
     else:
         ret.append('')
     if 'trainsetTypeInfo' in j['data']['trainDetail'] and len(j['data']['trainDetail']['trainsetTypeInfo']) > 0:
-        ret.append(j['data']['trainDetail']['trainsetTypeInfo']['trainsetTypeName'].encode('utf-8'))
-        ret.append(j['data']['trainDetail']['trainsetTypeInfo']['indexKey'].encode('utf-8'))
+        ret.append(j['data']['trainDetail']['trainsetTypeInfo']['trainsetTypeName'])
+        ret.append(j['data']['trainDetail']['trainsetTypeInfo']['indexKey'])
     return ret
 
 
@@ -3214,7 +3237,7 @@ def traininfocsv(name, date, cache=1):
             row = []
             row, status = gettraininfo(date, code, cache)
             # print(','.join(row))
-            ret.append([x for x in row])
+            ret.append(row)
             idx = i + 1
             map[code] = 1
     return ret
@@ -3280,7 +3303,7 @@ def gtzwdjsp():
         match[2],
         match[3]
     )
-    return ret.encode('utf-8')
+    return ret
 
 
 def gtzwd(date, s):
@@ -3640,9 +3663,9 @@ if __name__ == '__main__':
     totalcache = 1
 
     if len(sys.argv) > 1 and sys.argv[1] == 'station':
-        writemincsv("js/station.csv", [[col.encode('utf-8') for col in row] for row in station])
-        #writemincsv("js/station.min.csv", [[row[x].encode('utf-8') for x in [1,2,-2]] for row in station])
-        writemincsv("js/station.min.csv", [[row[x].encode('utf-8') for x in [1,2,8]] for row in station])
+        writemincsv("js/station.csv", station)
+        #writemincsv("js/station.min.csv", [[row[x] for x in [1,2,-2]] for row in station])
+        writemincsv("js/station.min.csv", [[row[x] for x in [1,2,8]] for row in station])
         exit()
 
     if len(sys.argv) > 2 and sys.argv[1] == 'search':
@@ -3839,14 +3862,14 @@ if __name__ == '__main__':
             cache = 2
         if totalcache >= 2:
             cache = 2
-        tmpsize = getqueryTrainAll(train_map, base_date, date, station, totalcache)
+        tmpsize = getqueryTrainAll(train_map, base_date, date, station, cache)
         if tmpsize > size:
                 size = tmpsize
     #stat
     print('base_date %s size %d' % (base_date, size))
     stat, train_num = hash_no_stat_block(train_map, 100, maxlen)
     #
-    ret = checktimecsvmin(train_map, base_date, size, station)
+    ret = checktimecsvmin(train_map, base_date, size, station, totalcache)
     num = writemincsv('js/cr%s.min.csv'%(base_yymmdd()), ret)
     print(num)
     train_arr = mapToArr(train_map)
@@ -3912,31 +3935,31 @@ for line in lines:
 '''
 
 r'''
-fn = "C:\\Users\\Administrator\\ticket1\\2018-09-23_XJA_CBQ.json"
+fn = "2018-09-23_XJA_CBQ.json"
 
 j = json.loads(readbyte(fn))
 
 buf= '';
 for obj in j:
-    # obj['TRNO'].encode('utf-8')
-    # obj['FST'].encode('utf-8')
-    # obj['EST'].encode('utf-8')
-    # getSch12306(obj['FST'].encode('utf-8'), obj['EST'].encode('utf-8'), obj['TRNO'].encode('utf-8'), date)
-    train_code = obj['STCODE'].encode('utf-8')
-    # getSchT(obj['STCODE'].encode('utf-8'), date)
+    # obj['TRNO']
+    # obj['FST']
+    # obj['EST']
+    # getSch12306(obj['FST'], obj['EST'], obj['TRNO'], date)
+    train_code = obj['STCODE']
+    # getSchT(obj['STCODE'], date)
     s = json.loads(readbyte('sch/'+ train_code +'_T.json'))
     day = 0;
     last = 0;
     time_list = [];
-    print(s[0]['STCODE'].encode('utf-8') + "\n")
-    buf += (s[0]['STCODE'].encode('utf-8') + "\n")
+    print(s[0]['STCODE'] + "\n")
+    buf += (s[0]['STCODE'] + "\n")
     for i in range(0, len(s)):
-                print (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8')\
-                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'].encode('utf-8'))\
-                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME'].encode('utf-8')) + "\n");
-                buf += (s[i]['STNO'].encode('utf-8') + ',' + s[i]['SNAME'].encode('utf-8')\
-                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'].encode('utf-8'))\
-                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME'].encode('utf-8')) + "\n");
+                print (s[i]['STNO'] + ',' + s[i]['SNAME']\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'])\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME']) + "\n");
+                buf += (s[i]['STNO'] + ',' + s[i]['SNAME']\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['ATIME'])\
+                       + ',' + re.sub('(\d\d)(\d\d)', r"\1:\2", s[i]['STIME']) + "\n");
     buf += ("\n");
 
 print(buf.decode('utf-8'));
@@ -4360,12 +4383,12 @@ for v in map:
     if v == None:
         continue
     ret.append([
-        v["LJDM"].encode('utf-8'),
-        v["DBM"].encode('utf-8'),
-        v["PYM"].encode('utf-8'),
-        v["TMIS"].encode('utf-8'),
-        v["SSJC"].encode('utf-8'),
-        v["ZMHZ"].encode('utf-8')
+        v["LJDM"],
+        v["DBM"],
+        v["PYM"],
+        v["TMIS"],
+        v["SSJC"],
+        v["ZMHZ"]
     ])
 
 
@@ -4374,14 +4397,14 @@ for v in map:
     if v == None:
         continue
     ret.append([
-        v["LJM"].encode('utf-8'),
-        v["LJDM"][0].encode('utf-8'),
-        #v["LJQC"].encode('utf-8'),
-        v["DBM"].encode('utf-8'),
-        v["PYM"].encode('utf-8'),
-        v["TMISM"].encode('utf-8'),
-        # x v["SSJC"].encode('utf-8'),
-        v["HZZM"].encode('utf-8')
+        v["LJM"],
+        v["LJDM"][0],
+        #v["LJQC"],
+        v["DBM"],
+        v["PYM"],
+        v["TMISM"],
+        # x v["SSJC"],
+        v["HZZM"]
     ])
 
 
@@ -4391,17 +4414,17 @@ for v in map:
     if v == None:
         continue
     ret.append([
-        # x v["LJM"].encode('utf-8'),
-        v["LJDM"][0].encode('utf-8'),
-        #v["LJQC"].encode('utf-8'),
-        #v["LJJC"].encode('utf-8'),
-        v["DBM"].encode('utf-8'),
-        v["PYM"].encode('utf-8'),
-        v["TMISM"].encode('utf-8'),
-        # x v["SSJC"].encode('utf-8'),
-        # v["SBDM"].encode('utf-8'),
-        v["SSSX"].encode('utf-8'),
-        v["HZZM"].encode('utf-8')
+        # x v["LJM"],
+        v["LJDM"][0],
+        #v["LJQC"],
+        #v["LJJC"],
+        v["DBM"],
+        v["PYM"],
+        v["TMISM"],
+        # x v["SSJC"],
+        # v["SBDM"],
+        v["SSSX"],
+        v["HZZM"]
     ])
 
 

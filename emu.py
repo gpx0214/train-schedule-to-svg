@@ -34,10 +34,7 @@ for row in ccrgt:
     if not len(row[0]):
         continue
     #if row[2] != row[3]:
-        #if platform.system() == "Windows":
-            #print(','.join(row).encode('gbk'))
-        #else:
-            #print(','.join(row).encode('utf-8'))
+        print(','.join(row))
     ccrgtmap[hash_no(row[0])] = row
 
 for row in equip:
@@ -131,7 +128,7 @@ for key in range(0,maxlen):
 
 writemincsv(
     'emu/emu%s.csv'%(yyyymmdd),
-    [[x.encode('utf-8') for x in row] for row in ret]
+    ret, #[[x.encode('utf-8') for x in row] for row in ret]
 )
 
 
