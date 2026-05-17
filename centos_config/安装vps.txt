@@ -5,18 +5,19 @@ wget --no-check-certificate https://kyfw.12306.cn/otn/resources/js/query/train_l
 7za a -t7z -r js.7z js/ -xr\!*.gz
 7za a -t7z -r sch.7z sch/
 
-7za a -t7z -r equip2509.7z equip2509/
-7za a -t7z -r emu_ccrgt2509.7z ccrgt2509/
-7za a -t7z -r carcode2509.7z carcode2509/
-7za a -t7z -r trainset2509.7z trainset2509/
-7za a -t7z -r bureau2509.7z bureau2509/
+7za a -t7z -r equip2605.7z equip2605/
+7za a -t7z -r emu_ccrgt2605.7z ccrgt2605/
+7za a -t7z -r carcode2605.7z carcode2605/
+7za a -t7z -r trainset2605.7z trainset2605/
+7za a -t7z -r bureau2605.7z bureau2605/
 7za a -t7z -r emu250826.7z emu/
 
-7za a -t7z -r sch250701.7z sch250701/
-7za a -t7z -r train250701.7z train250701/
-7za a -t7z -r search250701.7z search250701/
-7za a -t7z -r ticket250701.7z ticket250701/
-7za a -t7z -r station250701.7z station250701/
+7za a -t7z -r sch260415.7z sch260415/
+7za a -t7z -r train260415.7z train260415/
+7za a -t7z -r search260415.7z search260415/
+7za a -t7z -r ticket260415.7z ticket260415/
+7za a -t7z -r station260415.7z station260415/
+7za a -t7z -r bureau260415.7z bureau260415/
 
 7za a -t7z -r js.7z js/ -xr\!*.gz
 
@@ -57,9 +58,9 @@ pip install --upgrade pip==20.3.4
 
 
 # sodium 不要用yum的旧版 支持xchacha20-ietf-poly1305
-wget -N --no-check-certificate https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz
-tar xvf libsodium-1.0.18.tar.gz
-cd libsodium-1.0.18
+wget -N --no-check-certificate https://download.libsodium.org/libsodium/releases/libsodium-1.0.21.tar.gz
+tar xvf libsodium-1.0.21.tar.gz
+cd libsodium-1.0.21
 ./configure
 make && make check
 make install
@@ -572,24 +573,27 @@ https://www.openssl.org/source/
 
 # https --no-check-certificate 
 wget https://jaist.dl.sourceforge.net/project/pcre/pcre/8.45/pcre-8.45.tar.gz
-wget https://www.openssl.org/source/openssl-1.1.1v.tar.gz
+wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz
 
-wget http://www.zlib.net/zlib-1.3.1.tar.gz
-wget https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.45/pcre2-10.45.tar.gz
-wget https://www.openssl.org/source/openssl-3.0.16.tar.gz
+wget http://www.zlib.net/zlib-1.3.2.tar.gz
+wget https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.47/pcre2-10.47.tar.gz
+wget https://www.openssl.org/source/openssl-3.0.20.tar.gz
+wget https://www.openssl.org/source/openssl-3.5.6.tar.gz
 
 tar -zxvf pcre-8.45.tar.gz
-tar -zxvf openssl-1.1.1v.tar.gz
-tar -zxvf zlib-1.3.1.tar.gz
-tar -zxvf pcre2-10.45.tar.gz
-tar -zxvf openssl-3.0.16.tar.gz
+tar -zxvf openssl-1.1.1w.tar.gz
+tar -zxvf zlib-1.3.2.tar.gz
+tar -zxvf pcre2-10.47.tar.gz
+tar -zxvf openssl-3.0.20.tar.gz
+tar -zxvf openssl-3.5.6.tar.gz
 
-编译选项后加上 --with-pcre=../pcre-8.45 --with-zlib=../zlib-1.3.1 --with-openssl=../openssl-1.1.1v
-编译选项后加上 --with-pcre=../pcre2-10.45 --with-zlib=../zlib-1.3.1 --with-openssl=../openssl-3.0.16
+编译选项后加上 --with-pcre=../pcre-8.45 --with-zlib=../zlib-1.3.2 --with-openssl=../openssl-1.1.1w
+编译选项后加上 --with-pcre=../pcre2-10.47 --with-zlib=../zlib-1.3.2 --with-openssl=../openssl-3.0.20
+编译选项后加上 --with-pcre=../pcre2-10.47 --with-zlib=../zlib-1.3.2 --with-openssl=../openssl-3.5.6
 
-wget http://nginx.org/download/nginx-1.28.0.tar.gz
-tar -zxvf nginx-1.28.0.tar.gz
-cd nginx-1.28.0
+wget http://nginx.org/download/nginx-1.30.1.tar.gz
+tar -zxvf nginx-1.30.1.tar.gz
+cd nginx-1.30.1
 
 #nginx1.14.0 1.18.0 1.20.0 1.20.2编译选项
 # 1.22.0 增加 --without-pcre2
@@ -684,6 +688,7 @@ cd nginx-1.28.0
                                      disable ngx_http_upstream_keepalive_module
   --without-http_upstream_zone_module
                                      disable ngx_http_upstream_zone_module
+  --without-http_upstream_sticky     disable sticky upstream modules
 
   --with-http_perl_module            enable ngx_http_perl_module
   --with-http_perl_module=dynamic    enable dynamic ngx_http_perl_module
@@ -775,14 +780,19 @@ cd nginx-1.28.0
   --with-debug                       enable debug logging
 
 
+# ubuntu
+./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt=-Wl,-z,relro --with-debug --with-http_ssl_module --with-http_v2_module --with-http_v3_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_ssl_preread_module --with-pcre=../pcre2-10.47 --with-pcre-opt='-fPIE' --with-pcre-jit --with-zlib=../zlib-1.3.2 --with-zlib-opt='-fPIE' --with-openssl=../openssl-3.5.6 --with-openssl-opt=enable-ktls
 
 #指定pcre zlib openssl源码目录
-./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_v2_module --with-http_v3_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_geoip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module --with-pcre-jit --with-pcre=../pcre2-10.45 --with-zlib=../zlib-1.3.1 --with-openssl=../openssl-3.0.16 --with-openssl-opt=enable-ktls
+# openssl3.5 yum -y install perl-Time-HiRes perl-FindBin perl-Time-Piece
+./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt=-Wl,-z,relro --with-debug --with-http_ssl_module --with-http_v2_module --with-http_v3_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_geoip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module --with-pcre=../pcre2-10.47 --with-pcre-opt='-fPIE' --with-pcre-jit --with-zlib=../zlib-1.3.2 --with-zlib-opt='-fPIE' --with-openssl=../openssl-3.5.6 --with-openssl-opt=enable-ktls
+# geoip 暂时去掉
+./configure --with-cc-opt='-g -O3 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt=-Wl,-z,relro --with-debug --with-pcre-jit --with-http_ssl_module --with-http_v2_module --with-http_v3_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-stream_realip_module --with-stream_ssl_preread_module --add-module=../nginx-rtmp-module --with-pcre=../pcre2-10.47 --with-pcre-opt='-fPIE' --with-pcre-jit --with-zlib=../zlib-1.3.2 --with-zlib-opt='-fPIE' --with-openssl=../openssl-3.5.6 --with-openssl-opt=enable-ktls
 checking for OS
- + Linux 5.18.12-1.el7.elrepo.x86_64 x86_64
+ + Linux 5.14.0-611.9.1.el9_7.x86_64 x86_64
 checking for C compiler ... found
  + using GNU C compiler
- + gcc version: 4.8.5 20150623 (Red Hat 4.8.5-44) (GCC)
+ + gcc version: 11.5.0 20240719 (Red Hat 11.5.0-11) (GCC)
 checking for gcc -pipe switch ... found
 checking for --with-ld-opt="-Wl,-z,relro" ... found
 checking for -Wl,-E switch ... found
@@ -801,7 +811,7 @@ checking for crypt.h ... found
 checking for Linux specific features
 checking for epoll ... found
 checking for EPOLLRDHUP ... found
-checking for EPOLLEXCLUSIVE ... not found
+checking for EPOLLEXCLUSIVE ... found
 checking for eventfd() ... found
 checking for O_PATH ... found
 checking for sendfile() ... found
@@ -812,9 +822,9 @@ checking for prctl(PR_SET_KEEPCAPS) ... found
 checking for capabilities ... found
 checking for crypt_r() ... found
 checking for sys/vfs.h ... found
-checking for BPF sockhash ... not found
-checking for SO_COOKIE ... not found
-checking for UDP_SEGMENT ... not found
+checking for BPF sockhash ... found
+checking for SO_COOKIE ... found
+checking for UDP_SEGMENT ... found
 checking for nobody group ... found
 checking for poll() ... found
 checking for /dev/poll ... not found
@@ -828,8 +838,7 @@ checking for F_NOCACHE ... not found
 checking for directio() ... not found
 checking for statfs() ... found
 checking for statvfs() ... found
-checking for dlopen() ... not found
-checking for dlopen() in libdl ... found
+checking for dlopen() ... found
 checking for sched_yield() ... found
 checking for sched_setaffinity() ... found
 checking for SO_SETFIB ... not found
@@ -846,7 +855,7 @@ checking for IPV6_RECVPKTINFO ... found
 checking for IP_MTU_DISCOVER ... found
 checking for IPV6_MTU_DISCOVER ... found
 checking for IP_DONTFRAG ... not found
-checking for IPV6_DONTFRAG ... not found
+checking for IPV6_DONTFRAG ... found
 checking for TCP_DEFER_ACCEPT ... found
 checking for TCP_KEEPIDLE ... found
 checking for TCP_FASTOPEN ... found
@@ -874,8 +883,7 @@ checking for setproctitle() ... not found
 checking for pread() ... found
 checking for pwrite() ... found
 checking for pwritev() ... found
-checking for strerrordesc_np() ... not found
-checking for sys_nerr ... found
+checking for strerrordesc_np() ... found
 checking for localtime_r() ... found
 checking for clock_gettime(CLOCK_MONOTONIC) ... found
 checking for posix_memalign() ... found
@@ -883,8 +891,7 @@ checking for memalign() ... found
 checking for mmap(MAP_ANON|MAP_SHARED) ... found
 checking for mmap("/dev/zero", MAP_SHARED) ... found
 checking for System V shared memory ... found
-checking for POSIX semaphores ... not found
-checking for POSIX semaphores in libpthread ... found
+checking for POSIX semaphores ... found
 checking for struct msghdr.msg_control ... found
 checking for ioctl(FIONBIO) ... found
 checking for ioctl(FIONREAD) ... found
@@ -903,16 +910,16 @@ checking for libexslt ... found
 checking for GD library ... found
 checking for GD WebP support ... found
 checking for perl
- + perl version: This is perl 5, version 16, subversion 3 (v5.16.3) built for x86_64-linux-thread-multi
+ + perl version: This is perl 5, version 32, subversion 1 (v5.32.1) built for x86_64-linux-thread-multi
  + perl interpreter multiplicity found
-checking for GeoIP library ... found
-checking for GeoIP IPv6 support ... found
+// checking for GeoIP library ... found
+// checking for GeoIP IPv6 support ... found
 creating objs/Makefile
 
 Configuration summary
-  + using PCRE2 library: ../pcre2-10.45
-  + using OpenSSL library: ../openssl-3.0.16
-  + using zlib library: ../zlib-1.3.1
+  + using PCRE2 library: ../pcre2-10.47
+  + using OpenSSL library: ../openssl-3.5.6
+  + using zlib library: ../zlib-1.3.2
 
   nginx path prefix: "/usr/local/nginx"
   nginx binary file: "/usr/local/nginx/sbin/nginx"
